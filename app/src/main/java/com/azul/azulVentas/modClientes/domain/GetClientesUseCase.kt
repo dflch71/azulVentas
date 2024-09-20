@@ -1,6 +1,5 @@
 package com.azul.azulVentas.modClientes.domain
 
-import com.azul.azulVentas.modClientes.data.ClienteDao
 import com.azul.azulVentas.modClientes.data.ClienteRepository
 import com.azul.azulVentas.modClientes.ui.model.ClienteModel
 import kotlinx.coroutines.flow.Flow
