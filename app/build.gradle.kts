@@ -2,9 +2,14 @@
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
+    alias(libs.plugins.googleServices)
+    alias(libs.plugins.crashlytics)
 
-    kotlin("kapt")
+    alias(libs.plugins.ksp)
     alias(libs.plugins.google.dagger.hilt)
+
+    //Existing plugins
+    alias(libs.plugins.compose.compiler)
 }
 
 android {
@@ -57,8 +62,23 @@ android {
 
 dependencies {
 
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.crashlytics)
+    implementation(libs.firebase.auth)
+    implementation(libs.firebase.firestone)
+    implementation(libs.firebase.realtime)
+
+    implementation(libs.coil)
+
     implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.navigation.compose)
+
+    //Live Data
     implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.lifecycle.livedata.ktx)
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
+    implementation(libs.androidx.livedata.compose)
+
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
@@ -73,31 +93,17 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
-    implementation("io.coil-kt:coil-compose:2.6.0")
-
     // Dagger - Hilt
     implementation(libs.google.dagger.hilt)
-    kapt(libs.google.dagger.hilt.compiler)
-
-    //Live Data
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0")
-    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.7.0")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
-    implementation("androidx.compose.runtime:runtime-livedata:1.6.7")
-
-
-    //Room
-    val room_version = "2.6.1"
-    implementation(libs.androidx.room.ktx)
-    implementation(libs.androidx.room.runtime)
-    //annotationProcessor(libs.androidx.room.compiler) //Produce un error
-    kapt("androidx.room:room-compiler:$room_version")  //Se configuro con esta libreria, no se dejo con ksp
-
 
     //KSP - replace kapt for room
-    implementation(libs.ksp)
+    ksp(libs.google.dagger.hilt.compiler)
+    kspAndroidTest(libs.google.dagger.hilt.compiler)
+
+    //Room
+    implementation(libs.androidx.room.ktx)
+    implementation(libs.androidx.room.runtime)
+    ksp(libs.androidx.room.compiler)
+
 }
 
-kapt {
-    correctErrorTypes = true
-}

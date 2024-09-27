@@ -2,6 +2,12 @@
 plugins {
     alias(libs.plugins.androidApplication) apply false
     alias(libs.plugins.jetbrainsKotlinAndroid) apply false
+    alias(libs.plugins.googleServices) apply false
+    alias(libs.plugins.crashlytics) apply false
 
+    alias(libs.plugins.ksp) apply false
     alias(libs.plugins.google.dagger.hilt) apply false
+
+    // Existing plugins
+    alias(libs.plugins.compose.compiler) apply false
 }

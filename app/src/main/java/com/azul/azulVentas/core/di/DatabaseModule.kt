@@ -3,7 +3,7 @@ package com.azul.azulVentas.core.di
 import android.content.Context
 import androidx.room.Room
 import com.azul.azulVentas.core.AzulVentasDatabase
-import com.azul.azulVentas.modClientes.data.ClienteDao
+import com.azul.azulVentas.data.local.dao.ClienteDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

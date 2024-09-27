@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "60526565993",
+    "project_id": "azul-invoice",
+    "storage_bucket": "azul-invoice.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:60526565993:android:380ba59239b5ed870aa0f8",
+        "android_client_info": {
+          "package_name": "com.azul.azulVentas"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCdiBUdpCUwl11DIy6OHaQqJxHO6weCnYo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -8,10 +8,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="com.azul.azulVentas" />
+                  <option name="mobileSdkAppId" value="1:60526565993:android:380ba59239b5ed870aa0f8" />
+                  <option name="projectId" value="azul-invoice" />
+                  <option name="projectNumber" value="60526565993" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />
