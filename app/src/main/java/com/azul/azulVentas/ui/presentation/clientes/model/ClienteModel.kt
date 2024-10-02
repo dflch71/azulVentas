@@ -1,4 +1,4 @@
-package com.azul.azulVentas.ui.clientes.model
+package com.azul.azulVentas.ui.presentation.clientes.model
 
 data class ClienteModel (
     val id: Int = System.currentTimeMillis().hashCode(),

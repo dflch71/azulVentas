@@ -1,17 +1,17 @@
-package com.azul.azulVentas.ui.clientes.viewmodel
+package com.azul.azulVentas.ui.presentation.clientes.viewmodel
 
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.azul.azulVentas.domain.usecases.AddClienteUseCase
-import com.azul.azulVentas.domain.usecases.DeleteClienteUseCase
-import com.azul.azulVentas.domain.usecases.GetClientesUseCase
-import com.azul.azulVentas.domain.usecases.UpdateClienteUseCase
-import com.azul.azulVentas.ui.clientes.view.ClientesUiState
-import com.azul.azulVentas.ui.clientes.view.ClientesUiState.Success
-import com.azul.azulVentas.ui.clientes.model.ClienteModel
+import com.azul.azulVentas.domain.usecases.cliente.AddClienteUseCase
+import com.azul.azulVentas.domain.usecases.cliente.DeleteClienteUseCase
+import com.azul.azulVentas.domain.usecases.cliente.GetClientesUseCase
+import com.azul.azulVentas.domain.usecases.cliente.UpdateClienteUseCase
+import com.azul.azulVentas.ui.presentation.clientes.view.ClientesUiState
+import com.azul.azulVentas.ui.presentation.clientes.view.ClientesUiState.Success
+import com.azul.azulVentas.ui.presentation.clientes.model.ClienteModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow

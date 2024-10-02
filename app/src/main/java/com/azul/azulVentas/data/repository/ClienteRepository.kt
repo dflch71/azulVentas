@@ -2,7 +2,7 @@ package com.azul.azulVentas.data.repository
 
 import com.azul.azulVentas.data.local.dao.ClienteDao
 import com.azul.azulVentas.data.local.entities.ClienteEntity
-import com.azul.azulVentas.ui.clientes.model.ClienteModel
+import com.azul.azulVentas.ui.presentation.clientes.model.ClienteModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject

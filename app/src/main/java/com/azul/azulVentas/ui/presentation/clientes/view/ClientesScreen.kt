@@ -1,4 +1,4 @@
-package com.azul.azulVentas.ui.clientes.view
+package com.azul.azulVentas.ui.presentation.clientes.view
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.BorderStroke
@@ -69,8 +69,8 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.zIndex
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.repeatOnLifecycle
-import com.azul.azulVentas.ui.clientes.model.ClienteModel
-import com.azul.azulVentas.ui.clientes.viewmodel.ClientesViewModel
+import com.azul.azulVentas.ui.presentation.clientes.model.ClienteModel
+import com.azul.azulVentas.ui.presentation.clientes.viewmodel.ClientesViewModel
 
 
 @Composable

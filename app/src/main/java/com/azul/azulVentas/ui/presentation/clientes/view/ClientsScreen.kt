@@ -1,4 +1,4 @@
-package com.azul.azulVentas.ui.clientes.view
+package com.azul.azulVentas.ui.presentation.clientes.view
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -6,12 +6,12 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.repeatOnLifecycle
-import com.azul.azulVentas.ui.clientes.viewmodel.ClientesViewModel
 import com.azul.azulVentas.ui.components.ClientList
+import com.azul.azulVentas.ui.presentation.clientes.viewmodel.ClientesViewModel
 
 
 @Composable
@@ -19,7 +19,7 @@ fun ClientsScreen (
     clientesViewModel: ClientesViewModel
 ) {
 
-    val lifecycle = LocalLifecycleOwner.current.lifecycle
+    val lifecycle = androidx.lifecycle.compose.LocalLifecycleOwner.current.lifecycle
 
     val uiState by produceState<ClientesUiState>(
         initialValue = ClientesUiState.Loading,
@@ -33,7 +33,15 @@ fun ClientsScreen (
 
     when (uiState) {
         is ClientesUiState.Error -> {}
-        ClientesUiState.Loading -> { CircularProgressIndicator() }
+        ClientesUiState.Loading -> {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ){
+                CircularProgressIndicator()
+            }
+        }
         is ClientesUiState.Success -> {
             Box(
                 modifier = Modifier.fillMaxSize()

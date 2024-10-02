@@ -6,19 +6,21 @@ junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
 lifecycleRuntimeKtx = "2.8.6"
-compose-livedata = "1.7.2"
+compose-livedata = "1.7.3"
 activityCompose = "1.9.2"
 
 hilt = "2.51.1"
 room = "2.6.1"
 ksp = "2.0.20-1.0.25"
 
-composeBom = "2024.09.02"
-firebaseBom = "33.3.0"
+composeBom = "2024.09.03"
+firebaseBom = "33.4.0"
 service = "4.4.2"
 crashlytics = "3.0.2"
 coil = "2.6.0"
-navigationCompose = "2.8.1"
+navigationCompose = "2.8.2"
+
+konfetti = "2.0.4"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -60,6 +62,8 @@ firebase-realtime = { module = "com.google.firebase:firebase-database-ktx" }
 
 coil = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
+
+konfetti = { group = "nl.dionsegijn", name = "konfetti-compose", version.ref = "konfetti" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

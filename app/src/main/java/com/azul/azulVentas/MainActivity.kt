@@ -1,80 +1,32 @@
 package com.azul.azulVentas
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.compose.animation.animateContentSize
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.AddCircle
-import androidx.compose.material.icons.filled.Call
-import androidx.compose.material.icons.filled.Create
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.BottomAppBar
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import coil.compose.AsyncImage
-import com.azul.azulVentas.ui.clientes.view.ClientsScreen
-import com.azul.azulVentas.ui.clientes.viewmodel.ClientesViewModel
-import com.azul.azulVentas.ui.components.BottomNavigationBar
-import com.azul.azulVentas.ui.components.FavoritesScreen
-import com.azul.azulVentas.ui.components.SettingsScreeen
+import com.azul.azulVentas.ui.presentation.clientes.viewmodel.ClientesViewModel
+import com.azul.azulVentas.ui.presentation.container.ScreenContainer
+import com.azul.azulVentas.ui.presentation.login.viewmodel.AuthViewModel
 import com.azul.azulVentas.ui.theme.AzulVentasTheme
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.ktx.Firebase
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     private lateinit var navHostController: NavHostController
-    private lateinit var auth: FirebaseAuth
+   // private lateinit var auth: FirebaseAuth
 
-
+    private val authViewModel: AuthViewModel by viewModels()
     private val clientesViewModel: ClientesViewModel by viewModels()
 
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
-        auth = Firebase.auth
+        //auth = Firebase.auth
 
         setContent {
 
@@ -83,9 +35,11 @@ class MainActivity : ComponentActivity() {
 
             AzulVentasTheme {
 
-                NavigationWrapper(navHostController, auth)
+                //NavigationWrapper(navHostController, auth, clientesViewModel)
+                //ScreenContainer(navHostController,  auth,  authViewModel, clientesViewModel)
+                ScreenContainer(navHostController, authViewModel, clientesViewModel)
 
-                /*
+/*
                 var selectedItemIndex by remember {
                     mutableStateOf(0)
                 }
@@ -131,6 +85,7 @@ class MainActivity : ComponentActivity() {
                     }
                 }
                 */
+
             }
         }
     }
@@ -138,50 +93,17 @@ class MainActivity : ComponentActivity() {
     override fun onStart() {
         super.onStart()
 
-        val currentUser: FirebaseUser? = auth.currentUser
+        /*val currentUser: FirebaseUser? = auth.currentUser
         if (currentUser != null) {
             //navigate to home
             Log.i("Login", "Login success Main")
 
             auth.signOut()
-        }
-
+        }*/
     }
 }
 
-
-
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun AzulVentasTopAppBar() {
-    TopAppBar(
-        navigationIcon = {
-            IconButton(onClick = {}) {
-                Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null )
-            }
-        },
-
-        actions = {
-
-            IconButton(onClick = {}) {
-                Icon(imageVector = Icons.Filled.Create, contentDescription = null )
-            }
-
-            IconButton(onClick = {}) {
-                Icon(imageVector = Icons.Filled.Add, contentDescription = null )
-            }
-        },
-
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.primary,
-            titleContentColor = MaterialTheme.colorScheme.onPrimary,
-            navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
-            actionIconContentColor = MaterialTheme.colorScheme.onPrimary
-        ),
-        title = { Text(text = "Azul Ventas") }
-    )
-}
+/*
 
 @Composable
 fun AzulVentasBottonAppBar() {
@@ -325,4 +247,5 @@ fun AzulVentasAlertDialog(
             Icon(imageVector = Icons.Filled.Call, contentDescription = null )
         }
     )
-}
+}*/
+

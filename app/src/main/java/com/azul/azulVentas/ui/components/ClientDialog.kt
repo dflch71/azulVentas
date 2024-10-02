@@ -49,8 +49,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import com.azul.azulVentas.ui.clientes.viewmodel.ClientesViewModel
-import com.azul.azulVentas.ui.clientes.model.ClienteModel
+import com.azul.azulVentas.ui.presentation.clientes.viewmodel.ClientesViewModel
+import com.azul.azulVentas.ui.presentation.clientes.model.ClienteModel
 
 @Composable
 fun ClientDialog(

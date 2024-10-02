@@ -1,6 +1,6 @@
-package com.azul.azulVentas.ui.clientes.view
+package com.azul.azulVentas.ui.presentation.clientes.view
 
-import com.azul.azulVentas.ui.clientes.model.ClienteModel
+import com.azul.azulVentas.ui.presentation.clientes.model.ClienteModel
 
 sealed interface ClientesUiState {
     object Loading : ClientesUiState

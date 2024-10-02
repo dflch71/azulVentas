@@ -105,5 +105,8 @@ dependencies {
     implementation(libs.androidx.room.runtime)
     ksp(libs.androidx.room.compiler)
 
+    //Konfetti
+    implementation(libs.konfetti)
+
 }
 

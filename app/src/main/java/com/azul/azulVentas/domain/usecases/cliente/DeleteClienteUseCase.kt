@@ -1,7 +1,7 @@
-package com.azul.azulVentas.domain.usecases
+package com.azul.azulVentas.domain.usecases.cliente
 
 import com.azul.azulVentas.data.repository.ClienteRepository
-import com.azul.azulVentas.ui.clientes.model.ClienteModel
+import com.azul.azulVentas.ui.presentation.clientes.model.ClienteModel
 import javax.inject.Inject
 
 class DeleteClienteUseCase @Inject constructor(

@@ -22,8 +22,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.azul.azulVentas.ui.clientes.viewmodel.ClientesViewModel
-import com.azul.azulVentas.ui.clientes.model.ClienteModel
+import com.azul.azulVentas.ui.presentation.clientes.viewmodel.ClientesViewModel
+import com.azul.azulVentas.ui.presentation.clientes.model.ClienteModel
 
 @Composable
 fun ClientList(clientes: List<ClienteModel>, clientesViewModel: ClientesViewModel) {

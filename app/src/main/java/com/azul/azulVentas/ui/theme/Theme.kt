@@ -15,6 +15,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
+private val AppColors = darkColorScheme(
+    primary = Purple80,
+    secondary = PurpleGrey80,
+    tertiary = Pink80
+)
+
 private val DarkColorScheme = darkColorScheme(
     primary = Purple80,
     secondary = PurpleGrey80,
@@ -63,7 +69,8 @@ fun AzulVentasTheme(
     }
 
     MaterialTheme(
-        colorScheme = colorScheme,
+        //colorScheme = colorScheme,
+        colorScheme = AppColors,
         typography = Typography,
         content = content
     )
