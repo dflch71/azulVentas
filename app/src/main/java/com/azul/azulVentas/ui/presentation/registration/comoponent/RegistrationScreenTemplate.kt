@@ -1,6 +1,7 @@
-package com.azul.azulVentas.ui.components
+package com.azul.azulVentas.ui.presentation.registration.comoponent
 
 import androidx.annotation.DrawableRes
+import android.util.Patterns
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -18,11 +19,19 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Email
+import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -44,18 +53,23 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.azul.azulVentas.R
+import com.azul.azulVentas.ui.components.ActionButton
 import com.azul.azulVentas.ui.presentation.login.viewmodel.AuthViewModel
+import com.azul.azulVentas.ui.presentation.registration.viewmodel.RegisterViewModel
 import com.azul.azulVentas.ui.theme.DarkTextColor
+import com.azul.azulVentas.ui.theme.PrimaryPink
 import kotlinx.coroutines.launch
 
 @Composable
-fun AuthenticationScreenTemplate(
-    authViewModel: AuthViewModel,
+fun RegistrationScreenTemplate(
+    registerViewModel: RegisterViewModel,
     modifier: Modifier = Modifier,
     backgroundGradient: Array<Pair<Float, Color>>,
     @DrawableRes imgRes: Int,
@@ -66,9 +80,8 @@ fun AuthenticationScreenTemplate(
     mainActionButtonColors: ButtonColors,
     secondaryActionButtonColors: ButtonColors,
     actionButtonShadow: Color,
-    onMainActionButtonClicked: () -> Unit,
-    onSecondaryActionButtonClicked: () -> Unit,
-    onLoginSuccess: () -> Unit
+    onSecondaryActionButtonClicked: () -> Unit
+
 ) {
     val scrollState = rememberScrollState()
     val coroutineScope = rememberCoroutineScope()
@@ -76,6 +89,7 @@ fun AuthenticationScreenTemplate(
 
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var errorMessage by remember { mutableStateOf<String?>(null) }
 
     LaunchedEffect(keyboardHeight) {
         coroutineScope.launch {
@@ -96,82 +110,61 @@ fun AuthenticationScreenTemplate(
             painter = painterResource(imgRes),
             contentDescription = null,
             modifier = Modifier
-                .size(300.dp)
-                .padding(start = 30.dp)
+                .size(280.dp)
+                .padding(start = 8.dp)
         )
+
         Message(
             title = title,
             subtitle = subtitle
         )
+
         Spacer(
             modifier = Modifier.height(8.dp)
         )
 
-        email = InputField(
-            leadingIconRes = R.drawable.ic_person,
-            placeholderText = "You email",
+        email = emailTextField(
             modifier = Modifier.padding(horizontal = 24.dp),
+            placeholderText = "You email",
+            keyBoardType = KeyboardType.Email,
+            imeAction = ImeAction.Next
         )
-        authViewModel.setEmail_(email)
 
         Spacer(
-            modifier = Modifier.height(10.dp)
+            modifier = Modifier.height(8.dp)
         )
 
-        password = InputField(
+        password = passwordTextField(
+            modifier = Modifier.padding(horizontal = 24.dp),
             leadingIconRes = R.drawable.ic_key,
+            visibleIconRes = R.drawable.ic_visibility,
+            visibleOffIconRes = R.drawable.ic_visibility_off,
             placeholderText = "Password",
-            visualTransformation = PasswordVisualTransformation(),
-            modifier = Modifier.padding(horizontal = 24.dp)
-        )
-        authViewModel.setPassword_(password)
-
-        Spacer(
-            modifier = Modifier.height(10.dp)
+            keyBoardType = KeyboardType.Password,
+            imeAction = ImeAction.Done
         )
 
-        var errorMessage by remember { mutableStateOf<String?>(null) }
-        ActionButton(
-            text = mainActionButtonTitle,
-            isNavigationArrowVisible = true,
-            //onClicked = onMainActionButtonClicked,
-            onClicked =
-                {
-                    authViewModel.login(email, password) { user ->
-                        if (user != null) {
-                            // Login exitoso, llama a onLoginSuccess
-                            onLoginSuccess()
-                        } else {
-                            errorMessage = "Login failed. Try again."
-                        }
-                    }
-                },
-            colors = mainActionButtonColors,
-            shadowColor = actionButtonShadow,
-            modifier = Modifier.padding(horizontal = 24.dp)
-        )
+        Spacer(modifier = Modifier.height(10.dp))
 
-        if (errorMessage != null) {
-            Text(
-                text = errorMessage!!,
-                color = MaterialTheme.colorScheme.error,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 24.dp)
-            )
-        }
 
-        Separator(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 40.dp)
-                .height(62.dp)
-        )
 
         ActionButton(
             text = secondaryActionButtonTitle,
             isNavigationArrowVisible = false,
-            onClicked = onSecondaryActionButtonClicked,
+            //onClicked = onSecondaryActionButtonClicked,
+            onClicked = {
+
+                    errorMessage = null
+                    registerViewModel.register(email, password) { user ->
+                        if (user != null) {
+                            // Login exitoso, llama a onLoginSuccess
+                            //onLoginSuccess()
+                        } else {
+                            errorMessage = "Login failed. Try again."
+                        }
+                    }
+
+            },
             colors = secondaryActionButtonColors,
             shadowColor = actionButtonShadow,
             modifier = Modifier
@@ -180,7 +173,6 @@ fun AuthenticationScreenTemplate(
         )
     }
 }
-
 
 @Composable
 private fun Message(
@@ -212,20 +204,24 @@ private fun Message(
 }
 
 @Composable
-private fun InputField(
+fun emailTextField(
     modifier: Modifier = Modifier,
     visualTransformation: VisualTransformation = VisualTransformation.None,
-    @DrawableRes leadingIconRes: Int,
-    placeholderText: String
+    placeholderText: String,
+    keyBoardType: KeyboardType = KeyboardType.Text,
+    imeAction: ImeAction
 ): String {
-    var inputValue by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
+    var isValidEmail by remember { mutableStateOf(true) }
 
     TextField(
         modifier = modifier
             .fillMaxWidth()
             .height(62.dp),
-        value = inputValue,
-        onValueChange = { inputValue = it },
+        value = email,
+        onValueChange = { email = it
+            isValidEmail = Patterns.EMAIL_ADDRESS.matcher(email).matches()
+        },
         visualTransformation = visualTransformation,
         singleLine = true,
         shape = RoundedCornerShape(percent = 50),
@@ -246,6 +242,77 @@ private fun InputField(
         textStyle = MaterialTheme.typography.bodyLarge.copy(
             fontWeight = FontWeight.Medium
         ),
+        keyboardOptions = KeyboardOptions(
+            keyboardType = keyBoardType,
+            imeAction = imeAction
+        ),
+        leadingIcon = {
+            Icon(
+                imageVector = Icons.Outlined.Email,
+                contentDescription = "Email Icon",
+                modifier = Modifier.size(24.dp)
+            )
+        },
+        placeholder = { Text(text = placeholderText) }
+    )
+
+    if (!isValidEmail) {
+        Text(
+            text = "Invalid email format",
+            color = MaterialTheme.colorScheme.error,
+            style = MaterialTheme.typography.bodySmall,
+            modifier = Modifier.padding(start = 4.dp)
+        )
+    }
+    return email
+}
+
+@Composable
+private fun passwordTextField(
+    modifier: Modifier = Modifier,
+    @DrawableRes leadingIconRes: Int,
+    @DrawableRes visibleIconRes: Int,
+    @DrawableRes visibleOffIconRes: Int,
+    placeholderText: String,
+    keyBoardType: KeyboardType = KeyboardType.Password,
+    imeAction: ImeAction
+): String {
+    var password by remember { mutableStateOf("") }
+    var passwordVisible by remember { mutableStateOf(false) }
+    var isValidPassword by remember { mutableStateOf(true) }
+
+    TextField(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(62.dp),
+        value = password,
+        onValueChange = {
+            password = it
+            isValidPassword = it.length >= 6 // Example validation: at least 6 characters
+        },
+        singleLine = true,
+        shape = RoundedCornerShape(percent = 50),
+        colors = TextFieldDefaults.colors(
+            focusedIndicatorColor = Color.Transparent,
+            disabledIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent,
+            errorIndicatorColor = Color.Transparent,
+            focusedTextColor = DarkTextColor,
+            unfocusedTextColor = DarkTextColor,
+            unfocusedPlaceholderColor = DarkTextColor,
+            focusedPlaceholderColor = DarkTextColor,
+            focusedLeadingIconColor = DarkTextColor,
+            unfocusedLeadingIconColor = DarkTextColor,
+            focusedContainerColor = Color.White,
+            unfocusedContainerColor = Color.White
+        ),
+        textStyle = MaterialTheme.typography.bodyLarge.copy(
+            fontWeight = FontWeight.Medium
+        ),
+        keyboardOptions = KeyboardOptions(
+            keyboardType = keyBoardType,
+            imeAction = imeAction
+        ),
         leadingIcon = {
             Icon(
                 painter = painterResource(leadingIconRes),
@@ -253,11 +320,41 @@ private fun InputField(
                 modifier = Modifier.size(24.dp)
             )
         },
+        trailingIcon = {
+            val image = if (passwordVisible) visibleIconRes else visibleOffIconRes
+
+            IconButton(
+                onClick = {passwordVisible = !passwordVisible}) {
+                Icon(
+                    painter = painterResource(image),
+                    contentDescription = "Show password",
+                    modifier = Modifier
+                        .size(32.dp)
+                        .padding(end = 8.dp),
+                    tint = if (!isValidPassword) MaterialTheme.colorScheme.primary
+                    else MaterialTheme.colorScheme.background
+                )
+            }
+
+        },
+
+        isError = !isValidPassword,
+        visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
         placeholder = { Text(text = placeholderText) }
     )
 
-    return inputValue
+    if (!isValidPassword) {
+        Text(
+            text = "length >= 6",
+            color = MaterialTheme.colorScheme.error,
+            style = MaterialTheme.typography.bodySmall,
+            modifier = Modifier.padding(start = 4.dp)
+        )
+    }
+
+    return password
 }
+
 
 @Composable
 private fun Separator(
@@ -295,5 +392,41 @@ private fun DashedLine(
             cap = StrokeCap.Round,
             strokeWidth = 1.dp.toPx()
         )
+    }
+}
+
+@Composable
+fun CustomButton(
+    onClick: () -> Unit,
+    @DrawableRes iconRes: Int,
+    description: String
+) {
+    Button(
+        onClick = onClick,
+        modifier = Modifier
+            //.fillMaxWidth()
+            .height(90.dp)
+            .width(150.dp)
+            .padding(8.dp),
+        colors = ButtonDefaults.buttonColors(
+            contentColor = Color.White,
+            containerColor = PrimaryPink
+        )
+    ) {
+        Column(
+            modifier = Modifier.weight(0.25f),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ){
+            Icon(
+                painter = painterResource(id = iconRes), // Replace with your Google logo drawable
+                contentDescription = null,
+                tint = Color.Unspecified, // No tint needed for the logo
+                modifier = Modifier.size(36.dp)
+            )
+            Text(
+                description,
+                color = Color.Black
+            )
+        }
     }
 }

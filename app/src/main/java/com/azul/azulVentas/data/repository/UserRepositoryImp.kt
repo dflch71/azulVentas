@@ -14,7 +14,12 @@ class UserRepositoryImpl @Inject constructor(
         return authService.login(email, password)
     }
 
-    override suspend fun logout() {
-        authService.logout()
+    override suspend fun signout() {
+        authService.signOut()
     }
+
+    override suspend fun register(email: String, password: String): User? {
+        return authService.register(email, password)
+    }
+
 }

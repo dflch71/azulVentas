@@ -1,12 +1,13 @@
 package com.azul.azulVentas.ui.presentation.login.viewmodel
 
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.azul.azulVentas.domain.model.user.User
-import com.azul.azulVentas.domain.usecases.user.LogOutUseCase
+import com.azul.azulVentas.domain.usecases.user.SignOutUseCase
 import com.azul.azulVentas.domain.usecases.user.LoginUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,7 +18,7 @@ import javax.inject.Inject
 @HiltViewModel
 class AuthViewModel @Inject constructor(
     private val loginUseCase: LoginUseCase,
-    private val logOutUseCase: LogOutUseCase
+    private val signOutUseCase: SignOutUseCase
 ) : ViewModel() {
 
     fun login(email: String, password: String, onResult: (User?) -> Unit) {
@@ -31,10 +32,10 @@ class AuthViewModel @Inject constructor(
     private val _isUserLoggedOut = MutableStateFlow(false)
     val isUserLoggedOut: StateFlow<Boolean> = _isUserLoggedOut
 
-    fun logout() {
-        // Implementar lógica de logout si es necesario
+    fun signout() {
+        // Implementar lógica de signout si es necesario
         viewModelScope.launch {
-            logOutUseCase.logOut()
+            signOutUseCase.signOut()
             _isUserLoggedOut.value = true
         }
     }

@@ -9,12 +9,14 @@ import com.azul.azulVentas.ui.presentation.clientes.viewmodel.ClientesViewModel
 import com.azul.azulVentas.ui.presentation.home.HomeScreen
 import com.azul.azulVentas.ui.presentation.login.view.LoginScreen
 import com.azul.azulVentas.ui.presentation.login.viewmodel.AuthViewModel
-import com.azul.azulVentas.ui.presentation.registration.RegistrationScreen
+import com.azul.azulVentas.ui.presentation.registration.view.RegistrationScreen
+import com.azul.azulVentas.ui.presentation.registration.viewmodel.RegisterViewModel
 
 @Composable
 fun ScreenContainer(
     navHost: NavHostController,
     authViewModel: AuthViewModel,
+    registerViewModel: RegisterViewModel,
     clientesViewModel: ClientesViewModel
 ) {
     //val navHost = rememberNavController()
@@ -30,17 +32,14 @@ fun ScreenContainer(
                 }
             )
         }
+
         composable(NavGraph.Login.route) {
             LoginScreen(
-                onLoginClicked = {
-                    navHost.navigate(NavGraph.Home.route) // Navegar al Home después del login
-                },
-
                 onRegistrationClicked = {
                     navHost.navigate(NavGraph.Registration.route) // Navegar a la pantalla de Registro
                 },
 
-                viewModel = authViewModel, // ViewModel inyectado
+                authViewModel = authViewModel, // ViewModel inyectado
                 onLoginSuccess = {
                     navHost.navigate(NavGraph.Home.route) // Si el login es exitoso, navegar al Home
                 }
@@ -48,24 +47,10 @@ fun ScreenContainer(
         }
 
         composable(NavGraph.Registration.route) {
-            /*RegistrationScreen(
-                onRegisterClicked = {
-                    navHost.navigate(NavGraph.Home.route)
-                },
-                onLoginClicked = {
-                    navHost.navigate(NavGraph.Login.route)
-                }
-            )*/
             RegistrationScreen(
-                authViewModel,
-                onRegisterClicked = {
-                    navHost.navigate(NavGraph.Home.route)
-                },
+                registerViewModel,
                 onLoginClicked = {
                     navHost.navigate(NavGraph.Login.route)
-                },
-                onLoginSuccess = {
-                    navHost.navigate(NavGraph.Home.route)
                 }
             )
         }
@@ -75,7 +60,7 @@ fun ScreenContainer(
                 clientesViewModel,
                 authViewModel,
                 onLogoutSuccess  = {
-                    authViewModel.logout()
+                    authViewModel.signout()
                     navHost.navigate(NavGraph.Login.route) {
                         popUpTo(NavGraph.Home.route) { inclusive = true }
                     }

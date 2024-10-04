@@ -9,6 +9,7 @@ class FirebaseAuthService @Inject constructor() {
 
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
 
+    //Login
     suspend fun login(email: String, password: String): User? {
         return try {
             val result = auth.signInWithEmailAndPassword(email, password).await()
@@ -20,7 +21,19 @@ class FirebaseAuthService @Inject constructor() {
         }
     }
 
-    fun logout() {
+    fun signOut() {
         auth.signOut()
+    }
+
+    //Register
+    suspend fun register(email: String, password: String): User? {
+        return try {
+            val result = auth.createUserWithEmailAndPassword(email, password).await()
+            result.user?.let { firebaseUser ->
+                User(uid = firebaseUser.uid, email = firebaseUser.email ?: "")
+            }
+        } catch (e: Exception) {
+            null
+        }
     }
 }

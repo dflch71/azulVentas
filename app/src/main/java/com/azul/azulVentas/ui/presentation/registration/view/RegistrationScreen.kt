@@ -1,26 +1,24 @@
-package com.azul.azulVentas.ui.presentation.registration
+package com.azul.azulVentas.ui.presentation.registration.view
 
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import com.azul.azulVentas.R
-import com.azul.azulVentas.ui.components.AuthenticationScreenTemplate
-import com.azul.azulVentas.ui.presentation.login.viewmodel.AuthViewModel
+import com.azul.azulVentas.ui.presentation.registration.comoponent.RegistrationScreenTemplate
+import com.azul.azulVentas.ui.presentation.registration.viewmodel.RegisterViewModel
 import com.azul.azulVentas.ui.theme.PrimaryViolet
 import com.azul.azulVentas.ui.theme.PrimaryVioletDark
 import com.azul.azulVentas.ui.theme.PrimaryVioletLight
 
 @Composable
 fun RegistrationScreen(
-    authViewModel: AuthViewModel,
+    registerViewModel: RegisterViewModel,
     modifier: Modifier = Modifier,
-    onRegisterClicked: () -> Unit,
-    onLoginClicked: () -> Unit,
-    onLoginSuccess: () -> Unit
+    onLoginClicked: () -> Unit
 ){
-    AuthenticationScreenTemplate(
-        authViewModel = authViewModel,
+    RegistrationScreenTemplate(
+        registerViewModel = registerViewModel,
         modifier = modifier,
         backgroundGradient = arrayOf(
             0f to PrimaryViolet,
@@ -40,8 +38,7 @@ fun RegistrationScreen(
             contentColor = Color.White
         ),
         actionButtonShadow = PrimaryVioletDark,
-        onMainActionButtonClicked = onRegisterClicked,
-        onSecondaryActionButtonClicked = onLoginClicked,
-        onLoginSuccess = onLoginSuccess
+        onSecondaryActionButtonClicked = onLoginClicked
+
     )
 }
