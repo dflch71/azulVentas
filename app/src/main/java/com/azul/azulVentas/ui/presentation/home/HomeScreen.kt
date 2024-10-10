@@ -5,9 +5,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Create
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -17,7 +17,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -39,14 +38,11 @@ fun HomeScreen(
     authViewModel: AuthViewModel,
     onLogoutSuccess : () -> Unit
 ) {
-
     var selectedItemIndex by remember { mutableStateOf(0) }
-    val isLoggedOut by authViewModel.isUserLoggedOut.collectAsState()
-    //Pendiente de implementar logout de firebase
 
     Scaffold(
         topBar = {
-            AzulVentasTopAppBar()
+            AzulVentasTopAppBar(authViewModel, onLogoutSuccess)
         },
 
         bottomBar = {
@@ -66,20 +62,10 @@ fun HomeScreen(
                     //.verticalScroll(rememberScrollState())
             ) {
                 when (selectedItemIndex) {
-                    0 -> {
-                        //ClientesScreen(clientesViewModel)
-                        //AzulVentasCard()
-                        ClientsScreen(clientesViewModel)
-                    }
-                    1 -> {
-                        FavoritesScreen()
-                    }
-                    2 -> {
-                        Text (text = "Notifications")
-                    }
-                    3 -> {
-                        SettingsScreeen()
-                    }
+                    0 -> { ClientsScreen(clientesViewModel) }
+                    1 -> { FavoritesScreen() }
+                    2 -> { Text (text = "Notifications")}
+                    3 -> { SettingsScreeen() }
                 }
             }
         }
@@ -88,22 +74,33 @@ fun HomeScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AzulVentasTopAppBar() {
+fun AzulVentasTopAppBar(
+    authViewModel: AuthViewModel,
+    onLogoutSuccess: () -> Unit
+    ) {
     TopAppBar(
         navigationIcon = {
-            IconButton(onClick = {}) {
-                Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null )
-            }
+            //IconButton(onClick = {}) {
+            //    Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null )
+            //}
         },
 
         actions = {
+            //IconButton(onClick = {}) {
+            //    Icon(imageVector = Icons.Filled.Add, contentDescription = null )
+            //}
 
-            IconButton(onClick = {}) {
-                Icon(imageVector = Icons.Filled.Create, contentDescription = null )
-            }
-
-            IconButton(onClick = {}) {
-                Icon(imageVector = Icons.Filled.Add, contentDescription = null )
+            IconButton(onClick = {
+                authViewModel.signout()
+                authViewModel.isLoggedIn()
+                onLogoutSuccess()
+            }) {
+                Icon(
+                    imageVector = Icons.Filled.AccountCircle,
+                    contentDescription = null,
+                    //tint = MaterialTheme.colorScheme.inversePrimary,
+                    //modifier = Modifier.size(24.dp)
+                )
             }
         },
 

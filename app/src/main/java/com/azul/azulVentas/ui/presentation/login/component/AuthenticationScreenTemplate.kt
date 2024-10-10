@@ -7,6 +7,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -20,6 +21,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -29,6 +31,7 @@ import androidx.compose.material.icons.outlined.Email
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
@@ -62,6 +65,7 @@ import androidx.compose.ui.unit.dp
 import com.azul.azulVentas.R
 import com.azul.azulVentas.ui.components.ActionButton
 import com.azul.azulVentas.ui.presentation.login.viewmodel.AuthViewModel
+import com.azul.azulVentas.ui.presentation.login.viewmodel.LoginState
 import com.azul.azulVentas.ui.theme.DarkTextColor
 import com.azul.azulVentas.ui.theme.PrimaryPink
 import kotlinx.coroutines.launch
@@ -90,6 +94,29 @@ fun AuthenticationScreenTemplate(
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var errorMessage by remember { mutableStateOf<String?>(null) }
+
+    val loginState = authViewModel.loginState
+
+    // UI lógica basada en el estado del login
+    when (loginState) {
+        is LoginState.Loading -> {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center)
+            {
+                CircularProgressIndicator()
+                Thread.sleep(5000)
+            }
+        }
+
+        is LoginState.Success -> {
+            // Acción cuando el login sea exitoso
+            onLoginSuccess()
+        }
+
+        is LoginState.Error -> errorMessage = loginState.message
+        else -> {}
+    }
 
     LaunchedEffect(keyboardHeight) {
         coroutineScope.launch {
@@ -154,14 +181,7 @@ fun AuthenticationScreenTemplate(
             onClicked =
                 {
                     errorMessage = null
-                    authViewModel.login(email, password) { user ->
-                        if (user != null) {
-                            // Login exitoso, llama a onLoginSuccess
-                            onLoginSuccess()
-                        } else {
-                            errorMessage = "Login failed. Try again."
-                        }
-                    }
+                    authViewModel.login(email, password)
                 },
             colors = mainActionButtonColors,
             shadowColor = actionButtonShadow,
@@ -173,11 +193,17 @@ fun AuthenticationScreenTemplate(
             Text(
                 text = errorMessage!!,
                 color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodySmall,
                 modifier = Modifier
                     .padding(horizontal = 24.dp)
-                    .background(MaterialTheme.colorScheme.tertiaryContainer, RoundedCornerShape(24.dp))
-                    .fillMaxWidth(),
-                textAlign = TextAlign.Center
+                    .background(
+                        MaterialTheme.colorScheme.tertiaryContainer,
+                        RoundedCornerShape(24.dp)
+                    )
+                    .fillMaxWidth()
+                    .padding(start = 8.dp),
+                textAlign = TextAlign.Start,
+                maxLines = 2
             )
         }
 
@@ -200,6 +226,7 @@ fun AuthenticationScreenTemplate(
                 description = "Facebook"
             )
         }
+
         Separator(
             modifier = Modifier
                 .fillMaxWidth()
@@ -303,11 +330,20 @@ fun emailTextField(
     )
 
     if (!isValidEmail) {
+        Spacer(modifier = Modifier.height(2.dp))
         Text(
-            text = "Invalid email format",
+            text = "Formato correo: abc@xyz.com",
             color = MaterialTheme.colorScheme.error,
             style = MaterialTheme.typography.bodySmall,
-            modifier = Modifier.padding(start = 4.dp)
+            modifier = Modifier
+                .padding(horizontal = 24.dp)
+                .background(
+                    MaterialTheme.colorScheme.tertiaryContainer,
+                    RoundedCornerShape(24.dp)
+                )
+                .fillMaxWidth()
+                .padding(start = 8.dp),
+            textAlign = TextAlign.Center
         )
     }
     return email
@@ -390,11 +426,20 @@ private fun passwordTextField(
     )
 
     if (!isValidPassword) {
+        Spacer(modifier = Modifier.height(2.dp))
         Text(
-            text = "length >= 6",
+            text = "Contraseña: >= Mínimo 6 caracteres",
             color = MaterialTheme.colorScheme.error,
             style = MaterialTheme.typography.bodySmall,
-            modifier = Modifier.padding(start = 4.dp)
+            modifier = Modifier
+                .padding(horizontal = 24.dp)
+                .background(
+                    MaterialTheme.colorScheme.tertiaryContainer,
+                    RoundedCornerShape(24.dp)
+                )
+                .fillMaxWidth()
+                .padding(start = 8.dp),
+            textAlign = TextAlign.Center
         )
     }
 

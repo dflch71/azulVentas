@@ -1,45 +1,114 @@
 package com.azul.azulVentas.ui.presentation.login.viewmodel
 
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.azul.azulVentas.core.utils.Result
 import com.azul.azulVentas.domain.model.user.User
-import com.azul.azulVentas.domain.usecases.user.SignOutUseCase
+import com.azul.azulVentas.domain.usecases.user.GetUserEmailUseCase
+import com.azul.azulVentas.domain.usecases.user.GetUserLastDayUseCase
+import com.azul.azulVentas.domain.usecases.user.GetUserUidUseCase
+import com.azul.azulVentas.domain.usecases.user.IsLoggedInUseCase
 import com.azul.azulVentas.domain.usecases.user.LoginUseCase
+import com.azul.azulVentas.domain.usecases.user.SignOutUseCase
+import com.azul.azulVentas.domain.usecases.user.IsUserLoggedInUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.TimeoutCancellationException
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeout
 import javax.inject.Inject
 
 @HiltViewModel
 class AuthViewModel @Inject constructor(
     private val loginUseCase: LoginUseCase,
-    private val signOutUseCase: SignOutUseCase
+    private val signOutUseCase: SignOutUseCase,
+    private val isUserLoggedInUseCase: IsUserLoggedInUseCase,
+    private val isLoggedInUseCase: IsLoggedInUseCase,
+    private val getUserUidUseCase: GetUserUidUseCase,
+    private val getUserEmailUseCase: GetUserEmailUseCase,
+    private val getUserLastDayUseCase: GetUserLastDayUseCase
 ) : ViewModel() {
 
-    fun login(email: String, password: String, onResult: (User?) -> Unit) {
+    var loginState by mutableStateOf<LoginState>(LoginState.Idle)
+        private set
+
+
+   /* funcion sin reintentos de login
+   fun login(email: String, password: String) {
         viewModelScope.launch {
-            //val user = loginUseCase.execute(email, password)
-            val user = loginUseCase(email, password)
-            onResult(user)
+            loginState = LoginState.Loading
+
+            try {
+                withTimeout(5000) {
+                    val result = loginUseCase(email, password)
+                    when (result) {
+                        is Result.Success -> loginState = LoginState.Success(result.data)
+                        is Result.Error -> loginState = LoginState.Error(result.message)
+                    }
+                }
+            }
+            catch (e: TimeoutCancellationException) { loginState = LoginState.Error("Tiempo de espera agotado") }
+            catch (e: Exception) { loginState = LoginState.Error(e.localizedMessage ?: "Error desconocido -> ${e.message}") }
+        }
+    }*/
+
+    fun login(email: String, password: String) {
+        viewModelScope.launch {
+
+            loginState = LoginState.Loading
+
+            repeat(3) { attempt ->
+
+                try {
+                    withTimeout(5000) {
+                        val result = loginUseCase(email, password)
+                        when (result) {
+                            is Result.Success -> loginState = LoginState.Success(result.data)
+                            is Result.Error -> loginState = LoginState.Error(result.message)
+                        }
+                        return@withTimeout
+                    }
+                }
+                catch (e: TimeoutCancellationException) {
+                    if (attempt < 2) {
+                        loginState = LoginState.Error("Verificando conexión a internet...\nReintentando...")
+                        delay(1000)
+                    } else {
+                        loginState = LoginState.Error("Tiempo de espera agotado.\nCerrando sesión...")
+                        //signout()
+                    }
+                }
+            }
+
         }
     }
-
-    private val _isUserLoggedOut = MutableStateFlow(false)
-    val isUserLoggedOut: StateFlow<Boolean> = _isUserLoggedOut
 
     fun signout() {
-        // Implementar lógica de signout si es necesario
-        viewModelScope.launch {
-            signOutUseCase.signOut()
-            _isUserLoggedOut.value = true
-        }
+        signOutUseCase()
     }
 
+    fun isUserLoggedIn(): Boolean {
+        return isUserLoggedInUseCase()
+    }
+
+    fun isLoggedIn(): Boolean {
+        return isLoggedInUseCase()
+    }
+
+    fun getUserUid(): String? {
+        return getUserUidUseCase()
+    }
+
+    fun getUserEmail(): String? {
+        return getUserEmailUseCase()
+    }
+
+    fun getUserLastDay(): String? {
+        return getUserLastDayUseCase()
+    }
 
     // Variables para almacenar el email y la contraseña
     var email by mutableStateOf("")
@@ -48,11 +117,14 @@ class AuthViewModel @Inject constructor(
     var password by mutableStateOf("")
         private set
 
-    fun setEmail_(value: String) {
-        email = value
-    }
+    fun setEmail_(value: String) { email = value }
 
-    fun setPassword_(value: String) {
-        password = value
-    }
+    fun setPassword_(value: String) { password = value }
+}
+
+sealed class LoginState {
+    object Idle : LoginState()          // Estado inactivo, cuando no ha pasado nada aún
+    object Loading : LoginState()       // Estado de carga, cuando el usuario está en proceso de autenticarse
+    data class Success(val user: User) : LoginState()  // Estado de éxito, cuando el usuario ha iniciado sesión correctamente
+    data class Error(val message: String) : LoginState()  // Estado de error, con un mensaje describiendo el error
 }

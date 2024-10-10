@@ -1,4 +1,4 @@
-package com.azul.azulVentas.data.repository
+package com.azul.azulVentas.data.repository.client
 
 import com.azul.azulVentas.data.local.dao.ClienteDao
 import com.azul.azulVentas.data.local.entities.ClienteEntity

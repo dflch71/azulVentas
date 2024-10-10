@@ -8,6 +8,7 @@ import androidx.activity.viewModels
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.azul.azulVentas.ui.presentation.Welcome.viewmodel.WelcomeViewModel
 import com.azul.azulVentas.ui.presentation.clientes.viewmodel.ClientesViewModel
 import com.azul.azulVentas.ui.presentation.container.ScreenContainer
 import com.azul.azulVentas.ui.presentation.login.viewmodel.AuthViewModel
@@ -26,6 +27,7 @@ class MainActivity : ComponentActivity() {
     private lateinit var auth: FirebaseAuth
 
     //View Models
+    private val welcomeViewModel: WelcomeViewModel by viewModels()
     private val authViewModel: AuthViewModel by viewModels()
     private val registerViewModel: RegisterViewModel by viewModels()
     private val clientesViewModel: ClientesViewModel by viewModels()
@@ -43,6 +45,7 @@ class MainActivity : ComponentActivity() {
             AzulVentasTheme {
                 ScreenContainer(
                     navHostController,
+                    welcomeViewModel,
                     authViewModel,
                     registerViewModel,
                     clientesViewModel

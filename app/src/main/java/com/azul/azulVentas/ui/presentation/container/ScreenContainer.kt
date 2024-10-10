@@ -4,7 +4,8 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.azul.azulVentas.ui.presentation.Welcome.WelcomeScreen
+import com.azul.azulVentas.ui.presentation.Welcome.view.WelcomeScreen
+import com.azul.azulVentas.ui.presentation.Welcome.viewmodel.WelcomeViewModel
 import com.azul.azulVentas.ui.presentation.clientes.viewmodel.ClientesViewModel
 import com.azul.azulVentas.ui.presentation.home.HomeScreen
 import com.azul.azulVentas.ui.presentation.login.view.LoginScreen
@@ -15,6 +16,7 @@ import com.azul.azulVentas.ui.presentation.registration.viewmodel.RegisterViewMo
 @Composable
 fun ScreenContainer(
     navHost: NavHostController,
+    welcomeViewModel: WelcomeViewModel,
     authViewModel: AuthViewModel,
     registerViewModel: RegisterViewModel,
     clientesViewModel: ClientesViewModel
@@ -24,12 +26,19 @@ fun ScreenContainer(
     NavHost(
         navController = navHost,
         startDestination = NavGraph.Welcome.route
+        //startDestination = if (authViewModel.isUserLogged()) NavGraph.Home.route else NavGraph.Welcome.route
     ) {
         composable(NavGraph.Welcome.route) {
-            WelcomeScreen(
+
+            WelcomeScreen(welcomeViewModel,
                 onOpenLoginClicked = {
-                    navHost.navigate(NavGraph.Login.route)
-                }
+                    if (authViewModel.isLoggedIn()) {
+                        navHost.navigate(NavGraph.Home.route)
+                    } else {
+                        navHost.navigate(NavGraph.Login.route)
+                    }
+                },
+                authViewModel = authViewModel
             )
         }
 
@@ -60,8 +69,8 @@ fun ScreenContainer(
                 clientesViewModel,
                 authViewModel,
                 onLogoutSuccess  = {
-                    authViewModel.signout()
-                    navHost.navigate(NavGraph.Login.route) {
+                    //authViewModel.signout()
+                        navHost.navigate(NavGraph.Login.route) {
                         popUpTo(NavGraph.Home.route) { inclusive = true }
                     }
                 }

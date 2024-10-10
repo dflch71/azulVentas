@@ -78,7 +78,7 @@ fun ClientesScreen(
     clientesViewModel: ClientesViewModel
 ) {
 
-    val lifecycle = LocalLifecycleOwner.current.lifecycle
+    val lifecycle = androidx.lifecycle.compose.LocalLifecycleOwner.current.lifecycle
 
     val uiState by produceState<ClientesUiState>(
         initialValue = ClientesUiState.Loading,
