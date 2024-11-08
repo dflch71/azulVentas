@@ -53,7 +53,8 @@ class AuthViewModel @Inject constructor(
             catch (e: TimeoutCancellationException) { loginState = LoginState.Error("Tiempo de espera agotado") }
             catch (e: Exception) { loginState = LoginState.Error(e.localizedMessage ?: "Error desconocido -> ${e.message}") }
         }
-    }*/
+    }
+    */
 
     fun login(email: String, password: String) {
         viewModelScope.launch {

@@ -73,8 +73,8 @@ fun FavoritesScreen() {
                 Card(
                     modifier = Modifier.size(200.dp)
                 ){
-                    Box(modifier = Modifier.fillMaxSize()){
-
+                    Box(modifier = Modifier.fillMaxSize()
+                    ){
                         IconButton(
                             colors = IconButtonDefaults.iconButtonColors(
                                 containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.6f),

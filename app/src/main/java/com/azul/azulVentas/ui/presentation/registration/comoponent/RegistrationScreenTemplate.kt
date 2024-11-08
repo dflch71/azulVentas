@@ -2,13 +2,11 @@ package com.azul.azulVentas.ui.presentation.registration.comoponent
 
 import androidx.annotation.DrawableRes
 import android.util.Patterns
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,19 +17,16 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Email
-import androidx.compose.material3.Button
+import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material3.ButtonColors
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -45,11 +40,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.PathEffect
-import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -61,10 +53,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.azul.azulVentas.R
 import com.azul.azulVentas.ui.components.ActionButton
-import com.azul.azulVentas.ui.presentation.login.viewmodel.AuthViewModel
 import com.azul.azulVentas.ui.presentation.registration.viewmodel.RegisterViewModel
 import com.azul.azulVentas.ui.theme.DarkTextColor
-import com.azul.azulVentas.ui.theme.PrimaryPink
 import kotlinx.coroutines.launch
 
 @Composable
@@ -75,13 +65,9 @@ fun RegistrationScreenTemplate(
     @DrawableRes imgRes: Int,
     title: String,
     subtitle: String,
-    mainActionButtonTitle: String,
     secondaryActionButtonTitle: String,
-    mainActionButtonColors: ButtonColors,
     secondaryActionButtonColors: ButtonColors,
-    actionButtonShadow: Color,
-    onSecondaryActionButtonClicked: () -> Unit
-
+    actionButtonShadow: Color
 ) {
     val scrollState = rememberScrollState()
     val coroutineScope = rememberCoroutineScope()
@@ -89,6 +75,9 @@ fun RegistrationScreenTemplate(
 
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var identification by remember { mutableStateOf("") }
+    var companyName by remember { mutableStateOf("") }
+
     var errorMessage by remember { mutableStateOf<String?>(null) }
 
     LaunchedEffect(keyboardHeight) {
@@ -119,10 +108,7 @@ fun RegistrationScreenTemplate(
             subtitle = subtitle
         )
 
-        Spacer(
-            modifier = Modifier.height(8.dp)
-        )
-
+        Spacer(modifier = Modifier.height(8.dp))
         email = emailTextField(
             modifier = Modifier.padding(horizontal = 24.dp),
             placeholderText = "You email",
@@ -130,10 +116,7 @@ fun RegistrationScreenTemplate(
             imeAction = ImeAction.Next
         )
 
-        Spacer(
-            modifier = Modifier.height(8.dp)
-        )
-
+        Spacer(modifier = Modifier.height(8.dp))
         password = passwordTextField(
             modifier = Modifier.padding(horizontal = 24.dp),
             leadingIconRes = R.drawable.ic_key,
@@ -141,13 +124,28 @@ fun RegistrationScreenTemplate(
             visibleOffIconRes = R.drawable.ic_visibility_off,
             placeholderText = "Password",
             keyBoardType = KeyboardType.Password,
+            imeAction = ImeAction.Next
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+        identification = identificationTextField(
+            modifier = Modifier.padding(horizontal = 24.dp),
+            leadingIconRes = R.drawable.ic_person,
+            placeholderText = "Identification",
+            keyBoardType = KeyboardType.Number,
+            imeAction = ImeAction.Next
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+        companyName = companyTextField(
+            modifier = Modifier.padding(horizontal = 24.dp),
+            leadingIconRes = R.drawable.ic_business,
+            placeholderText = "Company Name",
+            keyBoardType = KeyboardType.Text,
             imeAction = ImeAction.Done
         )
 
         Spacer(modifier = Modifier.height(10.dp))
-
-
-
         ActionButton(
             text = secondaryActionButtonTitle,
             isNavigationArrowVisible = false,
@@ -157,10 +155,10 @@ fun RegistrationScreenTemplate(
                     errorMessage = null
                     registerViewModel.register(email, password) { user ->
                         if (user != null) {
-                            // Login exitoso, llama a onLoginSuccess
+                            //Login exitoso, llama a onLoginSuccess
                             //onLoginSuccess()
                         } else {
-                            errorMessage = "Login failed. Try again."
+                            errorMessage = "Register Failed. Try Again."
                         }
                     }
 
@@ -253,18 +251,30 @@ fun emailTextField(
                 modifier = Modifier.size(24.dp)
             )
         },
+        label = { Text(text = placeholderText) },
         placeholder = { Text(text = placeholderText) }
     )
 
     if (!isValidEmail) {
+        Spacer(modifier = Modifier.height(2.dp))
         Text(
-            text = "Invalid email format",
+            text = "Formato correo: abc@xyz.com",
             color = MaterialTheme.colorScheme.error,
             style = MaterialTheme.typography.bodySmall,
-            modifier = Modifier.padding(start = 4.dp)
+            modifier = Modifier
+                .padding(horizontal = 24.dp)
+                .background(
+                    MaterialTheme.colorScheme.tertiaryContainer,
+                    RoundedCornerShape(24.dp)
+                )
+                .fillMaxWidth()
+                .padding(start = 8.dp),
+            textAlign = TextAlign.Center
         )
     }
     return email
+
+
 }
 
 @Composable
@@ -331,102 +341,147 @@ private fun passwordTextField(
                     modifier = Modifier
                         .size(32.dp)
                         .padding(end = 8.dp),
-                    tint = if (!isValidPassword) MaterialTheme.colorScheme.primary
-                    else MaterialTheme.colorScheme.background
+                    tint = if (!isValidPassword) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
                 )
             }
-
         },
 
         isError = !isValidPassword,
         visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+        label = { Text(text = placeholderText) },
         placeholder = { Text(text = placeholderText) }
     )
 
     if (!isValidPassword) {
+        Spacer(modifier = Modifier.height(2.dp))
         Text(
-            text = "length >= 6",
+            text = "Contraseña: >= Mínimo 6 caracteres",
             color = MaterialTheme.colorScheme.error,
             style = MaterialTheme.typography.bodySmall,
-            modifier = Modifier.padding(start = 4.dp)
+            modifier = Modifier
+                .padding(horizontal = 24.dp)
+                .background(
+                    MaterialTheme.colorScheme.tertiaryContainer,
+                    RoundedCornerShape(24.dp)
+                )
+                .fillMaxWidth()
+                .padding(start = 8.dp),
+            textAlign = TextAlign.Center
         )
     }
 
     return password
 }
 
-
 @Composable
-private fun Separator(
-    modifier: Modifier = Modifier
-) {
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        DashedLine(
-            modifier = Modifier.weight(weight = 1f)
-        )
-        Text(
-            text = "Or",
-            style = MaterialTheme.typography.labelMedium,
-            color = Color.White
-        )
-        DashedLine(
-            modifier = Modifier.weight(weight = 1f)
-        )
-    }
-}
+private fun identificationTextField(
+    modifier: Modifier = Modifier,
+    @DrawableRes leadingIconRes: Int,
+    placeholderText: String,
+    keyBoardType: KeyboardType,
+    imeAction: ImeAction
+): String {
+    var identification by remember { mutableStateOf("") }
 
-@Composable
-private fun DashedLine(
-    modifier: Modifier = Modifier
-) {
-    Canvas(modifier = modifier) {
-        drawLine(
-            color = Color.White,
-            start = Offset(0f, 0f),
-            end = Offset(size.width, 0f),
-            pathEffect = PathEffect.dashPathEffect(floatArrayOf(8f, 8f), 0f),
-            cap = StrokeCap.Round,
-            strokeWidth = 1.dp.toPx()
-        )
-    }
-}
-
-@Composable
-fun CustomButton(
-    onClick: () -> Unit,
-    @DrawableRes iconRes: Int,
-    description: String
-) {
-    Button(
-        onClick = onClick,
-        modifier = Modifier
-            //.fillMaxWidth()
-            .height(90.dp)
-            .width(150.dp)
-            .padding(8.dp),
-        colors = ButtonDefaults.buttonColors(
-            contentColor = Color.White,
-            containerColor = PrimaryPink
-        )
-    ) {
-        Column(
-            modifier = Modifier.weight(0.25f),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ){
+    TextField(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(62.dp),
+        value = identification,
+        onValueChange = {
+            identification = it
+        },
+        singleLine = true,
+        shape = RoundedCornerShape(percent = 50),
+        colors = TextFieldDefaults.colors(
+            focusedIndicatorColor = Color.Transparent,
+            disabledIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent,
+            errorIndicatorColor = Color.Transparent,
+            focusedTextColor = DarkTextColor,
+            unfocusedTextColor = DarkTextColor,
+            unfocusedPlaceholderColor = DarkTextColor,
+            focusedPlaceholderColor = DarkTextColor,
+            focusedLeadingIconColor = DarkTextColor,
+            unfocusedLeadingIconColor = DarkTextColor,
+            focusedContainerColor = Color.White,
+            unfocusedContainerColor = Color.White
+        ),
+        textStyle = MaterialTheme.typography.bodyLarge.copy(
+            fontWeight = FontWeight.Medium
+        ),
+        keyboardOptions = KeyboardOptions(
+            keyboardType = keyBoardType,
+            imeAction = imeAction
+        ),
+        leadingIcon = {
             Icon(
-                painter = painterResource(id = iconRes), // Replace with your Google logo drawable
+                painter = painterResource(leadingIconRes),
                 contentDescription = null,
-                tint = Color.Unspecified, // No tint needed for the logo
-                modifier = Modifier.size(36.dp)
+                modifier = Modifier.size(24.dp)
             )
-            Text(
-                description,
-                color = Color.Black
-            )
-        }
-    }
+        },
+        label = { Text(text = placeholderText) },
+        placeholder = { Text(text = placeholderText) }
+    )
+
+    return identification
 }
+
+@Composable
+private fun companyTextField(
+    modifier: Modifier = Modifier,
+    @DrawableRes leadingIconRes: Int,
+    placeholderText: String,
+    keyBoardType: KeyboardType,
+    imeAction: ImeAction
+): String {
+    var companyName by remember { mutableStateOf("") }
+
+    TextField(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(62.dp),
+        value = companyName,
+        onValueChange = {
+            companyName = it
+        },
+        singleLine = false,
+        maxLines = 2,
+        shape = RoundedCornerShape(percent = 50),
+        colors = TextFieldDefaults.colors(
+            focusedIndicatorColor = Color.Transparent,
+            disabledIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent,
+            errorIndicatorColor = Color.Transparent,
+            focusedTextColor = DarkTextColor,
+            unfocusedTextColor = DarkTextColor,
+            unfocusedPlaceholderColor = DarkTextColor,
+            focusedPlaceholderColor = DarkTextColor,
+            focusedLeadingIconColor = DarkTextColor,
+            unfocusedLeadingIconColor = DarkTextColor,
+            focusedContainerColor = Color.White,
+            unfocusedContainerColor = Color.White
+        ),
+        textStyle = MaterialTheme.typography.bodyLarge.copy(
+            fontWeight = FontWeight.Medium
+        ),
+        keyboardOptions = KeyboardOptions(
+            keyboardType = keyBoardType,
+            imeAction = imeAction
+        ),
+        leadingIcon = {
+            Icon(
+                painter = painterResource(leadingIconRes),
+                contentDescription = null,
+                modifier = Modifier.size(24.dp)
+            )
+        },
+        label = { Text(text = placeholderText) },
+        placeholder = { Text(text = placeholderText) }
+    )
+
+    return companyName
+}
+
+

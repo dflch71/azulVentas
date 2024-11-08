@@ -5,18 +5,18 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.azul.azulVentas.ui.presentation.Welcome.view.WelcomeScreen
-import com.azul.azulVentas.ui.presentation.Welcome.viewmodel.WelcomeViewModel
 import com.azul.azulVentas.ui.presentation.clientes.viewmodel.ClientesViewModel
 import com.azul.azulVentas.ui.presentation.home.HomeScreen
 import com.azul.azulVentas.ui.presentation.login.view.LoginScreen
 import com.azul.azulVentas.ui.presentation.login.viewmodel.AuthViewModel
+import com.azul.azulVentas.ui.presentation.network.viewmodel.NetworkViewModel
 import com.azul.azulVentas.ui.presentation.registration.view.RegistrationScreen
 import com.azul.azulVentas.ui.presentation.registration.viewmodel.RegisterViewModel
 
 @Composable
 fun ScreenContainer(
     navHost: NavHostController,
-    welcomeViewModel: WelcomeViewModel,
+    networkViewModel: NetworkViewModel,
     authViewModel: AuthViewModel,
     registerViewModel: RegisterViewModel,
     clientesViewModel: ClientesViewModel
@@ -30,7 +30,7 @@ fun ScreenContainer(
     ) {
         composable(NavGraph.Welcome.route) {
 
-            WelcomeScreen(welcomeViewModel,
+            WelcomeScreen(networkViewModel,
                 onOpenLoginClicked = {
                     if (authViewModel.isLoggedIn()) {
                         navHost.navigate(NavGraph.Home.route)

@@ -5,6 +5,7 @@ import android.util.Patterns
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,6 +18,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
@@ -27,15 +29,19 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.Email
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -55,6 +61,7 @@ import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -62,6 +69,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import com.azul.azulVentas.R
 import com.azul.azulVentas.ui.components.ActionButton
 import com.azul.azulVentas.ui.presentation.login.viewmodel.AuthViewModel
@@ -110,6 +118,13 @@ fun AuthenticationScreenTemplate(
         }
 
         is LoginState.Success -> {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center)
+            {
+                LinearProgressIndicator()
+                Thread.sleep(5000)
+            }
             // Acción cuando el login sea exitoso
             onLoginSuccess()
         }
@@ -124,126 +139,166 @@ fun AuthenticationScreenTemplate(
         }
     }
 
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .background(Brush.verticalGradient(*backgroundGradient))
-            .systemBarsPadding()
-            .verticalScroll(scrollState)
-            .imePadding(),
-        horizontalAlignment = Alignment.CenterHorizontally
+    Box(
+        modifier = Modifier.fillMaxSize()
     ) {
-        Image(
-            painter = painterResource(imgRes),
-            contentDescription = null,
-            modifier = Modifier
-                .size(280.dp)
-                .padding(start = 8.dp)
-        )
 
-        Message(
-            title = title,
-            subtitle = subtitle
-        )
 
-        Spacer(
-            modifier = Modifier.height(8.dp)
-        )
+        Column(
+            modifier = modifier
+                .fillMaxSize()
+                .background(Brush.verticalGradient(*backgroundGradient))
+                .systemBarsPadding()
+                .verticalScroll(scrollState)
+                .imePadding(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
 
-        email = emailTextField(
-            modifier = Modifier.padding(horizontal = 24.dp),
-            placeholderText = "You email",
-            keyBoardType = KeyboardType.Email,
-            imeAction = ImeAction.Next
-        )
-        authViewModel.setEmail_(email)
 
-        Spacer(
-            modifier = Modifier.height(8.dp)
-        )
+            Image(
+                painter = painterResource(imgRes),
+                contentDescription = null,
+                modifier = Modifier
+                    .size(270.dp)
+                    .padding(start = 4.dp)
+            )
 
-        password = passwordTextField(
-            modifier = Modifier.padding(horizontal = 24.dp),
-            leadingIconRes = R.drawable.ic_key,
-            visibleIconRes = R.drawable.ic_visibility,
-            visibleOffIconRes = R.drawable.ic_visibility_off,
-            placeholderText = "Password",
-            keyBoardType = KeyboardType.Password,
-            imeAction = ImeAction.Done
-        )
-        authViewModel.setPassword_(password)
+            Message(
+                title = title,
+                subtitle = subtitle
+            )
 
-        Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(8.dp))
+            email = emailTextField(
+                modifier = Modifier.padding(horizontal = 24.dp),
+                placeholderText = "You email",
+                keyBoardType = KeyboardType.Email,
+                imeAction = ImeAction.Next
+            )
+            authViewModel.setEmail_(email)
 
-        ActionButton(
-            text = mainActionButtonTitle,
-            isNavigationArrowVisible = true,
-            onClicked =
+            Spacer(modifier = Modifier.height(8.dp))
+            password = passwordTextField(
+                modifier = Modifier.padding(horizontal = 24.dp),
+                leadingIconRes = R.drawable.ic_key,
+                visibleIconRes = R.drawable.ic_visibility,
+                visibleOffIconRes = R.drawable.ic_visibility_off,
+                placeholderText = "Password",
+                keyBoardType = KeyboardType.Password,
+                imeAction = ImeAction.Done
+            )
+            authViewModel.setPassword_(password)
+
+            Spacer(modifier = Modifier.height(4.dp))
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 24.dp)
+            ) {
+                Text(
+                    text = "Forget Password?",
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    color = Color.White,
+                    modifier = Modifier
+                        .wrapContentWidth()
+                        .padding(start = 24.dp)
+                        .clickable {
+                            //Navegar a interfaz de restablecer contraseña
+                        },
+                    textAlign = TextAlign.Left
+                )
+            }
+
+            Spacer(modifier = Modifier.height(4.dp))
+            ActionButton(
+                text = mainActionButtonTitle,
+                isNavigationArrowVisible = true,
+                onClicked =
                 {
                     errorMessage = null
                     authViewModel.login(email, password)
                 },
-            colors = mainActionButtonColors,
-            shadowColor = actionButtonShadow,
-            modifier = Modifier.padding(horizontal = 24.dp),
-        )
+                colors = mainActionButtonColors,
+                shadowColor = actionButtonShadow,
+                modifier = Modifier.padding(horizontal = 24.dp),
+            )
 
-        if (errorMessage != null) {
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = errorMessage!!,
-                color = MaterialTheme.colorScheme.error,
-                style = MaterialTheme.typography.bodySmall,
+            if (errorMessage != null) {
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = errorMessage!!,
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier
+                        .padding(horizontal = 24.dp)
+                        .background(
+                            MaterialTheme.colorScheme.tertiaryContainer,
+                            RoundedCornerShape(24.dp)
+                        )
+                        .fillMaxWidth()
+                        .padding(start = 8.dp),
+                    textAlign = TextAlign.Start,
+                    maxLines = 2
+                )
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 4.dp, start = 16.dp, end = 16.dp)
+            ) {
+                CustomButton(
+                    onClick = {},
+                    iconRes = R.drawable.google,
+                    description = "Google"
+                )
+                CustomButton(
+                    onClick = {},
+                    iconRes = R.drawable.facebook,
+                    description = "Facebook"
+                )
+            }
+
+            Separator(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 40.dp)
+                    .height(40.dp)
+            )
+
+            ActionButton(
+                text = secondaryActionButtonTitle,
+                isNavigationArrowVisible = false,
+                onClicked = onSecondaryActionButtonClicked,
+                colors = secondaryActionButtonColors,
+                shadowColor = actionButtonShadow,
                 modifier = Modifier
                     .padding(horizontal = 24.dp)
-                    .background(
-                        MaterialTheme.colorScheme.tertiaryContainer,
-                        RoundedCornerShape(24.dp)
-                    )
-                    .fillMaxWidth()
-                    .padding(start = 8.dp),
-                textAlign = TextAlign.Start,
-                maxLines = 2
+                    .padding(bottom = 24.dp)
             )
         }
 
-        Spacer(modifier = Modifier.height(8.dp))
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center,
+        /*
+        // FAB en la parte superior derecha
+        SmallFloatingActionButton(
+            onClick = { /* Acción del FAB */ },
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 4.dp, start = 16.dp, end = 16.dp)
+                .align(Alignment.TopEnd) // Alinea en la esquina superior derecha
+                .offset(x = (-16).dp, y = 16.dp), // Ajusta la posición con un margen
+            containerColor = MaterialTheme.colorScheme.inversePrimary // Color de fondo del FAB
         ) {
-            CustomButton(
-                onClick = {},
-                iconRes = R.drawable.google,
-                description = "Google"
-            )
-            CustomButton(
-                onClick = {},
-                iconRes = R.drawable.facebook,
-                description = "Facebook"
+            Icon(
+                imageVector = Icons.Default.Settings,
+                contentDescription = "Agregar",
+                tint = Color.White
             )
         }
+        */
 
-        Separator(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 40.dp)
-                .height(62.dp)
-        )
-
-        ActionButton(
-            text = secondaryActionButtonTitle,
-            isNavigationArrowVisible = false,
-            onClicked = onSecondaryActionButtonClicked,
-            colors = secondaryActionButtonColors,
-            shadowColor = actionButtonShadow,
-            modifier = Modifier
-                .padding(horizontal = 24.dp)
-                .padding(bottom = 24.dp)
-        )
     }
 }
 
@@ -413,8 +468,7 @@ private fun passwordTextField(
                     modifier = Modifier
                         .size(32.dp)
                         .padding(end = 8.dp),
-                    tint = if (!isValidPassword) MaterialTheme.colorScheme.primary
-                           else MaterialTheme.colorScheme.background
+                    tint = if (!isValidPassword) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
                 )
             }
 

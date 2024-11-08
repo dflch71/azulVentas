@@ -1,8 +1,11 @@
 package com.azul.azulVentas.core.di
 
 import android.content.Context
+import android.net.ConnectivityManager
+import com.azul.azulVentas.data.repository.network.ConnectivityObserver
 import com.azul.azulVentas.data.repository.network.NetworkRepository
 import com.azul.azulVentas.data.repository.network.NetworkRepositoryImpl
+import com.azul.azulVentas.data.repository.network.NetworkStatusTracker
 import com.azul.azulVentas.domain.usecases.network.CheckNetworkUseCase
 import dagger.Module
 import dagger.Provides
@@ -17,13 +20,26 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideNetworkRepository(@ApplicationContext context: Context): NetworkRepository {
-        return NetworkRepositoryImpl(context)
+    fun provideConnectivityObserver(@ApplicationContext context: Context): ConnectivityObserver {
+        return ConnectivityObserver(context)
     }
 
     @Provides
     @Singleton
-    fun provideCheckNetworkUseCase(networkRepository: NetworkRepository): CheckNetworkUseCase {
-        return CheckNetworkUseCase(networkRepository)
+    fun provideNetworkRepository(connectivityObserver: ConnectivityObserver): NetworkRepository {
+        return NetworkRepositoryImpl(connectivityObserver)
+    }
+
+
+    @Provides
+    @Singleton
+    fun provideConnectivityManager(@ApplicationContext context: Context): ConnectivityManager {
+        return context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    }
+
+    @Provides
+    @Singleton
+    fun provideNetworkStatusTracker(connectivityManager: ConnectivityManager): NetworkStatusTracker {
+        return NetworkStatusTracker(connectivityManager)
     }
 }

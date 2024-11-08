@@ -12,6 +12,7 @@ import com.azul.azulVentas.ui.presentation.Welcome.viewmodel.WelcomeViewModel
 import com.azul.azulVentas.ui.presentation.clientes.viewmodel.ClientesViewModel
 import com.azul.azulVentas.ui.presentation.container.ScreenContainer
 import com.azul.azulVentas.ui.presentation.login.viewmodel.AuthViewModel
+import com.azul.azulVentas.ui.presentation.network.viewmodel.NetworkViewModel
 import com.azul.azulVentas.ui.presentation.registration.viewmodel.RegisterViewModel
 import com.azul.azulVentas.ui.theme.AzulVentasTheme
 import com.google.firebase.auth.FirebaseAuth
@@ -27,7 +28,7 @@ class MainActivity : ComponentActivity() {
     private lateinit var auth: FirebaseAuth
 
     //View Models
-    private val welcomeViewModel: WelcomeViewModel by viewModels()
+    private val networkViewModel: NetworkViewModel by viewModels()
     private val authViewModel: AuthViewModel by viewModels()
     private val registerViewModel: RegisterViewModel by viewModels()
     private val clientesViewModel: ClientesViewModel by viewModels()
@@ -45,7 +46,7 @@ class MainActivity : ComponentActivity() {
             AzulVentasTheme {
                 ScreenContainer(
                     navHostController,
-                    welcomeViewModel,
+                    networkViewModel,
                     authViewModel,
                     registerViewModel,
                     clientesViewModel

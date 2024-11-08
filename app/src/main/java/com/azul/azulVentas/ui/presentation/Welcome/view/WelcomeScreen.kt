@@ -1,53 +1,117 @@
 package com.azul.azulVentas.ui.presentation.Welcome.view
 
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.systemBarsPadding
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.azul.azulVentas.R
+import com.azul.azulVentas.core.utils.Utility.Companion.calculateDaysToTargetDate
 import com.azul.azulVentas.ui.components.ActionButton
-import com.azul.azulVentas.ui.presentation.Welcome.viewmodel.WelcomeViewModel
 import com.azul.azulVentas.ui.presentation.login.viewmodel.AuthViewModel
+import com.azul.azulVentas.ui.presentation.network.viewmodel.NetworkViewModel
 import com.azul.azulVentas.ui.theme.DarkTextColor
 import com.azul.azulVentas.ui.theme.PrimaryPinkBlended
+import com.azul.azulVentas.ui.theme.PrimaryVioletDark
 import com.azul.azulVentas.ui.theme.PrimaryYellow
 import com.azul.azulVentas.ui.theme.PrimaryYellowDark
 import com.azul.azulVentas.ui.theme.PrimaryYellowLight
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+
 
 @Composable
 fun WelcomeScreen(
-    welcomeViewModel: WelcomeViewModel,
+    networkViewModel: NetworkViewModel,
     modifier: Modifier = Modifier,
     authViewModel: AuthViewModel,
     onOpenLoginClicked: () -> Unit
 ) {
-    val isNetworkAvailable by welcomeViewModel.isNetworkAvailable.observeAsState(true)
+    val isNetworkAvailable by networkViewModel.networkStatus.collectAsState()
+    val snackbarHostState = remember { SnackbarHostState() }  // Para el Snackbar
+    val context = LocalContext.current
+    val isConnect = remember { mutableStateOf(true) }
 
-    LaunchedEffect(Unit) {
-       welcomeViewModel.checkNetwork()
+    Scaffold(
+        snackbarHost = {
+            SnackbarHost(
+                hostState = snackbarHostState,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentSize(align = Alignment.TopCenter)
+                    .statusBarsPadding()
+
+            )
+        }
+    ) {
+        Box (modifier = Modifier.padding(it)) {
+            if (!isNetworkAvailable) {
+                LaunchedEffect(Unit) {
+                    snackbarHostState.showSnackbar(
+                        message = "No hay Conexión a Internet",
+                        withDismissAction = true
+                    )
+                }
+            }
+
+            isConnect.value = isNetworkAvailable
+
+            WelcomeContent(
+                isConnect = isNetworkAvailable,
+                modifier = modifier,
+                authViewModel = authViewModel,
+                onOpenLoginClicked = onOpenLoginClicked
+            )
+        }
     }
+}
 
+@Composable
+fun ShowToast(context: Context, message: String) {
+    Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+}
+
+@Composable
+private fun WelcomeContent(
+    isConnect: Boolean,
+    modifier: Modifier,
+    authViewModel: AuthViewModel,
+    onOpenLoginClicked: () -> Unit
+) {
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -62,19 +126,6 @@ fun WelcomeScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        if (!isNetworkAvailable!!) {
-            AlertDialog(
-                onDismissRequest = {},
-                title = { Text("Conexión perdida") },
-                text = { Text("No hay conexión a internet, por favor revisa tu red.") },
-                confirmButton = {
-                    Button(onClick = { /* Intenta reconectar o cerrar */ }) {
-                        Text("OK")
-                    }
-                }
-            )
-        }
-
         Image(
             painter = painterResource(R.drawable.img_welcome),
             contentDescription = null,
@@ -82,9 +133,8 @@ fun WelcomeScreen(
                 .size(300.dp)
                 .padding(top = 32.dp)
         )
-        Spacer(
-            modifier = Modifier.height(24.dp)
-        )
+
+        Spacer(modifier = Modifier.height(24.dp))
         Text(
             text = "Let's start now!",
             style = MaterialTheme.typography.headlineLarge,
@@ -93,18 +143,26 @@ fun WelcomeScreen(
             color = DarkTextColor
         )
 
-        Spacer( modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(16.dp))
         Text(
-            text = "Create a beautiful Login App using\nKotlin, Jetpack Compose, and Material3",
+            text = "Create a beautiful Login App using \n Kotlin, Jetpack Compose, and Material3",
             modifier = Modifier.padding(horizontal = 24.dp),
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.bodyLarge,
             color = DarkTextColor
         )
 
-        Spacer( modifier = Modifier.height(16.dp))
+        val user = "${authViewModel.getUserEmail() ?: ""}\n${authViewModel.getUserLastDay() ?: ""}"
+        Spacer(modifier = Modifier.height(16.dp))
+        Text(
+            text = user,
+            modifier = Modifier.padding(horizontal = 24.dp),
+            textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.bodyLarge,
+            color = DarkTextColor
+        )
 
-
+        /*
         Text(
             text = authViewModel.getUserEmail() ?: "",
             modifier = Modifier.padding(horizontal = 24.dp),
@@ -113,9 +171,7 @@ fun WelcomeScreen(
             color = DarkTextColor
         )
 
-
-
-        Spacer( modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(16.dp))
         Text(
             text = authViewModel.getUserLastDay() ?: "",
             modifier = Modifier.padding(horizontal = 24.dp),
@@ -123,10 +179,59 @@ fun WelcomeScreen(
             style = MaterialTheme.typography.bodyLarge,
             color = DarkTextColor
         )
+        */
 
-        Spacer(
-            modifier = Modifier.weight(weight = 1f)
-        )
+        var daysLogged = 0L
+        if (!authViewModel.getUserLastDay().isNullOrEmpty()) {
+            daysLogged = calculateDaysToTargetDate(
+                LocalDateTime.parse(
+                    authViewModel.getUserLastDay(),
+                    DateTimeFormatter.ofPattern("EEEE, dd MMM yyyy HH:mm:ss a")
+                )
+            )
+
+            //Si el usuario completa 5 dias, debe iniciar sesion
+            if (daysLogged > 5) { authViewModel.signout() }
+        }
+
+        if (daysLogged > 0L) {
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                text = "Days logged: $daysLogged",
+                modifier = Modifier.padding(horizontal = 24.dp),
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.bodyLarge,
+                color = DarkTextColor
+            )
+        }
+
+        if (!isConnect) {
+            Spacer(modifier = Modifier.height(16.dp))
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.End),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_wifi_off), // Replace with your image resource
+                    contentDescription = "No Internet",
+                    modifier = Modifier
+                        .size(24.dp),
+                    tint = PrimaryVioletDark
+                )
+                Spacer(modifier = Modifier.width(4.dp))
+                Text(
+                    "Sin Conexión a Internet",
+                    modifier = Modifier.padding(horizontal = 8.dp),
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = PrimaryVioletDark)
+
+            }
+        }
+
+        Spacer(modifier = Modifier.weight(weight = 1f))
         ActionButton(
             text = "Next",
             isNavigationArrowVisible = true,
@@ -139,4 +244,5 @@ fun WelcomeScreen(
             modifier = Modifier.padding(24.dp)
         )
     }
+
 }

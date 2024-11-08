@@ -11,7 +11,4 @@ class LoginUseCase @Inject constructor (
     suspend operator fun invoke(email: String, password: String): Result<User> {
         return repository.login(email, password)
     }
-
-    //suspend fun execute(email: String, password: String): User? {
-    //    return repository.login(email, password) }
 }

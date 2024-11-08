@@ -27,18 +27,11 @@ fun RegistrationScreen(
         imgRes = R.drawable.img_coder_w,
         title = "Hi there!",
         subtitle = "Let's Get Started",
-        mainActionButtonTitle = "Create an Account",
-        secondaryActionButtonTitle = "Lon In",
-        mainActionButtonColors = ButtonDefaults.buttonColors(
-            containerColor = PrimaryVioletDark,
-            contentColor = Color.White
-        ),
+        secondaryActionButtonTitle = "Register",
         secondaryActionButtonColors = ButtonDefaults.buttonColors(
             containerColor = PrimaryVioletLight,
             contentColor = Color.White
         ),
-        actionButtonShadow = PrimaryVioletDark,
-        onSecondaryActionButtonClicked = onLoginClicked
-
+        actionButtonShadow = PrimaryVioletDark
     )
 }

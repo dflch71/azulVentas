@@ -70,7 +70,8 @@ fun AzulVentasTheme(
 
     MaterialTheme(
         //colorScheme = colorScheme,
-        colorScheme = AppColors,
+        //colorScheme = AppColors,
+        colorScheme = LightColorScheme,
         typography = Typography,
         content = content
     )

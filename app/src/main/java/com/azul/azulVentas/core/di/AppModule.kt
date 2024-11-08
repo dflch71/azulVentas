@@ -10,7 +10,10 @@ import com.azul.azulVentas.domain.usecases.user.SignOutUseCase
 import com.azul.azulVentas.domain.usecases.user.LoginUseCase
 import com.azul.azulVentas.domain.usecases.user.RegisterUseCase
 import com.azul.azulVentas.domain.usecases.user.IsUserLoggedInUseCase
+import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.firestore
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -42,6 +45,20 @@ object AppModule {
     fun provideUserRepository(authService: FirebaseAuthService): UserRepository {
         return UserRepositoryImpl(authService)
     }
+
+    @Provides
+    @Singleton
+    fun provideFirestoreInstance(): FirebaseFirestore {
+        return Firebase.firestore
+    }
+
+    @Provides
+    @Singleton
+    fun provideEmpresaRepository(firestore: FirebaseFirestore): EmpresaRepository {
+        return EmpresaRepositoryImpl(firestore)
+    }
+
+
 
     @Provides
     @Singleton
