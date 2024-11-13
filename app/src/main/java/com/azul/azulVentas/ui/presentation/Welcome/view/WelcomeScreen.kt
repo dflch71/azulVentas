@@ -59,7 +59,8 @@ fun WelcomeScreen(
     networkViewModel: NetworkViewModel,
     modifier: Modifier = Modifier,
     authViewModel: AuthViewModel,
-    onOpenLoginClicked: () -> Unit
+    onOpenLoginClicked: () -> Unit,
+    onOpenOTPClicked: () -> Unit
 ) {
     val isNetworkAvailable by networkViewModel.networkStatus.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }  // Para el Snackbar
@@ -94,7 +95,8 @@ fun WelcomeScreen(
                 isConnect = isNetworkAvailable,
                 modifier = modifier,
                 authViewModel = authViewModel,
-                onOpenLoginClicked = onOpenLoginClicked
+                onOpenLoginClicked = onOpenLoginClicked,
+                onOpenOTPClicked = onOpenOTPClicked
             )
         }
     }
@@ -110,7 +112,8 @@ private fun WelcomeContent(
     isConnect: Boolean,
     modifier: Modifier,
     authViewModel: AuthViewModel,
-    onOpenLoginClicked: () -> Unit
+    onOpenLoginClicked: () -> Unit,
+    onOpenOTPClicked: () -> Unit
 ) {
     Column(
         modifier = modifier
@@ -232,10 +235,12 @@ private fun WelcomeContent(
         }
 
         Spacer(modifier = Modifier.weight(weight = 1f))
+
         ActionButton(
             text = "Next",
             isNavigationArrowVisible = true,
             onClicked = onOpenLoginClicked,
+            onLongClicked = onOpenOTPClicked,
             colors = ButtonDefaults.buttonColors(
                 containerColor = PrimaryYellowDark,
                 contentColor = DarkTextColor

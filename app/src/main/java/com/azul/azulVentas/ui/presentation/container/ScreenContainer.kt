@@ -10,6 +10,7 @@ import com.azul.azulVentas.ui.presentation.home.HomeScreen
 import com.azul.azulVentas.ui.presentation.login.view.LoginScreen
 import com.azul.azulVentas.ui.presentation.login.viewmodel.AuthViewModel
 import com.azul.azulVentas.ui.presentation.network.viewmodel.NetworkViewModel
+import com.azul.azulVentas.ui.presentation.otp.view.OTPScreen
 import com.azul.azulVentas.ui.presentation.registration.view.RegistrationScreen
 import com.azul.azulVentas.ui.presentation.registration.viewmodel.RegisterViewModel
 
@@ -30,7 +31,10 @@ fun ScreenContainer(
     ) {
         composable(NavGraph.Welcome.route) {
 
-            WelcomeScreen(networkViewModel,
+            WelcomeScreen(
+                networkViewModel,
+                authViewModel = authViewModel,
+
                 onOpenLoginClicked = {
                     if (authViewModel.isLoggedIn()) {
                         navHost.navigate(NavGraph.Home.route)
@@ -38,7 +42,10 @@ fun ScreenContainer(
                         navHost.navigate(NavGraph.Login.route)
                     }
                 },
-                authViewModel = authViewModel
+
+                onOpenOTPClicked = {
+                    navHost.navigate(NavGraph.OTP.route)
+                }
             )
         }
 
@@ -62,6 +69,10 @@ fun ScreenContainer(
                     navHost.navigate(NavGraph.Login.route)
                 }
             )
+        }
+
+        composable(NavGraph.OTP.route) {
+            OTPScreen()
         }
 
         composable(NavGraph.Home.route) {

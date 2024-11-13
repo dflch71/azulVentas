@@ -14,12 +14,12 @@ plugins {
 
 android {
     namespace = "com.azul.azulVentas"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.azul.azulVentas"
         minSdk = 28
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 

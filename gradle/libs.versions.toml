@@ -1,24 +1,24 @@
 [versions]
 agp = "8.5.2"
 kotlin = "2.0.20"
-coreKtx = "1.13.1"
+coreKtx = "1.15.0"
 junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
-lifecycleRuntimeKtx = "2.8.6"
-compose-livedata = "1.7.3"
-activityCompose = "1.9.2"
+lifecycleRuntimeKtx = "2.8.7"
+compose-livedata = "1.7.5"
+activityCompose = "1.9.3"
 
 hilt = "2.51.1"
 room = "2.6.1"
 ksp = "2.0.20-1.0.25"
 
-composeBom = "2024.09.03"
-firebaseBom = "33.4.0"
+composeBom = "2024.11.00"
+firebaseBom = "33.5.1"
 service = "4.4.2"
 crashlytics = "3.0.2"
 coil = "2.6.0"
-navigationCompose = "2.8.2"
+navigationCompose = "2.8.4"
 
 konfetti = "2.0.4"
 

@@ -4,16 +4,13 @@ import android.content.Context
 import android.content.SharedPreferences
 import com.azul.azulVentas.data.local.sharePreferences.SessionManager
 import com.azul.azulVentas.data.remote.FirebaseAuthService
-import com.azul.azulVentas.data.repository.user.UserRepositoryImpl
 import com.azul.azulVentas.data.repository.user.UserRepository
-import com.azul.azulVentas.domain.usecases.user.SignOutUseCase
+import com.azul.azulVentas.data.repository.user.UserRepositoryImpl
+import com.azul.azulVentas.domain.usecases.user.IsUserLoggedInUseCase
 import com.azul.azulVentas.domain.usecases.user.LoginUseCase
 import com.azul.azulVentas.domain.usecases.user.RegisterUseCase
-import com.azul.azulVentas.domain.usecases.user.IsUserLoggedInUseCase
-import com.google.firebase.Firebase
+import com.azul.azulVentas.domain.usecases.user.SignOutUseCase
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.firestore
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -46,17 +43,17 @@ object AppModule {
         return UserRepositoryImpl(authService)
     }
 
-    @Provides
-    @Singleton
-    fun provideFirestoreInstance(): FirebaseFirestore {
-        return Firebase.firestore
-    }
+    //@Provides
+    //@Singleton
+    //fun provideFirestoreInstance(): FirebaseFirestore {
+    //    return Firebase.firestore
+    //}
 
-    @Provides
-    @Singleton
-    fun provideEmpresaRepository(firestore: FirebaseFirestore): EmpresaRepository {
-        return EmpresaRepositoryImpl(firestore)
-    }
+    //@Provides
+    //@Singleton
+    //fun provideEmpresaRepository(firestore: FirebaseFirestore): EmpresaRepository {
+    //    return EmpresaRepositoryImpl(firestore)
+    //}
 
 
 

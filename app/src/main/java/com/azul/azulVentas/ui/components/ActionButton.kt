@@ -1,5 +1,7 @@
 package com.azul.azulVentas.ui.components
 
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -25,12 +27,14 @@ import com.azul.azulVentas.R
 import com.azul.azulVentas.ui.theme.AzulVentasTheme
 import com.azul.azulVentas.ui.theme.PrimaryPink
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ActionButton(
     modifier: Modifier = Modifier,
     text: String,
     isNavigationArrowVisible: Boolean,
     onClicked: () -> Unit,
+    onLongClicked: () -> Unit,
     colors: ButtonColors,
     shadowColor: Color
 ) {
@@ -43,7 +47,9 @@ fun ActionButton(
                 shape = RoundedCornerShape(percent = 50),
                 spotColor = shadowColor
             ),
-        onClick = onClicked,
+        onClick =  onClicked,
+        enabled = true,
+        shape = RoundedCornerShape(percent = 50),
         colors = colors
     ) {
         Row(
@@ -59,7 +65,12 @@ fun ActionButton(
                 Icon(
                     painter = painterResource(R.drawable.ic_arrow_right),
                     contentDescription = null,
-                    modifier = Modifier.size(24.dp)
+                    modifier = Modifier
+                        .size(24.dp)
+                        .combinedClickable(
+                            onClick = onClicked,
+                            onLongClick = onLongClicked
+                        )
                 )
             }
         }
@@ -74,6 +85,7 @@ private fun ActionButtonPreview_NavigationVisible() {
             text = "Action text",
             isNavigationArrowVisible = true,
             onClicked = {},
+            onLongClicked = {},
             colors = ButtonDefaults.buttonColors(
                 contentColor = Color.White,
                 containerColor = PrimaryPink
@@ -91,6 +103,7 @@ private fun ActionButtonPreview() {
             text = "Action text",
             isNavigationArrowVisible = false,
             onClicked = {},
+            onLongClicked = {},
             colors = ButtonDefaults.buttonColors(
                 contentColor = Color.White,
                 containerColor = PrimaryPink

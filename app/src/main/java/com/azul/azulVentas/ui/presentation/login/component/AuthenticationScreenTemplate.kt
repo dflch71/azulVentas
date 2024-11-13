@@ -1,7 +1,7 @@
 package com.azul.azulVentas.ui.presentation.login.component
 
-import androidx.annotation.DrawableRes
 import android.util.Patterns
+import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
@@ -29,19 +28,15 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.Email
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -61,7 +56,6 @@ import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -69,7 +63,6 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.zIndex
 import com.azul.azulVentas.R
 import com.azul.azulVentas.ui.components.ActionButton
 import com.azul.azulVentas.ui.presentation.login.viewmodel.AuthViewModel
@@ -219,6 +212,7 @@ fun AuthenticationScreenTemplate(
                     errorMessage = null
                     authViewModel.login(email, password)
                 },
+                onLongClicked = {},
                 colors = mainActionButtonColors,
                 shadowColor = actionButtonShadow,
                 modifier = Modifier.padding(horizontal = 24.dp),
@@ -274,6 +268,7 @@ fun AuthenticationScreenTemplate(
                 text = secondaryActionButtonTitle,
                 isNavigationArrowVisible = false,
                 onClicked = onSecondaryActionButtonClicked,
+                onLongClicked = {},
                 colors = secondaryActionButtonColors,
                 shadowColor = actionButtonShadow,
                 modifier = Modifier

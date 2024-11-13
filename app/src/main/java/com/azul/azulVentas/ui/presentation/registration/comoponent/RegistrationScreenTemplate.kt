@@ -1,7 +1,7 @@
 package com.azul.azulVentas.ui.presentation.registration.comoponent
 
-import androidx.annotation.DrawableRes
 import android.util.Patterns
+import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.scrollBy
@@ -23,7 +23,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Email
-import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -163,6 +162,7 @@ fun RegistrationScreenTemplate(
                     }
 
             },
+            onLongClicked = {},
             colors = secondaryActionButtonColors,
             shadowColor = actionButtonShadow,
             modifier = Modifier
