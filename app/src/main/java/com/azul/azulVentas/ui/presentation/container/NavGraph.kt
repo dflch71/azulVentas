@@ -6,4 +6,5 @@ sealed class NavGraph (val route: String) {
     object Registration: NavGraph("registration_screen")
     object Home: NavGraph("home_screen")
     object OTP: NavGraph("otp_screen")
+    object Empresa: NavGraph("empresa_screen")
 }

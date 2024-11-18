@@ -14,6 +14,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.azul.azulVentas.ui.theme.DarkTextColor
+import com.azul.azulVentas.ui.theme.PrimaryPinkDark
+import com.azul.azulVentas.ui.theme.PrimaryYellowDark
 
 @Composable
 fun CustomDefaultBtn(
@@ -31,8 +34,10 @@ fun CustomDefaultBtn(
             onClick()
         },
         colors = ButtonDefaults.buttonColors(
-            containerColor = MaterialTheme.colorScheme.primary,
-            contentColor = Color.White
+            //containerColor = MaterialTheme.colorScheme.primary,
+            //contentColor = Color.White
+            containerColor = PrimaryYellowDark,
+            contentColor = DarkTextColor
         ),
     ) {
         Text(text = btnText, fontSize = 16.sp)
