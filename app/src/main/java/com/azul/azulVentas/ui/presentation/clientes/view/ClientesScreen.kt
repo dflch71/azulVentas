@@ -761,8 +761,7 @@ fun NumeroTelefono(): String {
             onValueChange = {
                 if (it.length <= maxChar) { selectedText = it }
             },
-            modifier = Modifier
-                .fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth(),
             label = {Text("Número Teléfono")},
             singleLine = true,
             maxLines = 1,

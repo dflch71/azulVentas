@@ -1,4 +1,4 @@
-package com.azul.azulVentas.ui.presentation.Welcome.view
+package com.azul.azulVentas.ui.presentation.welcome.view
 
 import android.content.Context
 import android.widget.Toast
@@ -235,7 +235,6 @@ private fun WelcomeContent(
         }
 
         Spacer(modifier = Modifier.weight(weight = 1f))
-
         ActionButton(
             text = "Next",
             isNavigationArrowVisible = true,

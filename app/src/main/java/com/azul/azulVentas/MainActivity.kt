@@ -8,9 +8,9 @@ import androidx.activity.viewModels
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.azul.azulVentas.ui.presentation.Welcome.viewmodel.WelcomeViewModel
 import com.azul.azulVentas.ui.presentation.clientes.viewmodel.ClientesViewModel
 import com.azul.azulVentas.ui.presentation.container.ScreenContainer
+import com.azul.azulVentas.ui.presentation.empresa.viewmodel.EmpresaViewModel
 import com.azul.azulVentas.ui.presentation.login.viewmodel.AuthViewModel
 import com.azul.azulVentas.ui.presentation.network.viewmodel.NetworkViewModel
 import com.azul.azulVentas.ui.presentation.registration.viewmodel.RegisterViewModel
@@ -32,6 +32,7 @@ class MainActivity : ComponentActivity() {
     private val authViewModel: AuthViewModel by viewModels()
     private val registerViewModel: RegisterViewModel by viewModels()
     private val clientesViewModel: ClientesViewModel by viewModels()
+    private val empresaViewModel: EmpresaViewModel by viewModels()
 
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,7 +50,8 @@ class MainActivity : ComponentActivity() {
                     networkViewModel,
                     authViewModel,
                     registerViewModel,
-                    clientesViewModel
+                    clientesViewModel,
+                    empresaViewModel
                 )
             }
         }

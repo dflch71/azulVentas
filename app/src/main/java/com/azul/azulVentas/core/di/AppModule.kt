@@ -4,13 +4,18 @@ import android.content.Context
 import android.content.SharedPreferences
 import com.azul.azulVentas.data.local.sharePreferences.SessionManager
 import com.azul.azulVentas.data.remote.FirebaseAuthService
+import com.azul.azulVentas.data.repository.empresa.EmpresaRepository
+import com.azul.azulVentas.data.repository.empresa.EmpresaRepositoryImp
 import com.azul.azulVentas.data.repository.user.UserRepository
 import com.azul.azulVentas.data.repository.user.UserRepositoryImpl
+import com.azul.azulVentas.domain.usecases.empresa.AddEmpresaUseCase
 import com.azul.azulVentas.domain.usecases.user.IsUserLoggedInUseCase
 import com.azul.azulVentas.domain.usecases.user.LoginUseCase
 import com.azul.azulVentas.domain.usecases.user.RegisterUseCase
 import com.azul.azulVentas.domain.usecases.user.SignOutUseCase
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -43,20 +48,6 @@ object AppModule {
         return UserRepositoryImpl(authService)
     }
 
-    //@Provides
-    //@Singleton
-    //fun provideFirestoreInstance(): FirebaseFirestore {
-    //    return Firebase.firestore
-    //}
-
-    //@Provides
-    //@Singleton
-    //fun provideEmpresaRepository(firestore: FirebaseFirestore): EmpresaRepository {
-    //    return EmpresaRepositoryImpl(firestore)
-    //}
-
-
-
     @Provides
     @Singleton
     fun provideLoginUseCase(userRepository: UserRepository): LoginUseCase {
@@ -81,6 +72,7 @@ object AppModule {
         return RegisterUseCase(userRepository)
     }
 
+
     @Provides
     @Singleton
     fun provideSharedPreferences(@ApplicationContext context: Context): SharedPreferences {
@@ -92,5 +84,26 @@ object AppModule {
     fun provideSessionManager(sharedPreferences: SharedPreferences): SessionManager {
         return SessionManager(sharedPreferences)
     }
+
+    // Proveer instancia de Firebase Realtime Database
+    @Provides
+    @Singleton
+    fun provideFirebaseDatabase(): FirebaseDatabase {
+        return FirebaseDatabase.getInstance()
+    }
+
+    // Proveer UserRepository
+    @Provides
+    @Singleton
+    fun provideEmpresaRepository(databaseReference: FirebaseDatabase): EmpresaRepository {
+        return EmpresaRepositoryImp(databaseReference)
+    }
+
+    // Proveer InsertarUsuarioUseCase
+    @Provides
+    fun provideAddEmpresaUseCase(empresaRepository: EmpresaRepository): AddEmpresaUseCase {
+        return AddEmpresaUseCase(empresaRepository )
+    }
+
 
 }

@@ -1,10 +1,16 @@
 package com.azul.azulVentas.ui.presentation.empresa.component
 
+import android.icu.lang.UCharacter.toUpperCase
+import android.telephony.VisualVoicemailService
+import android.util.Patterns
 import androidx.annotation.DrawableRes
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,6 +25,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -26,7 +33,9 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -40,36 +49,55 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.azul.azulVentas.R
+import com.azul.azulVentas.ui.components.ActionButton
+import com.azul.azulVentas.ui.components.DefaultBackArrow
+import com.azul.azulVentas.ui.presentation.empresa.viewmodel.EmpresaViewModel
 import com.azul.azulVentas.ui.theme.DarkTextColor
+import com.azul.azulVentas.ui.theme.PrimaryYellowDark
 import kotlinx.coroutines.launch
+import java.util.Locale
 
 
 @Composable
 fun EmpresaScreenTemplate(
+    empresaViewModel: EmpresaViewModel,
+    navController: NavController,
     modifier: Modifier = Modifier,
-    backgroundGradient: Array<Pair<Float, Color>>,
-    title: String,
+    backgroundGradient: Array<Pair<Float, Color>>
 )
 {
+    val estadoRegistro by empresaViewModel.estadoRegistro.observeAsState()
+
     val scrollState = rememberScrollState()
     val coroutineScope = rememberCoroutineScope()
     val keyboardHeight = WindowInsets.ime.getBottom(LocalDensity.current)
 
-    var nitEmpresa by remember { mutableStateOf("") }
-    var nomEmpresa by remember { mutableStateOf("") }
-    var direccion by remember { mutableStateOf("") }
-    var ciudad by remember { mutableStateOf("") }
-    var departamento by remember { mutableStateOf("") }
-    var picEmpresa by remember { mutableStateOf("") }
-    var email by remember { mutableStateOf("") }
-    var repLegal by remember { mutableStateOf("") }
-    var telefono by remember { mutableStateOf("") }
+    var nitEmpresa by remember { mutableStateOf(TextFieldValue("")) }
+    var nomEmpresa by remember { mutableStateOf(TextFieldValue("")) }
+    var direccion by remember { mutableStateOf(TextFieldValue("")) }
+    var ciudad by remember { mutableStateOf(TextFieldValue("")) }
+    var departamento by remember { mutableStateOf(TextFieldValue("")) }
+    var email by remember { mutableStateOf(TextFieldValue("")) }
+    var repLegal by remember { mutableStateOf(TextFieldValue("")) }
+    var telefono by remember { mutableStateOf(TextFieldValue("")) }
 
-    var errorMessage by remember { mutableStateOf<String?>(null) }
+    val nitErrorState = remember { mutableStateOf(false) }
+    val nameErrorState = remember { mutableStateOf(false) }
+    val adressErrorState = remember { mutableStateOf(false) }
+    val cityErrorState = remember { mutableStateOf(false) }
+    val departamentErrorState = remember { mutableStateOf(false) }
+    val emailErrorState = remember { mutableStateOf(false) }
+    val personErrorState = remember { mutableStateOf(false) }
+    val phoneErrorState = remember { mutableStateOf(false) }
+
+    val animate = remember { mutableStateOf(true) }
 
     LaunchedEffect(keyboardHeight) {
         coroutineScope.launch {
@@ -86,132 +114,259 @@ fun EmpresaScreenTemplate(
             .imePadding(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Message( title = title )
+
+        Row(
+            modifier = Modifier
+                .padding(32.dp)
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        )
+        {
+            Box(modifier = Modifier.weight(0.5f)) {
+                DefaultBackArrow {
+                    navController.popBackStack()
+                }
+            }
+            Box(modifier = Modifier.weight(1.5f)) {
+                Text(
+                    text = "Registrar Empresa",
+                    color = MaterialTheme.colorScheme.primary,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight(700)
+                )
+            }
+        }
+
+        CustomTextField(
+            modifier = Modifier.padding(horizontal = 24.dp),
+            placeholder = "Nít - ID",
+            leadingIconRes = R.drawable.ic_identification,
+            label = "Nít - ID",
+            errorState = nitErrorState,
+            keyboardType = KeyboardType.Number,
+            visualTransformation = VisualTransformation.None,
+            imeAction = ImeAction.Next,
+            onChanged = { newNit -> nitEmpresa = newNit },
+            lengthChar = 20
+        )
 
         Spacer(modifier = Modifier.height(8.dp))
-        nitEmpresa = empresaTextField(
+        CustomTextField(
             modifier = Modifier.padding(horizontal = 24.dp),
-            leadingIconRes = R.drawable.ic_business,
-            placeholderText = "Nít",
-            keyBoardType = KeyboardType.Number,
-            imeAction = ImeAction.Next
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        nomEmpresa = empresaTextField(
-            modifier = Modifier.padding(horizontal = 24.dp),
-            leadingIconRes = R.drawable.ic_business,
-            placeholderText = "Nombre Empresa",
-            keyBoardType = KeyboardType.Text,
-            imeAction = ImeAction.Next
+            placeholder = "Nombre Empresa",
+            leadingIconRes = R.drawable.ic_factory,
+            label = "Nombre Empresa",
+            errorState = nameErrorState,
+            keyboardType = KeyboardType.Text,
+            visualTransformation = VisualTransformation.None,
+            imeAction = ImeAction.Next,
+            onChanged = { newNomEmpresa -> nomEmpresa = newNomEmpresa },
+            lengthChar = 100
         )
 
         Spacer(modifier = Modifier.height(8.dp))
-        direccion = empresaTextField(
+        CustomTextField(
             modifier = Modifier.padding(horizontal = 24.dp),
+            placeholder = "Dirección",
             leadingIconRes = R.drawable.ic_location,
-            placeholderText = "Dirección",
-            keyBoardType = KeyboardType.Text,
-            imeAction = ImeAction.Next
+            label = "Dirección",
+            errorState = adressErrorState,
+            keyboardType = KeyboardType.Text,
+            visualTransformation = VisualTransformation.None,
+            imeAction = ImeAction.Next,
+            onChanged = { newDireccion -> direccion = newDireccion },
+            lengthChar = 100
         )
 
         Spacer(modifier = Modifier.height(8.dp))
-        ciudad = empresaTextField(
+        CustomTextField(
             modifier = Modifier.padding(horizontal = 24.dp),
-            leadingIconRes = R.drawable.ic_business,
-            placeholderText = "Ciudad",
-            keyBoardType = KeyboardType.Text,
-            imeAction = ImeAction.Next
+            placeholder = "Ciudad",
+            leadingIconRes = R.drawable.ic_city,
+            label = "Ciudad",
+            errorState = cityErrorState,
+            keyboardType = KeyboardType.Text,
+            visualTransformation = VisualTransformation.None,
+            imeAction = ImeAction.Next,
+            onChanged = { newCiudad -> ciudad = newCiudad},
+            lengthChar = 100
         )
 
         Spacer(modifier = Modifier.height(8.dp))
-        departamento = empresaTextField(
+        CustomTextField(
             modifier = Modifier.padding(horizontal = 24.dp),
-            leadingIconRes = R.drawable.ic_business,
-            placeholderText = "Departamento",
-            keyBoardType = KeyboardType.Text,
-            imeAction = ImeAction.Next
+            placeholder = "Departamento",
+            leadingIconRes = R.drawable.ic_map,
+            label = "Departamento",
+            errorState = departamentErrorState,
+            keyboardType = KeyboardType.Text,
+            visualTransformation = VisualTransformation.None,
+            imeAction = ImeAction.Next,
+            onChanged = { newDepartamento -> departamento = newDepartamento},
+            lengthChar = 100
         )
 
         Spacer(modifier = Modifier.height(8.dp))
-        picEmpresa = empresaTextField(
+        CustomTextField(
             modifier = Modifier.padding(horizontal = 24.dp),
-            leadingIconRes = R.drawable.ic_image,
-            placeholderText = "Ruta Imagen",
-            keyBoardType = KeyboardType.Text,
-            imeAction = ImeAction.Next
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-        email = empresaTextField(
-            modifier = Modifier.padding(horizontal = 24.dp),
+            placeholder = "example@email.com",
             leadingIconRes = R.drawable.ic_email,
-            placeholderText = "Email",
-            keyBoardType = KeyboardType.Email,
-            imeAction = ImeAction.Next
+            label = "Email",
+            errorState = emailErrorState,
+            keyboardType = KeyboardType.Email,
+            visualTransformation = VisualTransformation.None,
+            imeAction = ImeAction.Next,
+            onChanged = { newEmail -> email = newEmail },
+            lengthChar = 100
         )
 
         Spacer(modifier = Modifier.height(8.dp))
-        repLegal = empresaTextField(
+        CustomTextField(
             modifier = Modifier.padding(horizontal = 24.dp),
+            placeholder = "Representante",
             leadingIconRes = R.drawable.ic_person,
-            placeholderText = "Nombre Representante",
-            keyBoardType = KeyboardType.Text,
-            imeAction = ImeAction.Next
+            label = "Representante",
+            errorState = personErrorState,
+            keyboardType = KeyboardType.Text,
+            visualTransformation = VisualTransformation.None,
+            imeAction = ImeAction.Next,
+            onChanged = { newRepLegal -> repLegal = newRepLegal },
+            lengthChar = 100
         )
 
         Spacer(modifier = Modifier.height(8.dp))
-        telefono = empresaTextField(
+        CustomTextField(
             modifier = Modifier.padding(horizontal = 24.dp),
+            placeholder = "Teléfono",
             leadingIconRes = R.drawable.ic_phone,
-            placeholderText = "Teléfono",
-            keyBoardType = KeyboardType.Phone,
-            imeAction = ImeAction.Next
+            label = "Teléfono",
+            errorState = phoneErrorState,
+            keyboardType = KeyboardType.Phone,
+            visualTransformation = VisualTransformation.None,
+            imeAction = ImeAction.Next,
+            onChanged = { newTelefono -> telefono = newTelefono },
+            lengthChar = 10
+        )
+
+        Spacer(modifier = Modifier.height(10.dp))
+        if (emailErrorState.value) {
+            ErrorSuggestion("EMAIL válido (example@email.com).")
+        }
+        if (phoneErrorState.value) {
+            Row() { ErrorSuggestion("TELÉFONO válido (10 dígitos).") }
+        }
+        if (nitErrorState.value || nameErrorState.value || adressErrorState.value || cityErrorState.value ||
+            departamentErrorState.value || personErrorState.value) {
+            Row() {
+                ErrorSuggestion("Valor requerido o incompleto.")
+            }
+        }
+
+        estadoRegistro?.let { result ->
+            when {
+                result.isSuccess -> {
+                        Row() { ErrorSuggestion("EMPRESA registrada exitosamente") }
+                }
+                result.isFailure -> {
+                    Row() { ErrorSuggestion("Error: ${result.exceptionOrNull()?.message} ${nitEmpresa.text}") }
+                }
+                else -> {}
+            }
+        }
+
+        Spacer(modifier = Modifier.weight(weight = 1f))
+        ActionButton(
+            text = "Registrar",
+            isNavigationArrowVisible = false,
+            onClicked = {
+                val isNitValid = !nitEmpresa.text.isEmpty() && nitEmpresa.text.length > 5
+                val isNameValid = !nomEmpresa.text.isEmpty() && nomEmpresa.text.length > 3
+                val isAdressValid = !direccion.text.isEmpty() && direccion.text.length > 2
+                val isCityValid = !ciudad.text.isEmpty() && ciudad.text.length > 3
+                val isDepartamentValid = !departamento.text.isEmpty() && departamento.text.length > 3
+                val patternEmail = Patterns.EMAIL_ADDRESS
+                val isEmailValid = patternEmail.matcher(email.text).matches() && !email.text.isEmpty()
+                val isPersonValid = !repLegal.text.isEmpty() && repLegal.text.length > 3
+                val patternTelefono = Patterns.PHONE  //Regex("[0-9]{10}")
+                val isTelefonoValid =  patternTelefono.matcher(telefono.text).matches() && !telefono.text.isEmpty() && telefono.text.length == 10
+
+                nitErrorState.value = !isNitValid
+                nameErrorState.value = !isNameValid
+                adressErrorState.value = !isAdressValid
+                cityErrorState.value = !isCityValid
+                departamentErrorState.value = !isDepartamentValid
+                emailErrorState.value = !isEmailValid
+                personErrorState.value = !isPersonValid
+                phoneErrorState.value = !isTelefonoValid
+
+                val isRequiredFields = isNitValid && isNameValid && isAdressValid && isCityValid && isDepartamentValid && isPersonValid
+                if (isEmailValid && isTelefonoValid && isRequiredFields) {
+                    animate.value = !animate.value
+                    empresaViewModel.registrarEmpresa(
+                        toUpperCase(nitEmpresa.text),
+                        toUpperCase(nomEmpresa.text),
+                        toUpperCase(direccion.text),
+                        toUpperCase(ciudad.text),
+                        toUpperCase(departamento.text),
+                        "Path...",
+                        email.text,
+                        toUpperCase(repLegal.text),
+                        toUpperCase(telefono.text)
+                    )
+                }
+            },
+            onLongClicked = {},
+            colors = ButtonDefaults.buttonColors(
+                containerColor = PrimaryYellowDark,
+                contentColor = DarkTextColor
+            ),
+            shadowColor = PrimaryYellowDark,
+            modifier = Modifier.padding(24.dp)
         )
     }
 }
 
 @Composable
-private fun Message(
+private fun CustomTextField(
     modifier: Modifier = Modifier,
-    title: String
-) {
-    Column(
-        modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(4.dp)
-    ) {
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text(
-            text = title,
-            modifier = Modifier.fillMaxWidth(),
-            textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.headlineMedium,
-            //color = MaterialTheme.colorScheme.primary,
-            fontSize = 26.sp,
-            fontWeight = FontWeight(700)
-        )
-
-    }
-}
-
-@Composable
-private fun empresaTextField(
-    modifier: Modifier = Modifier,
+    placeholder: String,
     @DrawableRes leadingIconRes: Int,
-    placeholderText: String,
-    keyBoardType: KeyboardType,
-    imeAction: ImeAction
-): String {
-    var nit by remember { mutableStateOf("") }
+    label: String,
+    keyboardType: KeyboardType,
+    visualTransformation: VisualTransformation,
+    errorState: MutableState<Boolean>,
+    imeAction: ImeAction,
+    onChanged: (TextFieldValue) -> Unit,
+    lengthChar: Int
+) {
+    //state
+    var selectedText by remember {
+        mutableStateOf(TextFieldValue(""))
+    }
 
     TextField(
         modifier = modifier
             .fillMaxWidth()
             .height(62.dp),
-        value = nit,
-        onValueChange = { nit = it },
-        singleLine = true,
+        value = selectedText,
+        onValueChange = { newText ->
+            if (newText.text.length <= lengthChar) {
+                selectedText = newText
+                onChanged(newText)
+            }
+        },
+        placeholder = { Text(text = placeholder) },
+        label = { Text(text = label) },
         shape = RoundedCornerShape(percent = 50),
+        leadingIcon = {
+            Icon(
+                painter = painterResource(leadingIconRes),
+                contentDescription = null,
+                modifier = Modifier.size(24.dp)
+            )
+        },
+        singleLine = true,
         colors = TextFieldDefaults.colors(
             focusedIndicatorColor = Color.Transparent,
             disabledIndicatorColor = Color.Transparent,
@@ -224,25 +379,28 @@ private fun empresaTextField(
             focusedLeadingIconColor = DarkTextColor,
             unfocusedLeadingIconColor = DarkTextColor,
             focusedContainerColor = Color.White,
-            unfocusedContainerColor = Color.White
+            unfocusedContainerColor = Color.White,
+            errorLeadingIconColor = Color.Red
         ),
-        textStyle = MaterialTheme.typography.bodyLarge.copy(
-            fontWeight = FontWeight.Medium
-        ),
-        keyboardOptions = KeyboardOptions(
-            keyboardType = keyBoardType,
-            imeAction = imeAction
-        ),
-        leadingIcon = {
-            Icon(
-                painter = painterResource(leadingIconRes),
-                contentDescription = null,
-                modifier = Modifier.size(24.dp)
-            )
-        },
-        label = { Text(text = placeholderText) },
-        placeholder = { Text(text = placeholderText) }
+        textStyle = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Medium),
+        visualTransformation = visualTransformation,
+        keyboardOptions = KeyboardOptions.Default.copy(keyboardType = keyboardType, imeAction = imeAction),
+        isError = errorState.value
     )
+}
 
-    return nit
+@Composable
+fun ErrorSuggestion(message: String) {
+    Row(
+        modifier = Modifier
+            .padding(horizontal = 24.dp)
+            .fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(
+            space = 10.dp,
+        ),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Image(painter = painterResource(id = R.drawable.ic_error), contentDescription = "Error Icon")
+        Text(text = message, color = MaterialTheme.colorScheme.primary, fontSize = 14.sp)
+    }
 }

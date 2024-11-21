@@ -1,13 +1,13 @@
 package com.azul.azulVentas.ui.presentation.container
 
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.azul.azulVentas.ui.presentation.Welcome.view.WelcomeScreen
+import com.azul.azulVentas.ui.presentation.welcome.view.WelcomeScreen
 import com.azul.azulVentas.ui.presentation.clientes.viewmodel.ClientesViewModel
 import com.azul.azulVentas.ui.presentation.empresa.view.EmpresaScreen
+import com.azul.azulVentas.ui.presentation.empresa.viewmodel.EmpresaViewModel
 import com.azul.azulVentas.ui.presentation.home.HomeScreen
 import com.azul.azulVentas.ui.presentation.login.view.LoginScreen
 import com.azul.azulVentas.ui.presentation.login.viewmodel.AuthViewModel
@@ -22,14 +22,14 @@ fun ScreenContainer(
     networkViewModel: NetworkViewModel,
     authViewModel: AuthViewModel,
     registerViewModel: RegisterViewModel,
-    clientesViewModel: ClientesViewModel
+    clientesViewModel: ClientesViewModel,
+    empresaViewModel: EmpresaViewModel
 ) {
     //val navHost = rememberNavController()
 
     NavHost(
         navController = navHost,
         startDestination = NavGraph.Welcome.route
-        //startDestination = if (authViewModel.isUserLogged()) NavGraph.Home.route else NavGraph.Welcome.route
     ) {
         composable(NavGraph.Welcome.route) {
 
@@ -75,14 +75,21 @@ fun ScreenContainer(
 
         composable(NavGraph.OTP.route) {
             OTPScreen(
+                navController = navHost,
                 onEmpresaClicked = {
-                    navHost.navigate(NavGraph.Empresa.route)
+                    navHost.navigate(
+
+                        NavGraph.Empresa.route
+                    )
                 }
             )
         }
 
         composable(NavGraph.Empresa.route) {
-            EmpresaScreen()
+            EmpresaScreen(
+                empresaViewModel,
+                navController = navHost
+            )
         }
 
         composable(NavGraph.Home.route) {

@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -34,15 +35,20 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import com.azul.azulVentas.ui.components.ActionButton
 import com.azul.azulVentas.ui.components.CustomDefaultBtn
 import com.azul.azulVentas.ui.components.DefaultBackArrow
 import com.azul.azulVentas.ui.components.OTPTexField
+import com.azul.azulVentas.ui.theme.DarkTextColor
 import com.azul.azulVentas.ui.theme.PrimaryPinkBlended
 import com.azul.azulVentas.ui.theme.PrimaryYellow
+import com.azul.azulVentas.ui.theme.PrimaryYellowDark
 import com.azul.azulVentas.ui.theme.PrimaryYellowLight
 
 @Composable
 fun OTPScreen(
+    navController: NavController,
     onEmpresaClicked: () -> Unit,
 ) {
     //otp mutable list
@@ -59,13 +65,8 @@ fun OTPScreen(
 
     //count down
     val timer = object : CountDownTimer(12000, 1000) {
-        override fun onTick(millisUntilFinished: Long) {
-
-        }
-
-        override fun onFinish() {
-
-        }
+        override fun onTick(millisUntilFinished: Long) {}
+        override fun onFinish() {}
     }
 
     Column(
@@ -90,31 +91,30 @@ fun OTPScreen(
         {
             Box(modifier = Modifier.weight(0.5f)) {
                 DefaultBackArrow {
-                    //     navController.popBackStack()
+                    navController.popBackStack()
                 }
             }
             Box(modifier = Modifier.weight(1.0f)) {
                 Text(
-                    text = "OTP Verification",
+                    text = "Verificación OTP",
                     color = MaterialTheme.colorScheme.primary,
                     fontSize = 18.sp,
                     fontWeight = FontWeight(700)
                 )
             }
         }
-        Spacer(modifier = Modifier.height(50.dp))
-        Text(text = "OTP Verification", fontSize = 26.sp, fontWeight = FontWeight.Bold)
+
+        Spacer(modifier = Modifier.height(40.dp))
+        Text(text = "OTP", fontSize = 26.sp, fontWeight = FontWeight.Bold)
         Text(
             text = buildAnnotatedString {
-                append("We sent your code to +5732168407\nThis code is expired in ")
+                append("Verificar el envio del código OTP\n+AzulSoluciones SMS, Email o Whatsapp.")
                 withStyle(
                     style = SpanStyle(
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.primary,
                     )
-                ) {
-                    append("120s")
-                }
+                ) {}
             },
             color = MaterialTheme.colorScheme.primary,
             textAlign = TextAlign.Center
@@ -165,17 +165,51 @@ fun OTPScreen(
 
         Spacer(modifier = Modifier.fillMaxHeight(0.3f))
 
+        //Otro tipo de boton de verificacion
+        /*
         CustomDefaultBtn(shapeSize = 50f, btnText = "Verify") {
             onEmpresaClicked()
             //if ((otp1.text + otp2.text + otp3.text + otp4.text + otp5.text).length == 5) {
             //    onEmpresaClicked()
             //}
         }
+        */
+
+        ActionButton(
+            text = "Verificar",
+            isNavigationArrowVisible = true,
+            onClicked = {
+                onEmpresaClicked()
+                //if ((otp1.text + otp2.text + otp3.text + otp4.text + otp5.text).length == 5) { onEmpresaClicked() }
+            },
+            onLongClicked = {},
+            colors = ButtonDefaults.buttonColors(
+                containerColor = PrimaryYellowDark,
+                contentColor = DarkTextColor
+            ),
+            shadowColor = PrimaryYellowDark
+        )
 
         Spacer(modifier = Modifier.fillMaxHeight(0.3f))
 
         Text(
-            text = "Resend OTP Code",
+            text = buildAnnotatedString {
+                append("Este código expira en: ")
+                withStyle(
+                    style = SpanStyle(
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary,
+                    )
+                ) {
+                    append("120s")
+                }
+            },
+            color = MaterialTheme.colorScheme.primary,
+            textAlign = TextAlign.Center
+        )
+
+        Text(
+            text = "Reenviar OTP Código",
             style = TextStyle(textDecoration = TextDecoration.Underline),
             color = MaterialTheme.colorScheme.primary,
             fontWeight = FontWeight(500),
