@@ -1,5 +1,6 @@
 package com.azul.azulVentas.ui.presentation.container
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -53,11 +54,12 @@ fun ScreenContainer(
 
         composable(NavGraph.Login.route) {
             LoginScreen(
+                authViewModel = authViewModel, // ViewModel inyectado
+
                 onRegistrationClicked = {
                     navHost.navigate(NavGraph.Registration.route) // Navegar a la pantalla de Registro
                 },
 
-                authViewModel = authViewModel, // ViewModel inyectado
                 onLoginSuccess = {
                     navHost.navigate(NavGraph.Home.route) // Si el login es exitoso, navegar al Home
                 }
@@ -76,19 +78,17 @@ fun ScreenContainer(
         composable(NavGraph.OTP.route) {
             OTPScreen(
                 navController = navHost,
-                onEmpresaClicked = {
-                    navHost.navigate(
-
-                        NavGraph.Empresa.route
-                    )
-                }
+                onEmpresaClicked = {  navHost.navigate( NavGraph.Empresa.route) }
             )
         }
 
         composable(NavGraph.Empresa.route) {
             EmpresaScreen(
                 empresaViewModel,
-                navController = navHost
+                navController = navHost,
+                onButtonClicked = { navHost.navigate(NavGraph.Login.route) {
+                    popUpTo(NavGraph.Welcome.route) { inclusive = true }
+                } }
             )
         }
 

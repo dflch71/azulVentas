@@ -39,5 +39,4 @@ class EmpresaViewModel @Inject constructor(
         _estadoRegistro.postValue(null)
     }
 
-
 }

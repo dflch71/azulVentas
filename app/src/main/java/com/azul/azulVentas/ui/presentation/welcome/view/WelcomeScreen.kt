@@ -63,9 +63,10 @@ fun WelcomeScreen(
     onOpenOTPClicked: () -> Unit
 ) {
     val isNetworkAvailable by networkViewModel.networkStatus.collectAsState()
+    val isConnect = remember { mutableStateOf(true) }
+
     val snackbarHostState = remember { SnackbarHostState() }  // Para el Snackbar
     val context = LocalContext.current
-    val isConnect = remember { mutableStateOf(true) }
 
     Scaffold(
         snackbarHost = {

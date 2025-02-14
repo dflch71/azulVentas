@@ -20,6 +20,7 @@ val SelectedField = Color(0xFF7c7c7c)
 val UnselectedField = Color(0xFF4a4a4a)
 
 val PrimaryYellowLight = Color(0xFFffeed4)
+val PrimaryYellowMid = Color(0xFFFFF3E0)
 val PrimaryYellow = Color(0xFFFFE7BA)
 val PrimaryYellowDark = Color(0xFFe9c16c)
 

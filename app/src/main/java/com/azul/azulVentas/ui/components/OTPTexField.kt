@@ -42,18 +42,10 @@ fun OTPTexField(focusRequester: FocusRequester, onChanged: (TextFieldValue) -> U
         colors = TextFieldDefaults.colors(
             focusedContainerColor = Color.Transparent,
             unfocusedContainerColor = Color.Transparent,
-            focusedTextColor = MaterialTheme.colorScheme.inversePrimary,
-            unfocusedTextColor = MaterialTheme.colorScheme.inversePrimary
+            focusedTextColor = Color.Gray,
+            unfocusedTextColor = Color.DarkGray,
         ),
 
-        /*
-        colors = TextFieldDefaults.outlinedTextFieldColors (
-            cursorColor = Color.Transparent,
-            focusedBorderColor = MaterialTheme.colorScheme.primary,
-            focusedLabelColor = MaterialTheme.colorScheme.primary,
-            textColor = MaterialTheme.colorScheme.inversePrimary
-        ),
-        */
 
         keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.NumberPassword),
         maxLines = 1,

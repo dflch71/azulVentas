@@ -1,7 +1,6 @@
 package com.azul.azulVentas.ui.presentation.empresa.component
 
 import android.icu.lang.UCharacter.toUpperCase
-import android.telephony.VisualVoicemailService
 import android.util.Patterns
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
@@ -49,7 +48,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
@@ -61,8 +59,9 @@ import com.azul.azulVentas.ui.components.DefaultBackArrow
 import com.azul.azulVentas.ui.presentation.empresa.viewmodel.EmpresaViewModel
 import com.azul.azulVentas.ui.theme.DarkTextColor
 import com.azul.azulVentas.ui.theme.PrimaryYellowDark
+import com.azul.azulVentas.ui.theme.PrimaryYellowMid
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.util.Locale
 
 
 @Composable
@@ -70,7 +69,8 @@ fun EmpresaScreenTemplate(
     empresaViewModel: EmpresaViewModel,
     navController: NavController,
     modifier: Modifier = Modifier,
-    backgroundGradient: Array<Pair<Float, Color>>
+    backgroundGradient: Array<Pair<Float, Color>>,
+    loginScreenClicked: () -> Unit
 )
 {
     val estadoRegistro by empresaViewModel.estadoRegistro.observeAsState()
@@ -114,10 +114,9 @@ fun EmpresaScreenTemplate(
             .imePadding(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
         Row(
             modifier = Modifier
-                .padding(32.dp)
+                .padding(top = 32.dp, start = 32.dp, end = 32.dp, bottom = 12.dp)
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
@@ -151,7 +150,7 @@ fun EmpresaScreenTemplate(
             lengthChar = 20
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(4.dp))
         CustomTextField(
             modifier = Modifier.padding(horizontal = 24.dp),
             placeholder = "Nombre Empresa",
@@ -165,7 +164,7 @@ fun EmpresaScreenTemplate(
             lengthChar = 100
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(4.dp))
         CustomTextField(
             modifier = Modifier.padding(horizontal = 24.dp),
             placeholder = "Dirección",
@@ -179,7 +178,7 @@ fun EmpresaScreenTemplate(
             lengthChar = 100
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(4.dp))
         CustomTextField(
             modifier = Modifier.padding(horizontal = 24.dp),
             placeholder = "Ciudad",
@@ -193,7 +192,7 @@ fun EmpresaScreenTemplate(
             lengthChar = 100
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(4.dp))
         CustomTextField(
             modifier = Modifier.padding(horizontal = 24.dp),
             placeholder = "Departamento",
@@ -207,7 +206,7 @@ fun EmpresaScreenTemplate(
             lengthChar = 100
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(4.dp))
         CustomTextField(
             modifier = Modifier.padding(horizontal = 24.dp),
             placeholder = "example@email.com",
@@ -221,7 +220,7 @@ fun EmpresaScreenTemplate(
             lengthChar = 100
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(4.dp))
         CustomTextField(
             modifier = Modifier.padding(horizontal = 24.dp),
             placeholder = "Representante",
@@ -235,7 +234,7 @@ fun EmpresaScreenTemplate(
             lengthChar = 100
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(4.dp))
         CustomTextField(
             modifier = Modifier.padding(horizontal = 24.dp),
             placeholder = "Teléfono",
@@ -266,19 +265,30 @@ fun EmpresaScreenTemplate(
         estadoRegistro?.let { result ->
             when {
                 result.isSuccess -> {
-                        Row() { ErrorSuggestion("EMPRESA registrada exitosamente") }
+                        Row() { ErrorSuggestion("EMPRESA registrada exitosamente", isError = false) }
+                        Row() { ErrorSuggestion("Actualizando Datos ...", isError = false) }
+
+                        //Mostrar mensaje de actualización por 4 segundos
+                        coroutineScope.launch {
+                            delay(4000L)
+                            empresaViewModel.limpiarEstadoRegistro()
+                            loginScreenClicked()
+                        }
+
                 }
                 result.isFailure -> {
-                    Row() { ErrorSuggestion("Error: ${result.exceptionOrNull()?.message} ${nitEmpresa.text}") }
+                    Row() {
+                        ErrorSuggestion("Error: ${result.exceptionOrNull()?.message} ${nitEmpresa.text}")
+                    }
                 }
                 else -> {}
             }
         }
 
-        Spacer(modifier = Modifier.weight(weight = 1f))
+        Spacer(modifier = Modifier.height(4.dp))
         ActionButton(
             text = "Registrar",
-            isNavigationArrowVisible = false,
+            isNavigationArrowVisible = true,
             onClicked = {
                 val isNitValid = !nitEmpresa.text.isEmpty() && nitEmpresa.text.length > 5
                 val isNameValid = !nomEmpresa.text.isEmpty() && nomEmpresa.text.length > 3
@@ -322,7 +332,21 @@ fun EmpresaScreenTemplate(
                 contentColor = DarkTextColor
             ),
             shadowColor = PrimaryYellowDark,
-            modifier = Modifier.padding(24.dp)
+            modifier = Modifier.padding(top = 36.dp, bottom = 4.dp, start = 24.dp, end = 24.dp)
+        )
+
+        Spacer(modifier = Modifier.weight(weight = 1f))
+        ActionButton(
+            text = "Cancelar",
+            isNavigationArrowVisible = true,
+            onClicked = { loginScreenClicked() },
+            onLongClicked = {},
+            colors = ButtonDefaults.buttonColors(
+                containerColor = PrimaryYellowMid,
+                contentColor = DarkTextColor
+            ),
+            shadowColor = PrimaryYellowDark,
+            modifier = Modifier.padding(top = 4.dp, bottom = 8.dp, start = 24.dp, end = 24.dp)
         )
     }
 }
@@ -390,7 +414,7 @@ private fun CustomTextField(
 }
 
 @Composable
-fun ErrorSuggestion(message: String) {
+fun ErrorSuggestion(message: String, isError: Boolean = true) {
     Row(
         modifier = Modifier
             .padding(horizontal = 24.dp)
@@ -400,7 +424,9 @@ fun ErrorSuggestion(message: String) {
         ),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Image(painter = painterResource(id = R.drawable.ic_error), contentDescription = "Error Icon")
+        Image(painter = painterResource(id = if (isError) R.drawable.ic_error else R.drawable.ic_success), contentDescription = "Error Icon")
         Text(text = message, color = MaterialTheme.colorScheme.primary, fontSize = 14.sp)
     }
 }
+
+

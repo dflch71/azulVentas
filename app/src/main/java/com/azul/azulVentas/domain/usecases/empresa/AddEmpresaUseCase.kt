@@ -19,8 +19,6 @@ class AddEmpresaUseCase @Inject constructor(
             } else {
                 Result.failure(existsResult.exceptionOrNull() ?: Exception("Error de verificación"))
             }
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
+        } catch (e: Exception) { Result.failure(e) }
     }
 }
