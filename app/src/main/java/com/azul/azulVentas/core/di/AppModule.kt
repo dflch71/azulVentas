@@ -4,10 +4,13 @@ import android.content.Context
 import android.content.SharedPreferences
 import com.azul.azulVentas.data.local.sharePreferences.SessionManager
 import com.azul.azulVentas.data.remote.FirebaseAuthService
+import com.azul.azulVentas.data.repository.auth.AuthRepository
+import com.azul.azulVentas.data.repository.auth.AuthRepositoryImp
 import com.azul.azulVentas.data.repository.empresa.EmpresaRepository
 import com.azul.azulVentas.data.repository.empresa.EmpresaRepositoryImp
 import com.azul.azulVentas.data.repository.user.UserRepository
 import com.azul.azulVentas.data.repository.user.UserRepositoryImpl
+import com.azul.azulVentas.domain.usecases.auth.SendPasswordResetUseCase
 import com.azul.azulVentas.domain.usecases.empresa.AddEmpresaUseCase
 import com.azul.azulVentas.domain.usecases.user.IsUserLoggedInUseCase
 import com.azul.azulVentas.domain.usecases.user.LoginUseCase
@@ -56,6 +59,12 @@ object AppModule {
 
     @Provides
     @Singleton
+    fun provideSendPasswordResetUseCase( authRepository: AuthRepository): SendPasswordResetUseCase {
+        return SendPasswordResetUseCase( authRepository )
+    }
+
+    @Provides
+    @Singleton
     fun provideSignOutUseCase(userRepository: UserRepository): SignOutUseCase {
         return SignOutUseCase(userRepository)
     }
@@ -68,10 +77,15 @@ object AppModule {
 
     @Provides
     @Singleton
+    fun provideAuthRepository(auth: FirebaseAuth): AuthRepository {
+        return AuthRepositoryImp(auth)
+    }
+
+    @Provides
+    @Singleton
     fun provideRegisterUseCase(userRepository: UserRepository): RegisterUseCase {
         return RegisterUseCase(userRepository)
     }
-
 
     @Provides
     @Singleton
@@ -104,6 +118,5 @@ object AppModule {
     fun provideAddEmpresaUseCase(empresaRepository: EmpresaRepository): AddEmpresaUseCase {
         return AddEmpresaUseCase(empresaRepository )
     }
-
 
 }

@@ -35,27 +35,6 @@ class AuthViewModel @Inject constructor(
     var loginState by mutableStateOf<LoginState>(LoginState.Idle)
         private set
 
-
-   /* funcion sin reintentos de login
-   fun login(email: String, password: String) {
-        viewModelScope.launch {
-            loginState = LoginState.Loading
-
-            try {
-                withTimeout(5000) {
-                    val result = loginUseCase(email, password)
-                    when (result) {
-                        is Result.Success -> loginState = LoginState.Success(result.data)
-                        is Result.Error -> loginState = LoginState.Error(result.message)
-                    }
-                }
-            }
-            catch (e: TimeoutCancellationException) { loginState = LoginState.Error("Tiempo de espera agotado") }
-            catch (e: Exception) { loginState = LoginState.Error(e.localizedMessage ?: "Error desconocido -> ${e.message}") }
-        }
-    }
-    */
-
     fun login(email: String, password: String) {
         viewModelScope.launch {
 
@@ -87,29 +66,17 @@ class AuthViewModel @Inject constructor(
         }
     }
 
-    fun signout() {
-        signOutUseCase()
-    }
+    fun signout() { signOutUseCase() }
 
-    fun isUserLoggedIn(): Boolean {
-        return isUserLoggedInUseCase()
-    }
+    fun isUserLoggedIn(): Boolean { return isUserLoggedInUseCase() }
 
-    fun isLoggedIn(): Boolean {
-        return isLoggedInUseCase()
-    }
+    fun isLoggedIn(): Boolean { return isLoggedInUseCase() }
 
-    fun getUserUid(): String? {
-        return getUserUidUseCase()
-    }
+    fun getUserUid(): String? { return getUserUidUseCase() }
 
-    fun getUserEmail(): String? {
-        return getUserEmailUseCase()
-    }
+    fun getUserEmail(): String? { return getUserEmailUseCase() }
 
-    fun getUserLastDay(): String? {
-        return getUserLastDayUseCase()
-    }
+    fun getUserLastDay(): String? { return getUserLastDayUseCase() }
 
     // Variables para almacenar el email y la contraseña
     var email by mutableStateOf("")
@@ -121,6 +88,8 @@ class AuthViewModel @Inject constructor(
     fun setEmail_(value: String) { email = value }
 
     fun setPassword_(value: String) { password = value }
+
+    fun clearState() { loginState = LoginState.Idle }
 }
 
 sealed class LoginState {

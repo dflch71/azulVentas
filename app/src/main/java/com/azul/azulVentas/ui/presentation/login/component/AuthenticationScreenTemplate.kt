@@ -56,12 +56,15 @@ import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import com.azul.azulVentas.R
 import com.azul.azulVentas.ui.components.ActionButton
@@ -86,7 +89,8 @@ fun AuthenticationScreenTemplate(
     actionButtonShadow: Color,
     onMainActionButtonClicked: () -> Unit,
     onSecondaryActionButtonClicked: () -> Unit,
-    onLoginSuccess: () -> Unit
+    onLoginSuccess: () -> Unit,
+    onRecoveryClicked: () -> Unit
 ) {
     val scrollState = rememberScrollState()
     val coroutineScope = rememberCoroutineScope()
@@ -126,17 +130,10 @@ fun AuthenticationScreenTemplate(
         else -> {}
     }
 
-    LaunchedEffect(keyboardHeight) {
-        coroutineScope.launch {
-            scrollState.scrollBy(keyboardHeight.toFloat())
-        }
-    }
+    LaunchedEffect(keyboardHeight) { coroutineScope.launch { scrollState.scrollBy(keyboardHeight.toFloat()) } }
 
-    Box(
-        modifier = Modifier.fillMaxSize()
-    ) {
-
-
+    Box( modifier = Modifier.fillMaxSize())
+    {
         Column(
             modifier = modifier
                 .fillMaxSize()
@@ -147,12 +144,11 @@ fun AuthenticationScreenTemplate(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-
             Image(
                 painter = painterResource(imgRes),
                 contentDescription = null,
                 modifier = Modifier
-                    .size(270.dp)
+                    .size(240.dp)
                     .padding(start = 4.dp)
             )
 
@@ -164,7 +160,7 @@ fun AuthenticationScreenTemplate(
             Spacer(modifier = Modifier.height(8.dp))
             email = emailTextField(
                 modifier = Modifier.padding(horizontal = 24.dp),
-                placeholderText = "You email",
+                placeholderText = "Email",
                 keyBoardType = KeyboardType.Email,
                 imeAction = ImeAction.Next
             )
@@ -176,34 +172,27 @@ fun AuthenticationScreenTemplate(
                 leadingIconRes = R.drawable.ic_key,
                 visibleIconRes = R.drawable.ic_visibility,
                 visibleOffIconRes = R.drawable.ic_visibility_off,
-                placeholderText = "Password",
+                placeholderText = "Contraseña",
                 keyBoardType = KeyboardType.Password,
                 imeAction = ImeAction.Done
             )
             authViewModel.setPassword_(password)
 
-            Spacer(modifier = Modifier.height(4.dp))
-            Box(
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = "Olvidé mi contraseña",
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.Medium,
+                textDecoration = TextDecoration.Underline,
+                color = Color.White,
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 24.dp)
-            ) {
-                Text(
-                    text = "Forget Password?",
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.SemiBold,
-                    color = Color.White,
-                    modifier = Modifier
-                        .wrapContentWidth()
-                        .padding(start = 24.dp)
-                        .clickable {
-                            //Navegar a interfaz de restablecer contraseña
-                        },
-                    textAlign = TextAlign.Left
-                )
-            }
+                    .align(Alignment.End)
+                    .wrapContentWidth()
+                    .padding(horizontal = 36.dp)
+                    .clickable { onRecoveryClicked() },
+            )
 
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(8.dp))
             ActionButton(
                 text = mainActionButtonTitle,
                 isNavigationArrowVisible = true,
@@ -261,7 +250,7 @@ fun AuthenticationScreenTemplate(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 40.dp)
-                    .height(40.dp)
+                    .height(30.dp)
             )
 
             ActionButton(
@@ -276,23 +265,6 @@ fun AuthenticationScreenTemplate(
                     .padding(bottom = 24.dp)
             )
         }
-
-        /*
-        // FAB en la parte superior derecha
-        SmallFloatingActionButton(
-            onClick = { /* Acción del FAB */ },
-            modifier = Modifier
-                .align(Alignment.TopEnd) // Alinea en la esquina superior derecha
-                .offset(x = (-16).dp, y = 16.dp), // Ajusta la posición con un margen
-            containerColor = MaterialTheme.colorScheme.inversePrimary // Color de fondo del FAB
-        ) {
-            Icon(
-                imageVector = Icons.Default.Settings,
-                contentDescription = "Agregar",
-                tint = Color.White
-            )
-        }
-        */
 
     }
 }
@@ -491,7 +463,6 @@ private fun passwordTextField(
             textAlign = TextAlign.Center
         )
     }
-
     return password
 }
 

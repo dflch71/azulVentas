@@ -45,7 +45,7 @@ class FirebaseAuthService @Inject constructor(
         }
         catch (e: TimeoutCancellationException) { Result.Error("Tiempo de espera agotado - Servidor no disponible") }
         catch (e: FirebaseAuthInvalidUserException) { Result.Error("El correo no está registrado") }
-        catch (e: FirebaseAuthInvalidCredentialsException) { Result.Error("Credenciales inválidas (Usurio o contraseña)") }
+        catch (e: FirebaseAuthInvalidCredentialsException) { Result.Error("Credenciales inválidas (Usuario o contraseña)") }
         catch (e: Exception) { Result.Error(e.localizedMessage ?: "Error desconocido -> ${e.message}") }
     }
 

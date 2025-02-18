@@ -13,6 +13,7 @@ import com.azul.azulVentas.ui.presentation.container.ScreenContainer
 import com.azul.azulVentas.ui.presentation.empresa.viewmodel.EmpresaViewModel
 import com.azul.azulVentas.ui.presentation.login.viewmodel.AuthViewModel
 import com.azul.azulVentas.ui.presentation.network.viewmodel.NetworkViewModel
+import com.azul.azulVentas.ui.presentation.recoverPassword.viewmodel.RecoverPasswordViewModel
 import com.azul.azulVentas.ui.presentation.registration.viewmodel.RegisterViewModel
 import com.azul.azulVentas.ui.theme.AzulVentasTheme
 import com.google.firebase.auth.FirebaseAuth
@@ -33,6 +34,7 @@ class MainActivity : ComponentActivity() {
     private val registerViewModel: RegisterViewModel by viewModels()
     private val clientesViewModel: ClientesViewModel by viewModels()
     private val empresaViewModel: EmpresaViewModel by viewModels()
+    private val recoverPasswordViewModel: RecoverPasswordViewModel by viewModels()
 
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -51,7 +53,8 @@ class MainActivity : ComponentActivity() {
                     authViewModel,
                     registerViewModel,
                     clientesViewModel,
-                    empresaViewModel
+                    empresaViewModel,
+                    recoverPasswordViewModel
                 )
             }
         }

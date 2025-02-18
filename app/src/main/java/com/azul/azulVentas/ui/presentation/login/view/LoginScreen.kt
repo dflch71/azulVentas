@@ -2,6 +2,7 @@ package com.azul.azulVentas.ui.presentation.login.view
 
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import com.azul.azulVentas.R
@@ -18,7 +19,12 @@ fun LoginScreen(
     modifier: Modifier = Modifier,
     onLoginSuccess: () -> Unit,
     onRegistrationClicked: () -> Unit,
+    onRecoveryClicked: () -> Unit
 ) {
+
+    // Resetear mensaje cuando la pantalla se vuelve a componer
+    authViewModel.clearState()
+
     AuthenticationScreenTemplate(
         authViewModel,
         modifier = modifier,
@@ -27,10 +33,10 @@ fun LoginScreen(
             1f to PrimaryPink
         ),
         imgRes = R.drawable.img_coder_m,
-        title = "Welcome back!",
-        subtitle = "Please, Log In.",
-        mainActionButtonTitle = "Continue",
-        secondaryActionButtonTitle = "Create an Account",
+        title = "Bienvenido!",
+        subtitle = "Ingrese Credenciales.",
+        mainActionButtonTitle = "Siguiente",
+        secondaryActionButtonTitle = "Crear Cuenta",
         mainActionButtonColors = ButtonDefaults.buttonColors(
             containerColor = PrimaryPinkDark,
             contentColor = Color.White
@@ -42,7 +48,8 @@ fun LoginScreen(
         actionButtonShadow = PrimaryPinkDark,
         onMainActionButtonClicked = onLoginSuccess,
         onSecondaryActionButtonClicked = onRegistrationClicked,
-        onLoginSuccess = onLoginSuccess
+        onLoginSuccess = onLoginSuccess,
+        onRecoveryClicked = onRecoveryClicked
     )
 
 }

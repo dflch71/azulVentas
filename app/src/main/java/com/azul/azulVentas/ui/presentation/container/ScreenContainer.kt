@@ -14,6 +14,8 @@ import com.azul.azulVentas.ui.presentation.login.view.LoginScreen
 import com.azul.azulVentas.ui.presentation.login.viewmodel.AuthViewModel
 import com.azul.azulVentas.ui.presentation.network.viewmodel.NetworkViewModel
 import com.azul.azulVentas.ui.presentation.otp.view.OTPScreen
+import com.azul.azulVentas.ui.presentation.recoverPassword.view.RecoverPasswordScreen
+import com.azul.azulVentas.ui.presentation.recoverPassword.viewmodel.RecoverPasswordViewModel
 import com.azul.azulVentas.ui.presentation.registration.view.RegistrationScreen
 import com.azul.azulVentas.ui.presentation.registration.viewmodel.RegisterViewModel
 
@@ -24,7 +26,8 @@ fun ScreenContainer(
     authViewModel: AuthViewModel,
     registerViewModel: RegisterViewModel,
     clientesViewModel: ClientesViewModel,
-    empresaViewModel: EmpresaViewModel
+    empresaViewModel: EmpresaViewModel,
+    recoverPasswordViewModel: RecoverPasswordViewModel
 ) {
     //val navHost = rememberNavController()
 
@@ -62,6 +65,10 @@ fun ScreenContainer(
 
                 onLoginSuccess = {
                     navHost.navigate(NavGraph.Home.route) // Si el login es exitoso, navegar al Home
+                },
+
+                onRecoveryClicked = {
+                    navHost.navigate(NavGraph.RecoverPassword.route)
                 }
             )
         }
@@ -91,6 +98,11 @@ fun ScreenContainer(
                 } }
             )
         }
+
+        composable(NavGraph.RecoverPassword.route) { RecoverPasswordScreen(
+            navController = navHost,
+            viewModel = recoverPasswordViewModel
+        ) }
 
         composable(NavGraph.Home.route) {
             HomeScreen(
