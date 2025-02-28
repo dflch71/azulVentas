@@ -19,3 +19,8 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+# Mantén el constructor sin argumentos de la clase Empresa
+-keepclassmembers class com.azul.azulVentas.domain.model.empresa.Empresa {
+    public <init>();
+}

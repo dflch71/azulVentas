@@ -1,14 +1,17 @@
 package com.azul.azulVentas.ui.presentation.container
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import com.azul.azulVentas.ui.presentation.welcome.view.WelcomeScreen
 import com.azul.azulVentas.ui.presentation.clientes.viewmodel.ClientesViewModel
 import com.azul.azulVentas.ui.presentation.empresa.view.EmpresaScreen
 import com.azul.azulVentas.ui.presentation.empresa.viewmodel.EmpresaViewModel
+import com.azul.azulVentas.ui.presentation.empresaFB.view.EmpresaFBScreen
+import com.azul.azulVentas.ui.presentation.empresaFB.viewmodel.EmpresaFBViewModel
 import com.azul.azulVentas.ui.presentation.home.HomeScreen
 import com.azul.azulVentas.ui.presentation.login.view.LoginScreen
 import com.azul.azulVentas.ui.presentation.login.viewmodel.AuthViewModel
@@ -17,6 +20,7 @@ import com.azul.azulVentas.ui.presentation.otp.view.OTPScreen
 import com.azul.azulVentas.ui.presentation.recoverPassword.view.RecoverPasswordScreen
 import com.azul.azulVentas.ui.presentation.recoverPassword.viewmodel.RecoverPasswordViewModel
 import com.azul.azulVentas.ui.presentation.registration.view.RegistrationScreen
+import com.azul.azulVentas.ui.presentation.registration.viewmodel.RegisterEmailViewModel
 import com.azul.azulVentas.ui.presentation.registration.viewmodel.RegisterViewModel
 
 @Composable
@@ -27,9 +31,10 @@ fun ScreenContainer(
     registerViewModel: RegisterViewModel,
     clientesViewModel: ClientesViewModel,
     empresaViewModel: EmpresaViewModel,
-    recoverPasswordViewModel: RecoverPasswordViewModel
+    empresaFBViewModel: EmpresaFBViewModel,
+    recoverPasswordViewModel: RecoverPasswordViewModel,
+    registerEmailViewModel: RegisterEmailViewModel
 ) {
-    //val navHost = rememberNavController()
 
     NavHost(
         navController = navHost,
@@ -59,8 +64,9 @@ fun ScreenContainer(
             LoginScreen(
                 authViewModel = authViewModel, // ViewModel inyectado
 
-                onRegistrationClicked = {
-                    navHost.navigate(NavGraph.Registration.route) // Navegar a la pantalla de Registro
+                onEmpresaFBClicked = {
+                    //navHost.navigate(NavGraph.Registration.route) // Navegar a la pantalla de Registro
+                    navHost.navigate(NavGraph.EmpresaFB.route) // Navegar a la pantalla de Registro
                 },
 
                 onLoginSuccess = {
@@ -73,19 +79,32 @@ fun ScreenContainer(
             )
         }
 
-        composable(NavGraph.Registration.route) {
+        composable(
+            NavGraph.Registration.route,
+            arguments = listOf(
+                navArgument("idEmpresa") { type = NavType.StringType },
+                navArgument("nomEmpresa") { type = NavType.StringType }
+            )
+        ) {
+            backStackEntry ->
+            val idEmpresa = backStackEntry.arguments?.getString("idEmpresa")
+            val nomEmpresa = backStackEntry.arguments?.getString("nomEmpresa")
             RegistrationScreen(
                 registerViewModel,
+                registerEmailViewModel,
+                navHost,
                 onLoginClicked = {
-                    navHost.navigate(NavGraph.Login.route)
-                }
+                    navHost.navigate(NavGraph.Login.route) {}
+                },
+                idEmpresa = idEmpresa ?: "",
+                nomEmpresa = nomEmpresa ?: ""
             )
         }
 
         composable(NavGraph.OTP.route) {
             OTPScreen(
                 navController = navHost,
-                onEmpresaClicked = {  navHost.navigate( NavGraph.Empresa.route) }
+                onEmpresaClicked = { navHost.navigate( NavGraph.Empresa.route) }
             )
         }
 
@@ -99,10 +118,27 @@ fun ScreenContainer(
             )
         }
 
-        composable(NavGraph.RecoverPassword.route) { RecoverPasswordScreen(
-            navController = navHost,
-            viewModel = recoverPasswordViewModel
-        ) }
+        composable(NavGraph.EmpresaFB.route) {
+            //EmpresaFBScreen Debe pasar parametros a la pantalla de Registro
+            EmpresaFBScreen(
+                navController = navHost,
+                empresaFBViewModel,
+                loginScreenClicked = {
+                    navHost.navigate(NavGraph.Login.route) {
+                    popUpTo(NavGraph.Welcome.route) { inclusive = true } }
+                },
+                onRegistrationClicked = { id, nom ->
+                    navHost.navigate(NavGraph.Registration.createRoute(id, nom))
+                }
+            )
+        }
+
+        composable(NavGraph.RecoverPassword.route) {
+            RecoverPasswordScreen(
+                navController = navHost,
+                viewModel = recoverPasswordViewModel
+            )
+        }
 
         composable(NavGraph.Home.route) {
             HomeScreen(

@@ -14,6 +14,15 @@ class UserRepositoryImpl @Inject constructor(
         return authService.login(email, password)
     }
 
+    override suspend fun register(email: String, password: String): User? {
+        return authService.register(email, password)
+    }
+
+    override suspend fun registerEmail(email: String, password: String): Result<User> {
+        return authService.registerEmail(email, password)
+    }
+
+
     override fun signout() {
         authService.signOut()
     }
@@ -36,10 +45,6 @@ class UserRepositoryImpl @Inject constructor(
 
     override fun getUserLastDay(): String? {
         return authService.getUserLastDay()
-    }
-
-    override suspend fun register(email: String, password: String): User? {
-        return authService.register(email, password)
     }
 
 }

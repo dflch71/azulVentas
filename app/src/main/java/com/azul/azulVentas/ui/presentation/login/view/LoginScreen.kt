@@ -18,7 +18,7 @@ fun LoginScreen(
     authViewModel: AuthViewModel,
     modifier: Modifier = Modifier,
     onLoginSuccess: () -> Unit,
-    onRegistrationClicked: () -> Unit,
+    onEmpresaFBClicked: () -> Unit,
     onRecoveryClicked: () -> Unit
 ) {
 
@@ -47,7 +47,7 @@ fun LoginScreen(
         ),
         actionButtonShadow = PrimaryPinkDark,
         onMainActionButtonClicked = onLoginSuccess,
-        onSecondaryActionButtonClicked = onRegistrationClicked,
+        onSecondaryActionButtonClicked = onEmpresaFBClicked,
         onLoginSuccess = onLoginSuccess,
         onRecoveryClicked = onRecoveryClicked
     )

@@ -11,9 +11,11 @@ import androidx.navigation.compose.rememberNavController
 import com.azul.azulVentas.ui.presentation.clientes.viewmodel.ClientesViewModel
 import com.azul.azulVentas.ui.presentation.container.ScreenContainer
 import com.azul.azulVentas.ui.presentation.empresa.viewmodel.EmpresaViewModel
+import com.azul.azulVentas.ui.presentation.empresaFB.viewmodel.EmpresaFBViewModel
 import com.azul.azulVentas.ui.presentation.login.viewmodel.AuthViewModel
 import com.azul.azulVentas.ui.presentation.network.viewmodel.NetworkViewModel
 import com.azul.azulVentas.ui.presentation.recoverPassword.viewmodel.RecoverPasswordViewModel
+import com.azul.azulVentas.ui.presentation.registration.viewmodel.RegisterEmailViewModel
 import com.azul.azulVentas.ui.presentation.registration.viewmodel.RegisterViewModel
 import com.azul.azulVentas.ui.theme.AzulVentasTheme
 import com.google.firebase.auth.FirebaseAuth
@@ -34,7 +36,9 @@ class MainActivity : ComponentActivity() {
     private val registerViewModel: RegisterViewModel by viewModels()
     private val clientesViewModel: ClientesViewModel by viewModels()
     private val empresaViewModel: EmpresaViewModel by viewModels()
+    private val empresaFBViewModel: EmpresaFBViewModel by viewModels()
     private val recoverPasswordViewModel: RecoverPasswordViewModel by viewModels()
+    private val registerEmailViewModel: RegisterEmailViewModel by viewModels()
 
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -54,7 +58,9 @@ class MainActivity : ComponentActivity() {
                     registerViewModel,
                     clientesViewModel,
                     empresaViewModel,
-                    recoverPasswordViewModel
+                    empresaFBViewModel,
+                    recoverPasswordViewModel,
+                    registerEmailViewModel
                 )
             }
         }

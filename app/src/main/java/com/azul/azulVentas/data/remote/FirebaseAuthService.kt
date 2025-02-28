@@ -7,6 +7,7 @@ import com.azul.azulVentas.domain.model.user.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
+import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.tasks.await
@@ -45,7 +46,7 @@ class FirebaseAuthService @Inject constructor(
         }
         catch (e: TimeoutCancellationException) { Result.Error("Tiempo de espera agotado - Servidor no disponible") }
         catch (e: FirebaseAuthInvalidUserException) { Result.Error("El correo no está registrado") }
-        catch (e: FirebaseAuthInvalidCredentialsException) { Result.Error("Credenciales inválidas (Usuario o contraseña)") }
+        catch (e: FirebaseAuthInvalidCredentialsException) { Result.Error("Credenciales inválidas (Usuario y/o contraseña)") }
         catch (e: Exception) { Result.Error(e.localizedMessage ?: "Error desconocido -> ${e.message}") }
     }
 
@@ -82,11 +83,24 @@ class FirebaseAuthService @Inject constructor(
             result.user?.let { firebaseUser ->
                 User(uid = firebaseUser.uid, email = firebaseUser.email ?: "")
             }
-        } catch (e: Exception) {
-            null
-        }
+        } catch (e: Exception) { null }
     }
 
+    suspend fun registerEmail(email: String, password: String): Result<User> {
+        return try {
+            val result = auth.createUserWithEmailAndPassword(email, password).await()
+            result.user?.let { firebaseUser ->
+                val user = User(uid = firebaseUser.uid, email = firebaseUser.email ?: "")
+                Result.Success(user)
+            } ?: Result.Error("Error al registrar el usuario")
+        } catch (e: FirebaseAuthInvalidCredentialsException) {
+            Result.Error("Credenciales inválidas")
+        } catch (e: FirebaseAuthUserCollisionException) {
+            Result.Error("El correo ya está registrado - 0K")
+        } catch (e: Exception) {
+            Result.Error(e.localizedMessage ?: "Error desconocido -> ${e.message}")
+        }
+    }
 
 }
 

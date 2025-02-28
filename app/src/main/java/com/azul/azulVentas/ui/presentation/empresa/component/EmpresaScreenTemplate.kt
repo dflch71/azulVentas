@@ -56,6 +56,8 @@ import androidx.navigation.NavController
 import com.azul.azulVentas.R
 import com.azul.azulVentas.ui.components.ActionButton
 import com.azul.azulVentas.ui.components.DefaultBackArrow
+import com.azul.azulVentas.ui.components.ErrorSuggestion
+import com.azul.azulVentas.ui.components.CustomTextField
 import com.azul.azulVentas.ui.presentation.empresa.viewmodel.EmpresaViewModel
 import com.azul.azulVentas.ui.theme.DarkTextColor
 import com.azul.azulVentas.ui.theme.PrimaryYellowDark
@@ -243,7 +245,7 @@ fun EmpresaScreenTemplate(
             errorState = phoneErrorState,
             keyboardType = KeyboardType.Phone,
             visualTransformation = VisualTransformation.None,
-            imeAction = ImeAction.Next,
+            imeAction = ImeAction.Done,
             onChanged = { newTelefono -> telefono = newTelefono },
             lengthChar = 10
         )
@@ -319,7 +321,7 @@ fun EmpresaScreenTemplate(
                         toUpperCase(direccion.text),
                         toUpperCase(ciudad.text),
                         toUpperCase(departamento.text),
-                        "Path...",
+                        "gs://azul-invoice.appspot.com/azulSoluciones.png",
                         email.text,
                         toUpperCase(repLegal.text),
                         toUpperCase(telefono.text)
@@ -351,6 +353,7 @@ fun EmpresaScreenTemplate(
     }
 }
 
+/*
 @Composable
 private fun CustomTextField(
     modifier: Modifier = Modifier,
@@ -429,4 +432,4 @@ fun ErrorSuggestion(message: String, isError: Boolean = true) {
     }
 }
 
-
+*/

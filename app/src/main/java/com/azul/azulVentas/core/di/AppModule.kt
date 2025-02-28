@@ -3,15 +3,20 @@ package com.azul.azulVentas.core.di
 import android.content.Context
 import android.content.SharedPreferences
 import com.azul.azulVentas.data.local.sharePreferences.SessionManager
+import com.azul.azulVentas.data.remote.EmpresaFBRemoteDataSource
 import com.azul.azulVentas.data.remote.FirebaseAuthService
 import com.azul.azulVentas.data.repository.auth.AuthRepository
 import com.azul.azulVentas.data.repository.auth.AuthRepositoryImp
 import com.azul.azulVentas.data.repository.empresa.EmpresaRepository
 import com.azul.azulVentas.data.repository.empresa.EmpresaRepositoryImp
+import com.azul.azulVentas.data.repository.empresaFB.EmpresaFBRepository
+import com.azul.azulVentas.data.repository.empresaFB.EmpresaFBRepositoryImpl
 import com.azul.azulVentas.data.repository.user.UserRepository
 import com.azul.azulVentas.data.repository.user.UserRepositoryImpl
 import com.azul.azulVentas.domain.usecases.auth.SendPasswordResetUseCase
 import com.azul.azulVentas.domain.usecases.empresa.AddEmpresaUseCase
+import com.azul.azulVentas.domain.usecases.empresaFB.BuscarEmpresaFBPorNitUseCase
+import com.azul.azulVentas.domain.usecases.empresaFB.ObtenerEmpresasFBUseCase
 import com.azul.azulVentas.domain.usecases.user.IsUserLoggedInUseCase
 import com.azul.azulVentas.domain.usecases.user.LoginUseCase
 import com.azul.azulVentas.domain.usecases.user.RegisterUseCase
@@ -43,6 +48,12 @@ object AppModule {
         sessionManager: SessionManager
     ): FirebaseAuthService {
         return FirebaseAuthService(firebaseAuth, sessionManager)
+    }
+
+    @Provides
+    @Singleton
+    fun provideDatabaseReference(): DatabaseReference {
+        return FirebaseDatabase.getInstance().reference
     }
 
     @Provides
@@ -113,10 +124,39 @@ object AppModule {
         return EmpresaRepositoryImp(databaseReference)
     }
 
-    // Proveer InsertarUsuarioUseCase
+    //Proveer InsertarUsuarioUseCase
     @Provides
+    @Singleton
     fun provideAddEmpresaUseCase(empresaRepository: EmpresaRepository): AddEmpresaUseCase {
         return AddEmpresaUseCase(empresaRepository )
     }
 
+    //Proveer EmpresaFB
+    @Provides
+    @Singleton
+    fun provideObtenerEmpresasUseCase(empresaFBRepository: EmpresaFBRepository): ObtenerEmpresasFBUseCase {
+        return ObtenerEmpresasFBUseCase(empresaFBRepository )
+    }
+
+    //Proveer EmpresaFB
+    @Provides
+    @Singleton
+    fun provideEmpresaFBRemoteDataSource(database: DatabaseReference): EmpresaFBRemoteDataSource {
+        return EmpresaFBRemoteDataSource(database)
+    }
+
+    @Provides
+    @Singleton
+    fun provideEmpresaFBRepository(remoteDataSource: EmpresaFBRemoteDataSource): EmpresaFBRepository {
+        return EmpresaFBRepositoryImpl(remoteDataSource)
+    }
+
+    @Provides
+    @Singleton
+    fun provideBuscarEmpresaFBPorNitUseCase(empresaFBRepository: EmpresaFBRepository): BuscarEmpresaFBPorNitUseCase {
+        return BuscarEmpresaFBPorNitUseCase(empresaFBRepository )
+    }
 }
+
+
+
