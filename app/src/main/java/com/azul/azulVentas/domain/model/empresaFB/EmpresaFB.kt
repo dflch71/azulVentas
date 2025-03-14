@@ -1,11 +1,11 @@
-package com.azul.azulVentas.domain.model.empresa
+package com.azul.azulVentas.domain.model.empresaFB
 
 import com.google.firebase.database.PropertyName
 
-//Esta clase esta definida con los mismos campos que la
-// clase Empresa de Realtimi Database de Firebase
+// Esta clase esta definida con los mismos campos que la
+// clase Empresa de Realtime Database de Firebase
 
-data class Empresa(
+data class EmpresaFB(
     @PropertyName("nit") val nit: String,
     @PropertyName("nombre") val nombre: String,
     @PropertyName("direccion") val direccion: String,

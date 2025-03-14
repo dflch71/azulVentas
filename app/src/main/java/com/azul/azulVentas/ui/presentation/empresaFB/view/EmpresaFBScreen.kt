@@ -21,14 +21,15 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -41,8 +42,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -55,43 +54,58 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.azul.azulVentas.R
-import com.azul.azulVentas.domain.model.empresa.Empresa
+import com.azul.azulVentas.domain.model.empresaFB.EmpresaFB
 import com.azul.azulVentas.ui.components.ActionButton
 import com.azul.azulVentas.ui.components.DefaultBackArrow
 import com.azul.azulVentas.ui.components.ErrorSuggestion
 import com.azul.azulVentas.ui.components.ReadTextField
 import com.azul.azulVentas.ui.components.SearchTextField
 import com.azul.azulVentas.ui.presentation.empresaFB.viewmodel.EmpresaFBViewModel
+import com.azul.azulVentas.ui.presentation.empresaPG.viewmodel.EmpresaPGViewModel
+import com.azul.azulVentas.ui.presentation.login.viewmodel.AuthViewModel
 import com.azul.azulVentas.ui.theme.DarkTextColor
 import com.azul.azulVentas.ui.theme.PrimaryViolet
 import com.azul.azulVentas.ui.theme.PrimaryVioletDark
 import com.azul.azulVentas.ui.theme.PrimaryVioletLight
 import com.azul.azulVentas.ui.theme.PrimaryYellowDark
-import com.azul.azulVentas.ui.theme.PrimaryYellowLight
 
 @Composable
 fun EmpresaFBScreen(
     navController: NavController,
     viewModel: EmpresaFBViewModel,
-    loginScreenClicked: () -> Unit,
-    onRegistrationClicked: ( idEmpresa: String, nomEmpresa: String ) -> Unit
+    empresaPGViewModel: EmpresaPGViewModel,
+    authViewModel: AuthViewModel,
+    empresasScreenClicked: () -> Unit,
+    onRegistrationClicked: ( idEmpresa: String, nomEmpresa: String, idPG: String ) -> Unit
 ) {
-
-    //val empresas by viewModel.empresas.collectAsState()
-    //val empresaEncontrada by viewModel.empresaEncontrada.collectAsState()
-    //var nitBusqueda by remember { mutableStateOf("") }
 
     // Collect the state from the ViewModel
     val empresasState by viewModel.empresasState.collectAsStateWithLifecycle()
     val empresaEncontradaState by viewModel.empresaEncontradaState.collectAsStateWithLifecycle()
 
-
+    var email by remember { mutableStateOf(TextFieldValue(authViewModel.getUserEmail().toString(),)) }
     var nitEmpresa by remember { mutableStateOf(TextFieldValue("")) }
     val nitErrorState = remember { mutableStateOf(false) }
 
     val scrollState = rememberScrollState()
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp.dp
+
+    val empresaPG by empresaPGViewModel.empresaPG.observeAsState(initial = emptyList())
+    val isLoadingPG by empresaPGViewModel.isLoading.collectAsState()
+    val errorPG by empresaPGViewModel.error.collectAsState()
+
+    //Evaluar que encontro la empresa en PostGresql
+    var empresaPGEncontrada = remember { mutableStateOf<Boolean>(false) }
+
+    //Inicializar la busqueda de la empresa cada que inicie la pantalla
+    var initialLoad by remember { mutableStateOf(true) }
+    LaunchedEffect(key1 = true) {
+        if (initialLoad){
+            viewModel.buscarEmpresaPorNit("")
+            initialLoad = false
+        }
+    }
 
     Box(
         modifier = Modifier
@@ -118,7 +132,7 @@ fun EmpresaFBScreen(
 
             Row(
                 modifier = Modifier
-                    .padding(top = 32.dp, start = 32.dp, end = 32.dp, bottom = 12.dp)
+                    .padding(top = 30.dp, start = 32.dp, end = 32.dp)
                     .fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
@@ -145,6 +159,14 @@ fun EmpresaFBScreen(
             val focusManager = LocalFocusManager.current // Gestor de enfoque
             val focusRequester = remember { FocusRequester() }
 
+            Spacer(modifier = Modifier.height(12.dp))
+            ReadTextField(
+                modifier = Modifier.padding(horizontal = 24.dp),
+                leadingIconRes = R.drawable.ic_factory,
+                label = "Email Registrado",
+                textValue = email.text
+            )
+
             Spacer(modifier = Modifier.height(8.dp))
             SearchTextField(
                 modifier = Modifier
@@ -167,9 +189,9 @@ fun EmpresaFBScreen(
                 }
             )
 
-
             // Display the found company
             when (val state = empresaEncontradaState) {
+
                 EmpresaFBViewModel.EmpresaEncontradaState.Loading -> {
                     // Show a loading indicator
                     Box(
@@ -218,9 +240,8 @@ fun EmpresaFBScreen(
                                 modifier = Modifier.padding(horizontal = 8.dp),
                                 color = Color.White
                             )
-
-                            ErrorSuggestion("No encontrada.")
-                            ErrorSuggestion("No esta registrada en el sistema.")
+                            //Este error nos indica que la empresa no esta registrada en Firebase
+                            ErrorSuggestion("Verifique los datos ingresados y/o la EMPRESA ${nitEmpresa.text} no esta registrada en PLATAFORMA, debe comunicarce con AZUL SOLUCIONES", isDark = false)
                         }
                     }
 
@@ -228,8 +249,27 @@ fun EmpresaFBScreen(
 
                 is EmpresaFBViewModel.EmpresaEncontradaState.Success  -> {
                     state.empresa?.let { empresa ->
-                            EmpresaItem(empresa = empresa) {
-                                onRegistrationClicked(empresa.nit, empresa.nombre)
+
+                        EmpresaItem(empresa = empresa) {
+                            if (empresaPGEncontrada.value) {
+                                onRegistrationClicked(empresa.nit, empresa.nombre, empresaPG[0].EMPRESA_ID.toString())
+                            }
+                        }
+
+                        //Buscar Empresa PostGresql
+                        empresaPGViewModel.findEmpresaPG(empresa.nit)
+
+                        //Verificar si no hubo error en la busqueda
+                        //WS AZUL - PostGresql No esta operando
+                        if (!errorPG.isNullOrBlank()) {
+                            ErrorSuggestion(errorPG.toString(), isDark = false)
+                        }
+                        else {
+                            if (empresaPG.isEmpty()) {
+                                ErrorSuggestion("Debe registrar la EMPRESA en ambiente local (WS - AZUL WEB).", isDark = false)
+                            }
+                             //Empresa no existe en PostGresql
+                              else { empresaPGEncontrada.value = true }
                             }
                     }
 
@@ -237,7 +277,7 @@ fun EmpresaFBScreen(
 
                 is EmpresaFBViewModel.EmpresaEncontradaState.Error -> {
                     // Show an error message
-                    Text("Error: ${state.message}")
+                    Text("Error (WS-AZUL): ${state.message}")
                 }
             }
 
@@ -260,15 +300,13 @@ fun EmpresaFBScreen(
                 }
             }
 
-
-
             Spacer(modifier = Modifier.weight(weight = 1f))
             ActionButton(
                 text = "Cancelar",
                 isNavigationArrowVisible = false,
                 onClicked = {
                     viewModel.buscarEmpresaPorNit("")
-                    loginScreenClicked()
+                    empresasScreenClicked()
                 },
                 onLongClicked = {},
                 colors = ButtonDefaults.buttonColors(
@@ -276,7 +314,7 @@ fun EmpresaFBScreen(
                     contentColor = Color.White
                 ),
                 shadowColor = PrimaryYellowDark,
-                modifier = Modifier.padding(top = 4.dp, bottom = 16.dp, start = 24.dp, end = 24.dp)
+                modifier = Modifier.padding(top = 8.dp, bottom = 16.dp, start = 24.dp, end = 24.dp)
             )
 
 
@@ -315,7 +353,7 @@ fun EmpresaFBScreen(
 
 @Composable
 fun EmpresaItem(
-    empresa: Empresa,
+    empresa: EmpresaFB,
     registrationScreen: () -> Unit
 ) {
     ElevatedCard(
@@ -323,7 +361,7 @@ fun EmpresaItem(
         modifier = Modifier
             .clickable{ registrationScreen() }
             .fillMaxWidth()
-            .padding(24.dp),
+            .padding(top = 8.dp, bottom = 8.dp, start = 24.dp, end = 24.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
 
     ) {

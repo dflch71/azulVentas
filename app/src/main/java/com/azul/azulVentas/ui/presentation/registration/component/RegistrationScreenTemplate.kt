@@ -1,6 +1,9 @@
 package com.azul.azulVentas.ui.presentation.registration.component
 
 import android.util.Patterns
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.layout.Arrangement
@@ -25,7 +28,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -44,69 +46,86 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.azul.azulVentas.R
+import com.azul.azulVentas.core.utils.Result.Error
+import com.azul.azulVentas.core.utils.Result.ErrorPG
+import com.azul.azulVentas.core.utils.Result.Success
+import com.azul.azulVentas.domain.model.userPG.UserPG
 import com.azul.azulVentas.ui.components.ActionButton
 import com.azul.azulVentas.ui.components.CustomTextField
 import com.azul.azulVentas.ui.components.DefaultBackArrow
 import com.azul.azulVentas.ui.components.ErrorSuggestion
-import com.azul.azulVentas.ui.components.PasswordTextField
 import com.azul.azulVentas.ui.components.ReadTextField
-import com.azul.azulVentas.ui.presentation.registration.viewmodel.RegisterEmailViewModel
-import com.azul.azulVentas.ui.presentation.registration.viewmodel.RegisterViewModel
+import com.azul.azulVentas.ui.presentation.login.viewmodel.AuthViewModel
+import com.azul.azulVentas.ui.presentation.userPG.viewmodel.UserPGViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import com.azul.azulVentas.core.utils.Result
-import com.azul.azulVentas.domain.model.user.User
 
 
 @Composable
 fun RegistrationScreenTemplate(
-    registerViewModel: RegisterViewModel,
-    registerEmailViewModel: RegisterEmailViewModel,
+    authViewModel: AuthViewModel,
+    userPGViewModel: UserPGViewModel,
     navController: NavController,
     modifier: Modifier = Modifier,
     backgroundGradient: Array<Pair<Float, Color>>,
     secondaryActionButtonTitle: String,
     secondaryActionButtonColors: ButtonColors,
     actionButtonShadow: Color,
-    loginScreenCliked: () -> Unit,
+    empresaScreenClicked: () -> Unit,
     idEmpresaFB: String = "",
-    nomEmpresaFB: String = ""
+    nomEmpresaFB: String = "",
+    idPG: String = ""
 ) {
-
-    val estadoRegistro by registerViewModel.estadoRegistro.observeAsState()
 
     val scrollState = rememberScrollState()
     val coroutineScope = rememberCoroutineScope()
     val keyboardHeight = WindowInsets.ime.getBottom(LocalDensity.current)
 
-    //Guardar el ID registrado de la empresa en BD PG
-    var idEmpresa by remember { mutableStateOf(-1) }
-    var UID by remember { mutableStateOf("") }
-
     var nitEmpresa by remember { mutableStateOf(TextFieldValue(idEmpresaFB)) }
     var nomEmpresa by remember { mutableStateOf(TextFieldValue(nomEmpresaFB)) }
+    var email by remember { mutableStateOf(TextFieldValue(authViewModel.getUserEmail().toString())) }
+    var password by remember { mutableStateOf(TextFieldValue(authViewModel.getUserUid().toString())) }
+
     var usuNombre by remember { mutableStateOf(TextFieldValue("")) }
     var usuApellido by remember { mutableStateOf(TextFieldValue("")) }
     var usuTelefono by remember { mutableStateOf(TextFieldValue("")) }
-    var email by remember { mutableStateOf(TextFieldValue("")) }
-    var password by remember { mutableStateOf(TextFieldValue("")) }
 
-    val idEmpresaError = remember { mutableStateOf(false) }
-    val nomEmpresaError = remember { mutableStateOf(false) }
     val usuNombreError = remember { mutableStateOf(false) }
     val usuApellidoError = remember { mutableStateOf(false) }
     val usuTelefonoError = remember { mutableStateOf(false) }
-    val emailError = remember { mutableStateOf(false) }
-    val passwordError = remember { mutableStateOf(false) }
 
-    var errorMessage by remember { mutableStateOf<String?>(null) }
 
-    val registerState by registerEmailViewModel.registerState.collectAsState()
+    var msgError by remember { mutableStateOf("") }
+    var showSuccessMessage by remember { mutableStateOf(false) }
+    var showErrorMessage by remember { mutableStateOf(false) }
+
 
     LaunchedEffect(keyboardHeight) {
         coroutineScope.launch {
             scrollState.scrollBy(keyboardHeight.toFloat())
         }
+    }
+
+    val insertUserState by userPGViewModel.insertUserState.collectAsState()
+    when (insertUserState) {
+        is Success -> {
+            val user = (insertUserState as Success<UserPG>).data
+            if (user.EMPRESA_ID != -1) {
+                // Handle the successful insertion
+                // Show success message or navigate
+                showSuccessMessage = true
+            }
+        }
+
+        is ErrorPG -> {
+            val errorState = insertUserState as ErrorPG // Correct type cast
+            val error = errorState.throwable.message ?: "Unknown error"
+            // Handle the error
+            showErrorMessage = true
+            msgError = error
+        }
+
+        is Error -> {}
     }
 
     Column(
@@ -146,7 +165,7 @@ fun RegistrationScreenTemplate(
         ReadTextField(
             modifier = Modifier.padding(horizontal = 24.dp),
             leadingIconRes = R.drawable.ic_identification,
-            label = "Nít - ID",
+            label = "Nít - ID (${idPG})",
             textValue = nitEmpresa.text
         )
 
@@ -156,6 +175,14 @@ fun RegistrationScreenTemplate(
             leadingIconRes = R.drawable.ic_factory,
             label = "Nombre Empresa",
             textValue = nomEmpresa.text
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+        ReadTextField(
+            modifier = Modifier.padding(horizontal = 24.dp),
+            leadingIconRes = R.drawable.ic_factory,
+            label = "Email Registrado",
+            textValue = email.text
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -200,92 +227,29 @@ fun RegistrationScreenTemplate(
             lengthChar = 10
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
-        CustomTextField(
-            modifier = Modifier.padding(horizontal = 24.dp),
-            placeholder = "example@email.com",
-            leadingIconRes = R.drawable.ic_email,
-            label = "Email",
-            errorState = emailError,
-            keyboardType = KeyboardType.Email,
-            visualTransformation = VisualTransformation.None,
-            imeAction = ImeAction.Next,
-            onChanged = { newEmail -> email = newEmail },
-            lengthChar = 100
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-        PasswordTextField(
-            modifier = Modifier.padding(horizontal = 24.dp),
-            placeholder = "Contraseña",
-            leadingIconRes = R.drawable.ic_key,
-            visibleIconRes = R.drawable.ic_visibility,
-            visibleOffIconRes = R.drawable.ic_visibility_off,
-            label = "Contraseña",
-            errorState = passwordError,
-            keyboardType = KeyboardType.Password,
-            imeAction = ImeAction.Done,
-            onChanged = { newPassword -> password = newPassword },
-            lengthChar = 20
-        )
-
         Spacer(modifier = Modifier.height(10.dp))
-        if (emailError.value) {
-            ErrorSuggestion("EMAIL inválido (example@email.com).")
-        }
         if (usuTelefonoError.value) {
-            Row() { ErrorSuggestion("TELÉFONO inválido (10 dígitos).") }
+            ErrorSuggestion("TELÉFONO inválido (10 dígitos).", isDark = false)
         }
-        if (passwordError.value) {
-            Row() { ErrorSuggestion("CONTRASEÑA inválida >= 6 Caracteres ") }
-        }
-        if (idEmpresaError.value || nomEmpresaError.value || usuNombreError.value || usuApellidoError.value) {
+        if (usuNombreError.value || usuApellidoError.value) {
             Row() {
-                ErrorSuggestion("Valor requerido o incompleto.")
+                ErrorSuggestion("Valor requerido o incompleto.", isDark = false)
             }
         }
 
-        estadoRegistro?.let { result ->
-            when {
-                result.isSuccess -> {
-                    Row() { ErrorSuggestion("USUARIO registrada exitosamente", isError = false) }
-                    Row() { ErrorSuggestion("Actualizando Datos ...", isError = false) }
-
-                    //Mostrar mensaje de actualización por 4 segundos
-                    coroutineScope.launch {
-                        delay(4000L)
-                        registerViewModel.limpiarEstadoRegistro()
-                        loginScreenCliked()
-                    }
-
-                }
-                result.isFailure -> {
-                    Row() { ErrorSuggestion("Error: ${result.exceptionOrNull()?.message} ${nitEmpresa.text}") }
-                }
-                else -> {}
-            }
+        if (showSuccessMessage) {
+            MsgInsert(
+                userPGViewModel,
+                empresaScreenClicked
+            )
         }
-
-        when (registerState) {
-            is Result.Success -> {
-                RegistrarEmpresa(nitEmpresa, registerState, registerEmailViewModel, loginScreenCliked)
-                //Text("Registro exitoso: ${(registerState as Result.Success<User>).data.email}")
-            }
-            is Result.Error -> {
-                if ((registerState as Result.Error).message.contains("0K")) {
-                    // Si el mensaje contiene OK, se registra el usuario
-                    // Esto porque en PG puede existir un correo duplicado
-                    // pero a diferentes empresas
-                    RegistrarEmpresa(nitEmpresa, registerState, registerEmailViewModel, loginScreenCliked)
-                } else {
-                    Row() { ErrorSuggestion("Error: ${(registerState as Result.Error).message} ${email.text}") }
-                    //Text("Error: ${(registerState as Result.Error).message}", color = Color.Red)
-                }
-            }
-            null -> {}
-
+        if (showErrorMessage) {
+            MsgError(
+                msgError,
+                userPGViewModel,
+                empresaScreenClicked
+            )
         }
-
 
         Spacer(modifier = Modifier.height(10.dp))
         ActionButton(
@@ -293,38 +257,30 @@ fun RegistrationScreenTemplate(
             isNavigationArrowVisible = false,
             onClicked = {
 
-                val isNitValid = nitEmpresa.text.isNotEmpty() && nitEmpresa.text.length > 5
-                val isNomEmpresa = nomEmpresa.text.isNotEmpty() && nomEmpresa.text.length > 3
-                val isUsuNombre =  usuNombre.text.isNotEmpty() && usuNombre.text.length > 3
-                val isUsuApellido =  usuApellido.text.isNotEmpty() && usuApellido.text.length > 3
+                val isUsuNombre = usuNombre.text.isNotEmpty() && usuNombre.text.length > 3
+                val isUsuApellido = usuApellido.text.isNotEmpty() && usuApellido.text.length > 3
                 val patternTelefono = Patterns.PHONE  //Regex("[0-9]{10}")
-                val isTelefonoValid =  patternTelefono.matcher(usuTelefono.text).matches() && usuTelefono.text.isNotEmpty() && usuTelefono.text.length == 10
-                val patternEmail = Patterns.EMAIL_ADDRESS
-                val isEmailValid = patternEmail.matcher(email.text).matches() && email.text.isNotEmpty()
-                val isPasswordValid = password.text.isNotEmpty() && password.text.length > 5
+                val isTelefonoValid = patternTelefono.matcher(usuTelefono.text)
+                    .matches() && usuTelefono.text.isNotEmpty() && usuTelefono.text.length == 10
 
-                idEmpresaError.value = !isNitValid
-                nomEmpresaError.value = !isNomEmpresa
                 usuNombreError.value = !isUsuNombre
                 usuApellidoError.value = !isUsuApellido
                 usuTelefonoError.value = !isTelefonoValid
-                emailError.value = !isEmailValid
-                passwordError.value = !isPasswordValid
 
-                val isRequiredFields =  isNitValid && isNomEmpresa && isUsuNombre && isUsuApellido && isPasswordValid
-                if ( isEmailValid && isTelefonoValid && isRequiredFields ) {
-                    /*registerViewModel.registraUsuario(email.text, password.text) { user ->
-                        if (user != null) {
-                            UID = user.uid;
-                            //Login exitoso, llama a onLoginSuccess
-                            //onLoginSuccess()
-                            //TODO: BD - PG
-                        } else {
-                            errorMessage = "Register Failed. Try Again."
-                        }
-                    }*/
 
-                    registerEmailViewModel.registerEmail( email.text, password.text)
+                val isRequiredFields = isUsuNombre && isUsuApellido
+                if (isTelefonoValid && isRequiredFields) {
+                    val userPG = UserPG(
+                        //USUARIO_ID = 0,
+                        EMPRESA_ID = idPG.toInt(),
+                        USU_NOMBRE = usuNombre.text.uppercase(),
+                        USU_APELLIDO = usuApellido.text.uppercase(),
+                        USU_TELEFONO = usuTelefono.text,
+                        USU_EMAIL = email.text,
+                        USU_PASS = password.text,
+                        USU_USUARIO = password.text,
+                    )
+                    userPGViewModel.insertUserPG(userPG)
                 }
             },
             onLongClicked = {},
@@ -338,20 +294,71 @@ fun RegistrationScreenTemplate(
 }
 
 @Composable
-private fun RegistrarEmpresa(
-    nitEmpresa: TextFieldValue,
-    registerState: Result<User>?,
-    registerEmailViewModel: RegisterEmailViewModel,
-    loginScreenCliked: () -> Unit
+fun MsgInsert(
+    userPGViewModel: UserPGViewModel,
+    empresaScreenClicked: () -> Unit
 ) {
-    Row() { ErrorSuggestion("Registro exitoso: ${nitEmpresa.text}", isError = false) }
-    Row() { ErrorSuggestion("Actualizando Datos ...", isError = false) }
+    var showSuccessMessage by remember { mutableStateOf(true) }
+    var showUpdatingMessage by remember { mutableStateOf(false) }
 
-    //Mostrar mensaje de actualización por 4 segundos
-    LaunchedEffect(registerState) {
-        delay(4000L)
-        registerEmailViewModel.limpiarEstadoRegistro()
-        loginScreenCliked()
+    Box(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            AnimatedVisibility(
+                visible = showSuccessMessage,
+                enter = fadeIn(),
+                exit = fadeOut()
+            ) {
+                Row { ErrorSuggestion("Registro exitoso", isError = false, isDark = false) }
+                Row { ErrorSuggestion("Actualizando Datos ...", isError = false, isDark = false) }
+            }
+
+            AnimatedVisibility(
+                visible = showUpdatingMessage,
+                enter = fadeIn(),
+                exit = fadeOut()
+            ) {}
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        delay(4000) // Delay of 2 seconds
+        showSuccessMessage = false
+        showUpdatingMessage = true
+        delay(2000)
+        showUpdatingMessage = false
+        //Reset the state
+        userPGViewModel.clearInsertResult()
+        empresaScreenClicked()
     }
 }
+
+@Composable
+fun MsgError(
+    msg: String,
+    userPGViewModel: UserPGViewModel,
+    empresaScreenClicked: () -> Unit
+){
+    Box(
+        modifier = Modifier.fillMaxSize()
+    ) {
+
+        if (msg.contains("End of input at")) {
+            MsgInsert(
+                userPGViewModel,
+                empresaScreenClicked
+            )
+        }
+        else {
+            Row() { ErrorSuggestion("Error PG: $msg", isDark = false) }
+        }
+    }
+}
+
+
+
+
+
 

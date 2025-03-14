@@ -48,6 +48,7 @@ class AuthViewModel @Inject constructor(
                         when (result) {
                             is Result.Success -> loginState = LoginState.Success(result.data)
                             is Result.Error -> loginState = LoginState.Error(result.message)
+                            is Result.ErrorPG -> loginState = LoginState.Error(result.throwable.message.toString())
                         }
                         return@withTimeout
                     }

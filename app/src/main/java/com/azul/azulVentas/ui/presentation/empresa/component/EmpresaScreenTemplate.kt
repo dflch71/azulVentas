@@ -2,8 +2,6 @@ package com.azul.azulVentas.ui.presentation.empresa.component
 
 import android.icu.lang.UCharacter.toUpperCase
 import android.util.Patterns
-import androidx.annotation.DrawableRes
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.layout.Arrangement
@@ -18,21 +16,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -44,7 +35,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -55,9 +45,9 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.azul.azulVentas.R
 import com.azul.azulVentas.ui.components.ActionButton
+import com.azul.azulVentas.ui.components.CustomTextField
 import com.azul.azulVentas.ui.components.DefaultBackArrow
 import com.azul.azulVentas.ui.components.ErrorSuggestion
-import com.azul.azulVentas.ui.components.CustomTextField
 import com.azul.azulVentas.ui.presentation.empresa.viewmodel.EmpresaViewModel
 import com.azul.azulVentas.ui.theme.DarkTextColor
 import com.azul.azulVentas.ui.theme.PrimaryYellowDark
@@ -252,10 +242,10 @@ fun EmpresaScreenTemplate(
 
         Spacer(modifier = Modifier.height(10.dp))
         if (emailErrorState.value) {
-            ErrorSuggestion("EMAIL válido (example@email.com).")
+            ErrorSuggestion("EMAIL inválido (example@email.com).")
         }
         if (phoneErrorState.value) {
-            Row() { ErrorSuggestion("TELÉFONO válido (10 dígitos).") }
+            Row() { ErrorSuggestion("TELÉFONO inválido (10 dígitos).") }
         }
         if (nitErrorState.value || nameErrorState.value || adressErrorState.value || cityErrorState.value ||
             departamentErrorState.value || personErrorState.value) {

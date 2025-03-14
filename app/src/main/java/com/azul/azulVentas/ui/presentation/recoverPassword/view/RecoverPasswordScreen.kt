@@ -106,6 +106,7 @@ fun RecoverPasswordScreen(
                     text = "@Email",
                     fontSize = 26.sp,
                     fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.inverseOnSurface
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(

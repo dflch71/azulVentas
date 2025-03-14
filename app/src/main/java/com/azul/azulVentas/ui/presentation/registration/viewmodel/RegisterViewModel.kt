@@ -14,6 +14,7 @@ class RegisterViewModel@Inject constructor(
     private val registerUseCase: RegisterUseCase
 ) : ViewModel() {
 
+    /*
     private val _estadoRegistro = MutableLiveData<Result<Boolean>?>()
     val estadoRegistro: MutableLiveData<Result<Boolean>?> = _estadoRegistro
 
@@ -25,8 +26,6 @@ class RegisterViewModel@Inject constructor(
         }
     }
 
-    fun limpiarEstadoRegistro() {
-        _estadoRegistro.postValue(null)
-    }
-
+    fun limpiarEstadoRegistro() { _estadoRegistro.postValue(null) }
+    */
 }

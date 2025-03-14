@@ -1,10 +1,9 @@
 package com.azul.azulVentas.ui.presentation.empresa.viewmodel
 
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.azul.azulVentas.domain.model.empresa.Empresa
+import com.azul.azulVentas.domain.model.empresaFB.EmpresaFB
 import com.azul.azulVentas.domain.usecases.empresa.AddEmpresaUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -30,7 +29,7 @@ class EmpresaViewModel @Inject constructor(
         telefono: String
     ){
         viewModelScope.launch {
-            val empresa = Empresa(nitEmpresa, nomEmpresa, direccion, ciudad, departamento, picEmpresa, email, repLegal, telefono)
+            val empresa = EmpresaFB(nitEmpresa, nomEmpresa, direccion, ciudad, departamento, picEmpresa, email, repLegal, telefono)
             _estadoRegistro.value = addEmpresaUseCase(empresa)
         }
     }

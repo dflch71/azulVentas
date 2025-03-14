@@ -1,10 +1,8 @@
 package com.azul.azulVentas.data.repository.empresa
 
-import com.azul.azulVentas.domain.model.empresa.Empresa
+import com.azul.azulVentas.domain.model.empresaFB.EmpresaFB
 import com.google.firebase.database.FirebaseDatabase
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class EmpresaRepositoryImp @Inject constructor(
@@ -13,7 +11,7 @@ class EmpresaRepositoryImp @Inject constructor(
 
     private val empresaRef = FirebaseRealtimeDB.getReference("Empresas")
 
-    override suspend fun insertarEmpresa(empresa: Empresa): Result<Boolean> {
+    override suspend fun insertarEmpresa(empresa: EmpresaFB): Result<Boolean> {
         return  try {
             empresaRef.child(empresa.nit).setValue(empresa).await()
             Result.success(true)

@@ -1,11 +1,10 @@
-package com.azul.azulVentas.ui.presentation.registration.viewmodel
+package com.azul.azulVentas.ui.presentation.registrationEmail.viewmodel
 
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.azul.azulVentas.core.utils.Result
 import com.azul.azulVentas.domain.model.user.User
 import com.azul.azulVentas.domain.usecases.user.RegisterEmailUseCase
-import com.azul.azulVentas.core.utils.Result
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -27,8 +26,5 @@ class RegisterEmailViewModel@Inject constructor(
         }
     }
 
-    fun limpiarEstadoRegistro() {
-        _registerState.value = null
-    }
-
+    fun limpiarEstadoRegistro() { _registerState.value = null }
 }

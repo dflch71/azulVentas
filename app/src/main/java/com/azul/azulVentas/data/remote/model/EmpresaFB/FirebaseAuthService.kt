@@ -1,6 +1,5 @@
-package com.azul.azulVentas.data.remote
+package com.azul.azulVentas.data.remote.model.EmpresaFB
 
-import androidx.compose.ui.text.capitalize
 import com.azul.azulVentas.core.utils.Result
 import com.azul.azulVentas.data.local.sharePreferences.SessionManager
 import com.azul.azulVentas.domain.model.user.User
@@ -14,7 +13,6 @@ import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import java.util.Locale
 import javax.inject.Inject
 
 class FirebaseAuthService @Inject constructor(
@@ -96,7 +94,7 @@ class FirebaseAuthService @Inject constructor(
         } catch (e: FirebaseAuthInvalidCredentialsException) {
             Result.Error("Credenciales inválidas")
         } catch (e: FirebaseAuthUserCollisionException) {
-            Result.Error("El correo ya está registrado - 0K")
+            Result.Error("este correo ya está registrado")
         } catch (e: Exception) {
             Result.Error(e.localizedMessage ?: "Error desconocido -> ${e.message}")
         }

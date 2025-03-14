@@ -1,13 +1,13 @@
 package com.azul.azulVentas.domain.usecases.empresa
 
 import com.azul.azulVentas.data.repository.empresa.EmpresaRepository
-import com.azul.azulVentas.domain.model.empresa.Empresa
+import com.azul.azulVentas.domain.model.empresaFB.EmpresaFB
 import javax.inject.Inject
 
 class AddEmpresaUseCase @Inject constructor(
     private val empresaRepository: EmpresaRepository
 ){
-    suspend operator fun invoke(empresa: Empresa): Result<Boolean> {
+    suspend operator fun invoke(empresa: EmpresaFB): Result<Boolean> {
         return try {
             val existsResult = empresaRepository.verificarEmpresa(empresa.nit)
             if (existsResult.isSuccess) {

@@ -85,6 +85,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.androidx.media3.common.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -107,6 +108,18 @@ dependencies {
 
     //Konfetti
     implementation(libs.konfetti)
+
+    // Gson
+    implementation(libs.gson)
+
+    // Coroutines
+    implementation(libs.kotlinx.coroutines.android)
+
+    // Retrofit for networking
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
+    implementation(libs.okhttp)
+    implementation(libs.logging.interceptor)
 
 }
 

@@ -5,26 +5,30 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavController
+import com.azul.azulVentas.data.repository.auth.AuthRepository
+import com.azul.azulVentas.ui.presentation.login.viewmodel.AuthViewModel
 import com.azul.azulVentas.ui.presentation.registration.component.RegistrationScreenTemplate
-import com.azul.azulVentas.ui.presentation.registration.viewmodel.RegisterEmailViewModel
+import com.azul.azulVentas.ui.presentation.registrationEmail.viewmodel.RegisterEmailViewModel
 import com.azul.azulVentas.ui.presentation.registration.viewmodel.RegisterViewModel
+import com.azul.azulVentas.ui.presentation.userPG.viewmodel.UserPGViewModel
 import com.azul.azulVentas.ui.theme.PrimaryViolet
 import com.azul.azulVentas.ui.theme.PrimaryVioletDark
 import com.azul.azulVentas.ui.theme.PrimaryVioletLight
 
 @Composable
 fun RegistrationScreen(
-    registerViewModel: RegisterViewModel,
-    registerEmailViewModel: RegisterEmailViewModel,
+    authViewModel: AuthViewModel,
+    userPGViewModel: UserPGViewModel,
     navController: NavController,
     modifier: Modifier = Modifier,
-    onLoginClicked: () -> Unit,
+    onEmpresasClicked: () -> Unit,
     idEmpresa: String = "",
-    nomEmpresa: String = ""
+    nomEmpresa: String = "",
+    idPG: String = ""
 ){
     RegistrationScreenTemplate(
-        registerViewModel = registerViewModel,
-        registerEmailViewModel = registerEmailViewModel,
+        authViewModel = authViewModel,
+        userPGViewModel = userPGViewModel,
         navController = navController,
         modifier = modifier,
         backgroundGradient = arrayOf(
@@ -37,8 +41,9 @@ fun RegistrationScreen(
             contentColor = Color.White
         ),
         actionButtonShadow = PrimaryVioletDark,
-        loginScreenCliked = onLoginClicked,
+        empresaScreenClicked = onEmpresasClicked,
         idEmpresaFB = idEmpresa,
-        nomEmpresaFB = nomEmpresa
+        nomEmpresaFB = nomEmpresa,
+        idPG = idPG
     )
 }

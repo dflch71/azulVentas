@@ -26,7 +26,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -383,7 +382,7 @@ fun PasswordTextField(
 }
 
 @Composable
-fun ErrorSuggestion(message: String, isError: Boolean = true) {
+fun ErrorSuggestion(message: String, isError: Boolean = true, isDark: Boolean = true) {
     Row(
         modifier = Modifier
             .padding(horizontal = 24.dp)
@@ -391,7 +390,14 @@ fun ErrorSuggestion(message: String, isError: Boolean = true) {
         horizontalArrangement = Arrangement.spacedBy(space = 10.dp,),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Image(painter = painterResource(id = if (isError) R.drawable.ic_error else R.drawable.ic_success), contentDescription = "Error Icon")
-        Text(text = message, color = MaterialTheme.colorScheme.inverseOnSurface, fontSize = 14.sp)
+        Image(
+            painter = painterResource(id = if (isError) R.drawable.ic_error else R.drawable.ic_success),
+            contentDescription = "Error Icon"
+        )
+        Text(
+            text = message,
+            color = if (isDark) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.inverseOnSurface,
+            fontSize = 14.sp
+        )
     }
 }

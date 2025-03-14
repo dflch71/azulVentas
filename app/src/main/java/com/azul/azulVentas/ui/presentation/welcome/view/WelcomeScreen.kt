@@ -236,6 +236,7 @@ private fun WelcomeContent(
         }
 
         Spacer(modifier = Modifier.weight(weight = 1f))
+
         ActionButton(
             text = "Next",
             isNavigationArrowVisible = true,

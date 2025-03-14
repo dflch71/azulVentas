@@ -2,7 +2,7 @@ package com.azul.azulVentas.ui.presentation.empresaFB.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.azul.azulVentas.domain.model.empresa.Empresa
+import com.azul.azulVentas.domain.model.empresaFB.EmpresaFB
 import com.azul.azulVentas.domain.usecases.empresaFB.BuscarEmpresaFBPorNitUseCase
 import com.azul.azulVentas.domain.usecases.empresaFB.ObtenerEmpresasFBUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,13 +20,13 @@ class EmpresaFBViewModel @Inject constructor(
     // Sealed class for state management
     sealed class EmpresaState {
         object Loading : EmpresaState()
-        data class Success(val empresas: List<Empresa>) : EmpresaState()
+        data class Success(val empresas: List<EmpresaFB>) : EmpresaState()
         data class Error(val message: String) : EmpresaState()
     }
 
     sealed class EmpresaEncontradaState {
         object Loading : EmpresaEncontradaState()
-        data class Success(val empresa: Empresa?) : EmpresaEncontradaState()
+        data class Success(val empresa: EmpresaFB?) : EmpresaEncontradaState()
         data class Error(val message: String) : EmpresaEncontradaState()
         data class Empty(val message: String) : EmpresaEncontradaState()
     }
