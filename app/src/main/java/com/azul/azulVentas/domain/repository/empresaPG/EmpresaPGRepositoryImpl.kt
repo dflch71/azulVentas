@@ -22,4 +22,15 @@ class EmpresaPGRepositoryImpl @Inject constructor(
             }
         }
     }
+
+    override suspend fun getEmpresaPGEmail(Email: String): List<EmpresaPG> {
+        return withContext(Dispatchers.IO) {
+            val response = apiService.getEmpresasPGEmail(Email)
+            if (response.isSuccessful) {
+                response.body()?.map { it.toDomain() } ?: emptyList()
+            } else {
+                emptyList()
+            }
+        }
+    }
 }

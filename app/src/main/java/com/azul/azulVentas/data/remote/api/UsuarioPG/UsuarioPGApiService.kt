@@ -14,6 +14,16 @@ interface UsuarioPGApiService {
     @GET(GET_PATH_USUARIO)
     suspend fun getUsuarioPGEmail(@Path("usu_email") usu_email: String): Response<List<UserPGResponse>>
 
+    //@PUT(PUT_PATH_USUARIO)
+    //suspend fun insertUserPG(@Body userPG: UserPGResponse): Response<UserPGResponse>
+    //Cuando la respuesta del insert en el web servicie tiene body por ejemplo
+    //{
+    //    "success": true,
+    //    "message": "Usuario insertado correctamente"
+    //}
+
+
     @PUT(PUT_PATH_USUARIO)
-    suspend fun insertUserPG(@Body userPG: UserPGResponse): Response<UserPGResponse>
+    suspend fun insertUserPG(@Body userPG: UserPGResponse): Response<Unit>
+    //Cuando la respuesta del insert en el web servicie no tiene body
 }

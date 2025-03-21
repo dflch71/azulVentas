@@ -243,13 +243,7 @@ fun RegistrationScreenTemplate(
                 empresaScreenClicked
             )
         }
-        if (showErrorMessage) {
-            MsgError(
-                msgError,
-                userPGViewModel,
-                empresaScreenClicked
-            )
-        }
+        if (showErrorMessage) { MsgError(msgError) }
 
         Spacer(modifier = Modifier.height(10.dp))
         ActionButton(
@@ -311,8 +305,16 @@ fun MsgInsert(
                 enter = fadeIn(),
                 exit = fadeOut()
             ) {
-                Row { ErrorSuggestion("Registro exitoso", isError = false, isDark = false) }
-                Row { ErrorSuggestion("Actualizando Datos ...", isError = false, isDark = false) }
+                Column {
+                    Row { ErrorSuggestion("Registro exitoso", isError = false, isDark = false) }
+                    Row {
+                        ErrorSuggestion(
+                            "Actualizando Datos ...",
+                            isError = false,
+                            isDark = false
+                        )
+                    }
+                }
             }
 
             AnimatedVisibility(
@@ -335,7 +337,7 @@ fun MsgInsert(
     }
 }
 
-@Composable
+/*@Composable
 fun MsgError(
     msg: String,
     userPGViewModel: UserPGViewModel,
@@ -355,6 +357,13 @@ fun MsgError(
             Row() { ErrorSuggestion("Error PG: $msg", isDark = false) }
         }
     }
+}*/
+
+@Composable
+fun MsgError(msg: String, ){
+    Box(
+        modifier = Modifier.fillMaxSize()
+    ) { Row() { ErrorSuggestion("Error PG: $msg", isDark = false) } }
 }
 
 

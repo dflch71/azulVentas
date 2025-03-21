@@ -13,6 +13,7 @@ import com.azul.azulVentas.ui.presentation.container.ScreenContainer
 import com.azul.azulVentas.ui.presentation.empresa.viewmodel.EmpresaViewModel
 import com.azul.azulVentas.ui.presentation.empresaFB.viewmodel.EmpresaFBViewModel
 import com.azul.azulVentas.ui.presentation.empresaPG.viewmodel.EmpresaPGViewModel
+import com.azul.azulVentas.ui.presentation.empresas.viewmodel.EmpresasPGViewModel
 import com.azul.azulVentas.ui.presentation.login.viewmodel.AuthViewModel
 import com.azul.azulVentas.ui.presentation.network.viewmodel.NetworkViewModel
 import com.azul.azulVentas.ui.presentation.recoverPassword.viewmodel.RecoverPasswordViewModel
@@ -40,6 +41,7 @@ class MainActivity : ComponentActivity() {
     private val empresaViewModel: EmpresaViewModel by viewModels()
     private val empresaFBViewModel: EmpresaFBViewModel by viewModels()
     private val empresaPGViewModel: EmpresaPGViewModel by viewModels()
+    private val empresasPGViewModel: EmpresasPGViewModel by viewModels()
     private val userPGViewModel: UserPGViewModel by viewModels()
     private val recoverPasswordViewModel: RecoverPasswordViewModel by viewModels()
     private val registerEmailViewModel: RegisterEmailViewModel by viewModels()
@@ -64,6 +66,7 @@ class MainActivity : ComponentActivity() {
                     empresaViewModel,
                     empresaFBViewModel,
                     empresaPGViewModel,
+                    empresasPGViewModel,
                     userPGViewModel,
                     recoverPasswordViewModel,
                     registerEmailViewModel

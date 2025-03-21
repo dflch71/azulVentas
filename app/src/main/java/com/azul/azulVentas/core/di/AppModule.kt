@@ -231,6 +231,7 @@ object AppModule {
         return EmpresaPGRepositoryImpl(apiService)
     }
 
+
     //Proveer Insertar UsuarioPG  Repository - UseCase
     @Provides
     @Singleton

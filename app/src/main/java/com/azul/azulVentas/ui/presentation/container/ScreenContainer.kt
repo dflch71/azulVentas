@@ -13,6 +13,7 @@ import com.azul.azulVentas.ui.presentation.empresaFB.view.EmpresaFBScreen
 import com.azul.azulVentas.ui.presentation.empresaFB.viewmodel.EmpresaFBViewModel
 import com.azul.azulVentas.ui.presentation.empresaPG.viewmodel.EmpresaPGViewModel
 import com.azul.azulVentas.ui.presentation.empresas.view.EmpresasScreen
+import com.azul.azulVentas.ui.presentation.empresas.viewmodel.EmpresasPGViewModel
 import com.azul.azulVentas.ui.presentation.home.HomeScreen
 import com.azul.azulVentas.ui.presentation.login.view.LoginScreen
 import com.azul.azulVentas.ui.presentation.login.viewmodel.AuthViewModel
@@ -37,6 +38,7 @@ fun ScreenContainer(
     empresaViewModel: EmpresaViewModel,
     empresaFBViewModel: EmpresaFBViewModel,
     empresaPGViewModel: EmpresaPGViewModel,
+    empresasPGViewModel: EmpresasPGViewModel,
     userPGViewModel: UserPGViewModel,
     recoverPasswordViewModel: RecoverPasswordViewModel,
     registerEmailViewModel: RegisterEmailViewModel
@@ -128,7 +130,9 @@ fun ScreenContainer(
 
         composable(NavGraph.Empresas.route) {
             EmpresasScreen(
+                navController = navHost,
                 authViewModel = authViewModel,
+                empresasPGViewModel = empresasPGViewModel,
                 HomeScreenClicked = { navHost.navigate(NavGraph.Home.route) },
                 RegisterScreenClicked = { navHost.navigate(NavGraph.EmpresaFB.route) }
             )

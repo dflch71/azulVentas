@@ -16,6 +16,15 @@ object Constants {
     const val GET_PATH_USUARIO = "Usuario/{usu_email}"
     const val PUT_PATH_USUARIO = "Usuario/"
 
+    //USUARIO-EMPRESA
+    //http://localhost:9060/datasnap/rest/TServerMethods/validarUsuarioEmail/ID_EMPRESA/EMAIL
+    const val GET_PATH_VALIDAR_USUARIO_EMAIL = "validarUsuarioEmail/{idEmpresa}/{Email}"
+
+    //EMPRESA-EMAIL
+    //http://localhost:9060/datasnap/rest/TServerMethods/validarEmpresasEmail/EMAIL
+    const val GET_PATH_VALIDAR_EMPRESAS_EMAIL = "validarEmpresaSEmail/{Email}"
+
+
     //VENTA
     //http://localhost:9060/datasnap/rest/TServerMethods/VentaxHora/901253102
     const val GET_PATH_VENTA_DIA = "VentaxHora/"

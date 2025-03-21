@@ -28,10 +28,14 @@ class UserPGRepositoryImpl @Inject constructor(
         }
     }
 
+    /*
+    Este caso del insert aplica cuando la respuesta del WS tiene body, esto se debe modificar en Delphi
     override suspend fun insertUserPG(userPG: UserPG): Result<UserPG> {
         return withContext(Dispatchers.IO) {
             try {
                 val response: Response<UserPGResponse> = apiService.insertUserPG(userPG.toResponse())
+
+
                 if (response.isSuccessful) {
                     val insertedUser = response.body()?.toDomain()
                     if (insertedUser != null) {
@@ -39,6 +43,33 @@ class UserPGRepositoryImpl @Inject constructor(
                     } else {
                         Result.ErrorPG(Throwable("Failed to parse the response"))
                     }
+                } else {
+                    val errorBody = response.errorBody()?.string()
+                    val errorMessage = if (!errorBody.isNullOrEmpty()) {
+                        val errorResponse: ErrorResponse? = try {
+                            Gson().fromJson(errorBody, ErrorResponse::class.java)
+                        } catch (e: Exception) { null }
+                        errorResponse?.error ?: "Unknown error"
+                    } else { "Unknown error" }
+
+                    Log.e("insertUserPG", "Error inserting user: $errorMessage")
+                    Result.ErrorPG(Throwable(errorMessage))
+                }
+            } catch (e: Exception) {
+                Log.e("insertUserPG", "Error inserting user", e.cause)
+                Result.ErrorPG(e)
+            }
+        }
+    }
+    */
+
+    override suspend fun insertUserPG(userPG: UserPG): Result<UserPG> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val response: Response<Unit> = apiService.insertUserPG(userPG.toResponse())
+                if (response.isSuccessful) {
+                    Log.d("insertUserPG", "Insert successful with status code: ${response.code()}")
+                    Result.Success(userPG)
                 } else {
                     val errorBody = response.errorBody()?.string()
                     val errorMessage = if (!errorBody.isNullOrEmpty()) {

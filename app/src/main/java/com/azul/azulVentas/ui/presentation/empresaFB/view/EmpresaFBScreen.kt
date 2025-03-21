@@ -266,7 +266,7 @@ fun EmpresaFBScreen(
                         }
                         else {
                             if (empresaPG.isEmpty()) {
-                                ErrorSuggestion("Debe registrar la EMPRESA en ambiente local (WS - AZUL WEB).", isDark = false)
+                                ErrorSuggestion("Debe registrar la EMPRESA en ambiente local (WS - AZUL WEB) y/o Iniciar WS-Contabo.", isDark = false)
                             }
                              //Empresa no existe en PostGresql
                               else { empresaPGEncontrada.value = true }
