@@ -8,6 +8,7 @@ import com.azul.azulVentas.data.remote.model.EmpresaFB.EmpresaFBRemoteDataSource
 import com.azul.azulVentas.data.remote.model.EmpresaFB.FirebaseAuthService
 import com.azul.azulVentas.data.remote.api.EmpresaPG.EmpresaPGApiService
 import com.azul.azulVentas.data.remote.api.UsuarioPG.UsuarioPGApiService
+import com.azul.azulVentas.data.remote.api.Venta.VentaApiService
 import com.azul.azulVentas.data.repository.auth.AuthRepository
 import com.azul.azulVentas.data.repository.auth.AuthRepositoryImp
 import com.azul.azulVentas.data.repository.empresa.EmpresaRepository
@@ -20,6 +21,8 @@ import com.azul.azulVentas.domain.repository.empresaPG.EmpresaPGRepository
 import com.azul.azulVentas.domain.repository.empresaPG.EmpresaPGRepositoryImpl
 import com.azul.azulVentas.domain.repository.userPG.UserPGRepository
 import com.azul.azulVentas.domain.repository.userPG.UserPGRepositoryImpl
+import com.azul.azulVentas.domain.repository.venta.VentaRepository
+import com.azul.azulVentas.domain.repository.venta.VentaRepositoryImpl
 import com.azul.azulVentas.domain.usecases.auth.SendPasswordResetUseCase
 import com.azul.azulVentas.domain.usecases.empresa.AddEmpresaUseCase
 import com.azul.azulVentas.domain.usecases.empresaFB.BuscarEmpresaFBPorNitUseCase
@@ -194,31 +197,6 @@ object AppModule {
             .build()
     }
 
-   /*
-    //Provider api PostgreSQL
-    @Provides
-    @Singleton
-    fun provideRetrofit(): Retrofit {
-        return Retrofit
-            .Builder()
-            .baseUrl(AZUL_URL)
-            .client(provideOkHttpClient())
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-    }
-
-    @Provides
-    @Singleton
-    fun provideOkHttpClient(): OkHttpClient {
-        val loggingInterceptor = HttpLoggingInterceptor().apply {
-            level = HttpLoggingInterceptor.Level.BODY
-        }
-        return OkHttpClient.Builder()
-            .addInterceptor(loggingInterceptor)
-            .build()
-    }
-   * */
-
     @Provides
     @Singleton
     fun provideEmpresaPGApiService(retrofit: Retrofit): EmpresaPGApiService {
@@ -254,6 +232,18 @@ object AppModule {
     @Singleton
     fun provideInsertUserPGUseCase(userPGRepository: UserPGRepository): InsertUserPGUseCase {
         return InsertUserPGUseCase(userPGRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideVentaApiService(retrofit: Retrofit): VentaApiService {
+        return retrofit.create(VentaApiService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideVentaRepository(apiService: VentaApiService): VentaRepository {
+        return VentaRepositoryImpl(apiService)
     }
 
 

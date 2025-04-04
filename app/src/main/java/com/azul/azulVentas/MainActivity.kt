@@ -20,6 +20,9 @@ import com.azul.azulVentas.ui.presentation.recoverPassword.viewmodel.RecoverPass
 import com.azul.azulVentas.ui.presentation.registrationEmail.viewmodel.RegisterEmailViewModel
 import com.azul.azulVentas.ui.presentation.registration.viewmodel.RegisterViewModel
 import com.azul.azulVentas.ui.presentation.userPG.viewmodel.UserPGViewModel
+import com.azul.azulVentas.ui.presentation.usuarioEmpresas.viewmodel.UsuarioEmpresasPGViewModel
+import com.azul.azulVentas.ui.presentation.venta.viewmodel.VentaDiaViewModel
+import com.azul.azulVentas.ui.presentation.venta.viewmodel.VentaSemanaViewModel
 import com.azul.azulVentas.ui.theme.AzulVentasTheme
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -42,9 +45,13 @@ class MainActivity : ComponentActivity() {
     private val empresaFBViewModel: EmpresaFBViewModel by viewModels()
     private val empresaPGViewModel: EmpresaPGViewModel by viewModels()
     private val empresasPGViewModel: EmpresasPGViewModel by viewModels()
+    private val usuarioEmpresasPGViewModel: UsuarioEmpresasPGViewModel by viewModels()
     private val userPGViewModel: UserPGViewModel by viewModels()
     private val recoverPasswordViewModel: RecoverPasswordViewModel by viewModels()
     private val registerEmailViewModel: RegisterEmailViewModel by viewModels()
+    private val ventaDiaViewModel: VentaDiaViewModel by viewModels()
+    private val ventaSemanaViewModel: VentaSemanaViewModel by viewModels()
+
 
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -67,9 +74,12 @@ class MainActivity : ComponentActivity() {
                     empresaFBViewModel,
                     empresaPGViewModel,
                     empresasPGViewModel,
+                    usuarioEmpresasPGViewModel,
                     userPGViewModel,
                     recoverPasswordViewModel,
-                    registerEmailViewModel
+                    registerEmailViewModel,
+                    ventaDiaViewModel,
+                    ventaSemanaViewModel
                 )
             }
         }

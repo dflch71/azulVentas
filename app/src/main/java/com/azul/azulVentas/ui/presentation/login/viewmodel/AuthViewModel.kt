@@ -55,7 +55,7 @@ class AuthViewModel @Inject constructor(
                 }
                 catch (e: TimeoutCancellationException) {
                     if (attempt < 2) {
-                        loginState = LoginState.Error("Verificando conexión a internet...\nReintentando...")
+                        loginState = LoginState.Error("Verificando conexión a internet...\nVerificando Credenciales de acceso...")
                         delay(1000)
                     } else {
                         loginState = LoginState.Error("Tiempo de espera agotado.\nCerrando sesión...")

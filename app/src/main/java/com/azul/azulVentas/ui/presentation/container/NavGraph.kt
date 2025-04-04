@@ -6,7 +6,10 @@ sealed class NavGraph (val route: String) {
     object Registration: NavGraph("registration_screen/{idEmpresa}/{nomEmpresa}/{idPG}"){
         fun createRoute(idEmpresa: String, nomEmpresa: String, idPG: String) = "registration_screen/$idEmpresa/$nomEmpresa/$idPG"
     }
-    object Home: NavGraph("home_screen")
+    object Home: NavGraph("home_screen/{idEmpresa}") {
+        const val idEmpresaArg = "idEmpresa"
+        fun createRoute(idEmpresa: String) = "home_screen/$idEmpresa"
+    }
     object OTP: NavGraph("otp_screen")
     object Empresa: NavGraph("empresa_screen")
     object EmpresaFB: NavGraph("empresaFB_screen")

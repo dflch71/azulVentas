@@ -19,12 +19,16 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -56,6 +60,7 @@ import coil.compose.rememberAsyncImagePainter
 import com.azul.azulVentas.R
 import com.azul.azulVentas.domain.model.empresaFB.EmpresaFB
 import com.azul.azulVentas.ui.components.ActionButton
+import com.azul.azulVentas.ui.components.CancelDialog
 import com.azul.azulVentas.ui.components.DefaultBackArrow
 import com.azul.azulVentas.ui.components.ErrorSuggestion
 import com.azul.azulVentas.ui.components.ReadTextField
@@ -63,6 +68,7 @@ import com.azul.azulVentas.ui.components.SearchTextField
 import com.azul.azulVentas.ui.presentation.empresaFB.viewmodel.EmpresaFBViewModel
 import com.azul.azulVentas.ui.presentation.empresaPG.viewmodel.EmpresaPGViewModel
 import com.azul.azulVentas.ui.presentation.login.viewmodel.AuthViewModel
+import com.azul.azulVentas.ui.presentation.usuarioEmpresas.viewmodel.UsuarioEmpresasPGViewModel
 import com.azul.azulVentas.ui.theme.DarkTextColor
 import com.azul.azulVentas.ui.theme.PrimaryViolet
 import com.azul.azulVentas.ui.theme.PrimaryVioletDark
@@ -74,6 +80,7 @@ fun EmpresaFBScreen(
     navController: NavController,
     viewModel: EmpresaFBViewModel,
     empresaPGViewModel: EmpresaPGViewModel,
+    usuarioEmpresasPGViewModel: UsuarioEmpresasPGViewModel,
     authViewModel: AuthViewModel,
     empresasScreenClicked: () -> Unit,
     onRegistrationClicked: ( idEmpresa: String, nomEmpresa: String, idPG: String ) -> Unit
@@ -91,12 +98,21 @@ fun EmpresaFBScreen(
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp.dp
 
+    //EmpresaPG ViewModel
     val empresaPG by empresaPGViewModel.empresaPG.observeAsState(initial = emptyList())
     val isLoadingPG by empresaPGViewModel.isLoading.collectAsState()
     val errorPG by empresaPGViewModel.error.collectAsState()
 
+    //UsuarioEmpresasPG ViewModel
+    val usuariosempresaPG by usuarioEmpresasPGViewModel.usuarioEmpresas.observeAsState(initial = emptyList())
+    val isLoadingUE by usuarioEmpresasPGViewModel.isLoading.collectAsState()
+    val errorUE by usuarioEmpresasPGViewModel.error.collectAsState()
+
     //Evaluar que encontro la empresa en PostGresql
     var empresaPGEncontrada = remember { mutableStateOf<Boolean>(false) }
+
+    // State to control the visibility of the AlertDialog
+    var showAlertDialog by remember { mutableStateOf(false) }
 
     //Inicializar la busqueda de la empresa cada que inicie la pantalla
     var initialLoad by remember { mutableStateOf(true) }
@@ -192,7 +208,7 @@ fun EmpresaFBScreen(
             // Display the found company
             when (val state = empresaEncontradaState) {
 
-                EmpresaFBViewModel.EmpresaEncontradaState.Loading -> {
+                is EmpresaFBViewModel.EmpresaEncontradaState.Loading -> {
                     // Show a loading indicator
                     Box(
                         modifier = Modifier
@@ -250,12 +266,6 @@ fun EmpresaFBScreen(
                 is EmpresaFBViewModel.EmpresaEncontradaState.Success  -> {
                     state.empresa?.let { empresa ->
 
-                        EmpresaItem(empresa = empresa) {
-                            if (empresaPGEncontrada.value) {
-                                onRegistrationClicked(empresa.nit, empresa.nombre, empresaPG[0].EMPRESA_ID.toString())
-                            }
-                        }
-
                         //Buscar Empresa PostGresql
                         empresaPGViewModel.findEmpresaPG(empresa.nit)
 
@@ -269,16 +279,62 @@ fun EmpresaFBScreen(
                                 ErrorSuggestion("Debe registrar la EMPRESA en ambiente local (WS - AZUL WEB) y/o Iniciar WS-Contabo.", isDark = false)
                             }
                              //Empresa no existe en PostGresql
-                              else { empresaPGEncontrada.value = true }
-                            }
-                    }
+                              else {
+                                  //empresaPGEncontrada.value = true
 
+                                  //Buscar si el usuario ya tiene registrada la empresa
+                                  usuarioEmpresasPGViewModel.listUsuarioEmpresas(empresaPG[0].EMPRESA_ID.toString(), email.text)
+                                  if (usuariosempresaPG.isNotEmpty()) {
+                                      if (usuariosempresaPG.first().usuarios == 0) {
+                                          EmpresaItem(empresa) { onRegistrationClicked(empresa.nit, empresa.nombre, empresaPG[0].EMPRESA_ID.toString()) }
+                                      }
+                                      else {
+                                          Spacer(modifier = Modifier.height(16.dp))
+                                          ErrorSuggestion("La Empresa: ${empresa.nombre} con Nít-ID: ${empresa.nit} ya se encuentra registrada por el usuario con EMAIL: ${email.text}.", isDark = false)
+                                      }
+                                  }
+                                    /*
+                                    EmpresaItem(empresa) {
+                                        val idEmp = empresaPG[0].EMPRESA_ID
+                                        usuarioEmpresasPGViewModel.listUsuarioEmpresas(idEmp.toString(), email.text)
+                                        if (usuariosempresaPG.isNotEmpty()) {
+                                            val usuarios: Int = usuariosempresaPG.first().usuarios
+                                            if (usuarios == 0) {
+                                                onRegistrationClicked(empresa.nit, empresa.nombre, empresaPG[0].EMPRESA_ID.toString())
+                                            } else {
+                                                showAlertDialog = true
+                                            }
+                                        }
+                                    }
+                                    */
+                              }
+                        }
+                    }
                 }
 
                 is EmpresaFBViewModel.EmpresaEncontradaState.Error -> {
                     // Show an error message
                     Text("Error (WS-AZUL): ${state.message}")
                 }
+            }
+
+            if (showAlertDialog) {
+                AlertDialog(
+                    onDismissRequest = {
+                        // Dismiss the dialog when outside is clicked or back is pressed
+                        showAlertDialog = false
+                    },
+                    title = { Text("Empresa Registrada") },
+                    text = { Text("La EMPRESA ${nitEmpresa.text} ya se encuentra registrada por el USUARIO ${email.text}") },
+                    confirmButton = {
+                        TextButton(
+                            onClick = {
+                                showAlertDialog = false
+                            }) {
+                            Text("OK")
+                        }
+                    }
+                )
             }
 
             // Display the list of companies (if needed)
@@ -301,6 +357,8 @@ fun EmpresaFBScreen(
             }
 
             Spacer(modifier = Modifier.weight(weight = 1f))
+
+
             ActionButton(
                 text = "Cancelar",
                 isNavigationArrowVisible = false,
@@ -317,36 +375,6 @@ fun EmpresaFBScreen(
                 modifier = Modifier.padding(top = 8.dp, bottom = 16.dp, start = 24.dp, end = 24.dp)
             )
 
-
-        /* Este código funciona es el ejemplo para cargar
-        la lista completa de empresas, tener en cuenta que se
-        debe corregir el viewmodel de EmpresaFB
-        // Campo de búsqueda
-        Spacer(modifier = Modifier.height(16.dp))
-        OutlinedTextField(
-            value = nitBusqueda,
-            onValueChange = { nitBusqueda = it },
-            label = { Text("Buscar por NIT") },
-            modifier = Modifier.fillMaxWidth()
-        )
-        Button(
-            onClick = { viewModel.buscarEmpresaPorNit(nitBusqueda) },
-            modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
-        ) {
-            Text("Buscar")
-        }
-
-        // Mostrar empresa encontrada
-            empresaEncontrada?.let { empresa ->
-                EmpresaItem(empresa = empresa)
-            }
-        // Lista de empresas
-        //LazyColumn {
-        //    items(empresas) { empresa ->
-        //        EmpresaItem(empresa = empresa)
-        //    }
-        }
-        */
         }
     }
 }
@@ -356,6 +384,7 @@ fun EmpresaItem(
     empresa: EmpresaFB,
     registrationScreen: () -> Unit
 ) {
+
     ElevatedCard(
         elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
         modifier = Modifier
@@ -410,16 +439,6 @@ fun EmpresaItem(
                 label = "Representante Legal",
                 textValue = empresa.repLegal,
             )
-
-            /*
-            Spacer(modifier = Modifier.height(4.dp))
-            ReadTextField(
-                modifier = Modifier.padding(horizontal = 24.dp),
-                leadingIconRes = R.drawable.ic_phone,
-                label = "Teléfono",
-                textValue = empresa.telefono
-            )
-            */
 
             Spacer(modifier = Modifier.height(4.dp))
             ReadTextField(

@@ -1,9 +1,6 @@
 package com.azul.azulVentas.domain.repository.userPG
 
 import com.azul.azulVentas.data.remote.api.UsuarioPG.UsuarioPGApiService
-import com.azul.azulVentas.data.remote.mappers.userPG.toDomain
-import com.azul.azulVentas.data.remote.mappers.userPG.toResponse
-import com.azul.azulVentas.data.remote.model.UserPG.UserPGResponse
 import com.azul.azulVentas.domain.model.userPG.UserPG
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -12,6 +9,8 @@ import javax.inject.Inject
 import android.util.Log
 import com.google.gson.Gson
 import com.azul.azulVentas.core.utils.Result
+import com.azul.azulVentas.data.remote.mappers.EmpresasUsuarios.toDomain
+import com.azul.azulVentas.data.remote.mappers.EmpresasUsuarios.toResponse
 
 
 class UserPGRepositoryImpl @Inject constructor(

@@ -6,8 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.ArrowBackIos
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -24,25 +23,32 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.azul.azulVentas.ui.components.BottomNavigationBar
 import com.azul.azulVentas.ui.components.FavoritesScreen
 import com.azul.azulVentas.ui.components.SettingsScreeen
-import com.azul.azulVentas.ui.presentation.clientes.view.ClientsScreen
 import com.azul.azulVentas.ui.presentation.clientes.viewmodel.ClientesViewModel
 import com.azul.azulVentas.ui.presentation.login.viewmodel.AuthViewModel
+import com.azul.azulVentas.ui.presentation.venta.view.VentaScreen
+import com.azul.azulVentas.ui.presentation.venta.viewmodel.VentaDiaViewModel
+import com.azul.azulVentas.ui.presentation.venta.viewmodel.VentaSemanaViewModel
 
 
 @Composable
 fun HomeScreen(
+    navController: NavController,
     clientesViewModel: ClientesViewModel,
     authViewModel: AuthViewModel,
-    onLogoutSuccess : () -> Unit
+    onLogoutSuccess : () -> Unit,
+    idEmpresa: String,
+    ventaDiaViewModel: VentaDiaViewModel,
+    ventaSemanaViewModel: VentaSemanaViewModel
 ) {
     var selectedItemIndex by remember { mutableStateOf(0) }
 
     Scaffold(
         topBar = {
-            AzulVentasTopAppBar(authViewModel, onLogoutSuccess)
+            AzulVentasTopAppBar(authViewModel, onLogoutSuccess, navController)
         },
 
         bottomBar = {
@@ -62,7 +68,8 @@ fun HomeScreen(
                     //.verticalScroll(rememberScrollState())
             ) {
                 when (selectedItemIndex) {
-                    0 -> { ClientsScreen(clientesViewModel) }
+                    //0 -> { ClientsScreen(clientesViewModel) }
+                    0 -> { VentaScreen(idEmpresa, ventaDiaViewModel, ventaSemanaViewModel ) }
                     1 -> { FavoritesScreen() }
                     2 -> { Text (text = "Notifications")}
                     3 -> { SettingsScreeen() }
@@ -76,13 +83,21 @@ fun HomeScreen(
 @Composable
 fun AzulVentasTopAppBar(
     authViewModel: AuthViewModel,
-    onLogoutSuccess: () -> Unit
-    ) {
+    onLogoutSuccess: () -> Unit,
+    navController: NavController
+) {
     TopAppBar(
         navigationIcon = {
-            //IconButton(onClick = {}) {
-            //    Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null )
-            //}
+            IconButton(
+                onClick = { navController.popBackStack() },
+                modifier = Modifier.padding(start = 8.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.ArrowBackIos,
+                    contentDescription = null
+                )
+            }
+
         },
 
         actions = {
@@ -110,6 +125,6 @@ fun AzulVentasTopAppBar(
             navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
             actionIconContentColor = MaterialTheme.colorScheme.onPrimary
         ),
-        title = { Text(text = "Azul Ventas") }
+        title = { Text(text = "Dashboard") }
     )
 }

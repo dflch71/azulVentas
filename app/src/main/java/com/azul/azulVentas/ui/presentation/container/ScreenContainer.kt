@@ -26,6 +26,9 @@ import com.azul.azulVentas.ui.presentation.registrationEmail.viewmodel.RegisterE
 import com.azul.azulVentas.ui.presentation.registration.viewmodel.RegisterViewModel
 import com.azul.azulVentas.ui.presentation.registrationEmail.view.RegistrationEmailScreen
 import com.azul.azulVentas.ui.presentation.userPG.viewmodel.UserPGViewModel
+import com.azul.azulVentas.ui.presentation.usuarioEmpresas.viewmodel.UsuarioEmpresasPGViewModel
+import com.azul.azulVentas.ui.presentation.venta.viewmodel.VentaDiaViewModel
+import com.azul.azulVentas.ui.presentation.venta.viewmodel.VentaSemanaViewModel
 import com.azul.azulVentas.ui.presentation.welcome.view.WelcomeScreen
 
 @Composable
@@ -39,9 +42,12 @@ fun ScreenContainer(
     empresaFBViewModel: EmpresaFBViewModel,
     empresaPGViewModel: EmpresaPGViewModel,
     empresasPGViewModel: EmpresasPGViewModel,
+    usuarioEmpresasPGViewModel: UsuarioEmpresasPGViewModel,
     userPGViewModel: UserPGViewModel,
     recoverPasswordViewModel: RecoverPasswordViewModel,
-    registerEmailViewModel: RegisterEmailViewModel
+    registerEmailViewModel: RegisterEmailViewModel,
+    ventaDiaViewModel: VentaDiaViewModel,
+    ventaSemanaViewModel: VentaSemanaViewModel
 ) {
 
     NavHost(
@@ -133,7 +139,7 @@ fun ScreenContainer(
                 navController = navHost,
                 authViewModel = authViewModel,
                 empresasPGViewModel = empresasPGViewModel,
-                HomeScreenClicked = { navHost.navigate(NavGraph.Home.route) },
+                HomeScreenClicked = { idEmpresa -> navHost.navigate(NavGraph.Home.createRoute(idEmpresa)) },
                 RegisterScreenClicked = { navHost.navigate(NavGraph.EmpresaFB.route) }
             )
         }
@@ -144,6 +150,7 @@ fun ScreenContainer(
                 navController = navHost,
                 empresaFBViewModel,
                 empresaPGViewModel,
+                usuarioEmpresasPGViewModel,
                 authViewModel,
                 empresasScreenClicked = {
                     navHost.navigate(NavGraph.Empresas.route) {
@@ -169,18 +176,34 @@ fun ScreenContainer(
             )
         }
 
-        composable(NavGraph.Home.route) {
-            HomeScreen(
-                clientesViewModel,
-                authViewModel,
-                onLogoutSuccess  = {
-                    //authViewModel.signout()
-                        navHost.navigate(NavGraph.Login.route) {
-                        popUpTo(NavGraph.Home.route) { inclusive = true }
-                    }
-                }
+        composable(
+            route = NavGraph.Home.route,
+            arguments = listOf(
+                navArgument(NavGraph.Home.idEmpresaArg) { type = NavType.StringType }
             )
-        }
 
+        ) {
+            backStackEntry ->
+            val idEmpresa = backStackEntry.arguments?.getString(NavGraph.Home.idEmpresaArg)
+
+
+
+            if (idEmpresa != null) {
+                HomeScreen(
+                    navController = navHost,
+                    clientesViewModel,
+                    authViewModel,
+                    onLogoutSuccess = {
+                        //authViewModel.signout()
+                        navHost.navigate(NavGraph.Login.route) {
+                            popUpTo(NavGraph.Home.route) { inclusive = true }
+                        }
+                    },
+                    idEmpresa = idEmpresa ?: "",
+                    ventaDiaViewModel,
+                    ventaSemanaViewModel
+                )
+            }
+        }
     }
 }

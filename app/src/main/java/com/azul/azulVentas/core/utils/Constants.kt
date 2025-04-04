@@ -27,9 +27,9 @@ object Constants {
 
     //VENTA
     //http://localhost:9060/datasnap/rest/TServerMethods/VentaxHora/901253102
-    const val GET_PATH_VENTA_DIA = "VentaxHora/"
-    const val GET_PATH_VENTA_SEMANA = "VentaUltimaSemana/"
-    const val GET_PATH_VENTA_PERIODO = "VentaPeriodos/"
+    const val GET_PATH_VENTA_DIA = "VentaxHora/{EmpresaID}"
+    const val GET_PATH_VENTA_SEMANA = "VentaUltimaSemana/{EmpresaID}"
+    const val GET_PATH_VENTA_PERIODO = "VentaPeriodos/{EmpresaID}"
 
     //VENTA POS
     //http://localhost:9060/datasnap/rest/TServerMethods/VentaPosxHora/901253102

@@ -1,13 +1,26 @@
 package com.azul.azulVentas.ui.components
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.BusinessCenter
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Paid
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.PointOfSale
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Shop
+import androidx.compose.material.icons.filled.Shop2
+import androidx.compose.material.icons.filled.ShoppingBag
 import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material.icons.outlined.BusinessCenter
 import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material.icons.outlined.Paid
 import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material.icons.outlined.PointOfSale
 import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material.icons.outlined.Shop
+import androidx.compose.material.icons.outlined.Shop2
+import androidx.compose.material.icons.outlined.ShoppingBag
 import androidx.compose.material.icons.outlined.ShoppingCart
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -19,6 +32,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
+import com.azul.azulVentas.R
 
 @Composable
 fun BottomNavigationBar(
@@ -31,27 +46,27 @@ fun BottomNavigationBar(
 
     val navigationList = listOf(
         NavigationItem(
-            title = "Clientes",
-            selectedIcon = Icons.Filled.Person,
-            unselectedIcon = Icons.Outlined.Person
+            title = "Ventas",
+            selectedIcon = Icons.Filled.Paid,
+            unselectedIcon = Icons.Outlined.Paid
         ),
 
         NavigationItem(
-            title = "Productos",
-            selectedIcon = Icons.Filled.Edit,
-            unselectedIcon = Icons.Outlined.Edit
+            title = "POS",
+            selectedIcon = Icons.Filled.PointOfSale,
+            unselectedIcon = Icons.Outlined.PointOfSale
         ),
 
         NavigationItem(
-            title = "Facturas",
-            selectedIcon = Icons.Filled.ShoppingCart,
-            unselectedIcon = Icons.Outlined.ShoppingCart
+            title = "Egresos",
+            selectedIcon = Icons.Filled.BusinessCenter,
+            unselectedIcon = Icons.Outlined.BusinessCenter
         ),
 
         NavigationItem(
-            title = "Configurar",
-            selectedIcon = Icons.Filled.Settings,
-            unselectedIcon = Icons.Outlined.Settings
+            title = "Compras",
+            selectedIcon = Icons.Filled.ShoppingBag,
+            unselectedIcon = Icons.Outlined.ShoppingBag
         )
     )
 

@@ -34,8 +34,7 @@ class EmpresaFBViewModel @Inject constructor(
     private val _empresasState = MutableStateFlow<EmpresaState>(EmpresaState.Loading)
     val empresasState: StateFlow<EmpresaState> = _empresasState
 
-    private val _empresaEncontradaState =
-        MutableStateFlow<EmpresaEncontradaState>(EmpresaEncontradaState.Loading)
+    private val _empresaEncontradaState = MutableStateFlow<EmpresaEncontradaState>(EmpresaEncontradaState.Loading)
     val empresaEncontradaState: StateFlow<EmpresaEncontradaState> = _empresaEncontradaState
 
     init {
