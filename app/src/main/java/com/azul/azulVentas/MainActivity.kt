@@ -17,11 +17,12 @@ import com.azul.azulVentas.ui.presentation.empresas.viewmodel.EmpresasPGViewMode
 import com.azul.azulVentas.ui.presentation.login.viewmodel.AuthViewModel
 import com.azul.azulVentas.ui.presentation.network.viewmodel.NetworkViewModel
 import com.azul.azulVentas.ui.presentation.recoverPassword.viewmodel.RecoverPasswordViewModel
-import com.azul.azulVentas.ui.presentation.registrationEmail.viewmodel.RegisterEmailViewModel
 import com.azul.azulVentas.ui.presentation.registration.viewmodel.RegisterViewModel
+import com.azul.azulVentas.ui.presentation.registrationEmail.viewmodel.RegisterEmailViewModel
 import com.azul.azulVentas.ui.presentation.userPG.viewmodel.UserPGViewModel
 import com.azul.azulVentas.ui.presentation.usuarioEmpresas.viewmodel.UsuarioEmpresasPGViewModel
 import com.azul.azulVentas.ui.presentation.venta.viewmodel.VentaDiaViewModel
+import com.azul.azulVentas.ui.presentation.venta.viewmodel.VentaPeriodoViewModel
 import com.azul.azulVentas.ui.presentation.venta.viewmodel.VentaSemanaViewModel
 import com.azul.azulVentas.ui.theme.AzulVentasTheme
 import com.google.firebase.auth.FirebaseAuth
@@ -51,6 +52,7 @@ class MainActivity : ComponentActivity() {
     private val registerEmailViewModel: RegisterEmailViewModel by viewModels()
     private val ventaDiaViewModel: VentaDiaViewModel by viewModels()
     private val ventaSemanaViewModel: VentaSemanaViewModel by viewModels()
+    private val ventaPeriodoViewModel: VentaPeriodoViewModel by viewModels()
 
 
     @OptIn(ExperimentalMaterial3Api::class)
@@ -79,7 +81,8 @@ class MainActivity : ComponentActivity() {
                     recoverPasswordViewModel,
                     registerEmailViewModel,
                     ventaDiaViewModel,
-                    ventaSemanaViewModel
+                    ventaSemanaViewModel,
+                    ventaPeriodoViewModel
                 )
             }
         }

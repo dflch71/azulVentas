@@ -1,5 +1,6 @@
 package com.azul.azulVentas.ui.presentation.venta.view
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,7 +21,11 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -32,9 +37,10 @@ import com.azul.azulVentas.ui.presentation.venta.viewmodel.VentaDiaViewModel
 import com.azul.azulVentas.ui.presentation.venta.viewmodel.VentaPeriodoViewModel
 import com.azul.azulVentas.ui.presentation.venta.viewmodel.VentaSemanaViewModel
 import com.azul.azulVentas.ui.theme.DarkTextColor
+import java.time.LocalDateTime
 
 @Composable
-fun VentaScreen(
+fun VentaScreenCopia(
     empresaID: String,
     ventaDiaViewModel: VentaDiaViewModel,
     ventaSemanaViewModel: VentaSemanaViewModel,
@@ -44,6 +50,16 @@ fun VentaScreen(
     val ventaDiaFmt by ventaDiaViewModel.ventaDiaFormatted
     val ventaSemanaFmt by ventaSemanaViewModel.ventaSemanaFormatted
 
+    //Venta Día
+    val ventaDia by ventaDiaViewModel.ventaDia.observeAsState(initial = emptyList())
+    val isLoadingVentaDia by ventaDiaViewModel.isLoading.collectAsState()
+    val errorVentaDia by ventaDiaViewModel.error.collectAsState()
+
+    //Venta Semana
+    val ventaSemana by ventaSemanaViewModel.ventaSemana.observeAsState(initial = emptyList())
+    val isLoadingVentaSemana by ventaSemanaViewModel.isLoading.collectAsState()
+    val errorVentaSemana by ventaSemanaViewModel.error.collectAsState()
+
     //Venta Periodo
     val ventaPeriodo by ventaPeriodoViewModel.ventaPeriodo.observeAsState(initial = emptyList())
     val isLoadingVentaPeriodo by ventaPeriodoViewModel.isLoading.collectAsState()
@@ -52,10 +68,40 @@ fun VentaScreen(
     val screenWidth = LocalConfiguration.current.screenWidthDp.dp
 
     LaunchedEffect(key1 = true) {
+        //ventaDiaViewModel.ventaDia(empresaID)
+        //ventaSemanaViewModel.ventaSemana(empresaID)
+
         ventaDiaViewModel.ventaDiaView(empresaID)
         ventaSemanaViewModel.ventaSemanaView(empresaID)
         ventaPeriodoViewModel.ventaPeriodo(empresaID)
     }
+
+    var diaVenta by remember { mutableStateOf("") }
+    var sumVentaDia by remember { mutableStateOf(0.0) }
+    var sumVentaDiaEfectivo by remember { mutableStateOf(0.0) }
+    var sumVentaDiaCredito by remember { mutableStateOf(0.0) }
+
+    val dayofSale: LocalDateTime
+    //if (ventaDia.isNotEmpty()) {
+        //diaVenta = ventaDia.first().fecha_dia+"T00:00:00"
+        //dayofSale = stringToLocalDateTime(diaVenta)!!
+        //diaVenta = "${formatDate(ventaDia.first().fecha_dia)} - ${(calculateDaysToTargetDate(dayofSale))} Días"
+        //sumVentaDia = ventaDia.sumOf { it.sum_hora }
+        //sumVentaDiaEfectivo = ventaDia.sumOf { it.sum_contado }
+        //sumVentaDiaCredito = ventaDia.sumOf { it.sum_credito }
+    //}
+
+    var semana by remember { mutableStateOf("") }
+    var sumVentaSemana by remember { mutableStateOf(0.0) }
+    var sumVentaSemanaEfectivo by remember { mutableStateOf(0.0) }
+    var sumVentaSemanaCredito by remember { mutableStateOf(0.0) }
+    //if (ventaSemana.isNotEmpty()) {
+        //semana = "${formatDate(ventaSemana.first().fecha_dia)} - ${formatDate(ventaSemana.last().fecha_dia)}"
+        //sumVentaSemana = ventaSemana.sumOf { it.sum_dia }
+        //sumVentaSemanaEfectivo = ventaSemana.sumOf { it.sum_contado }
+        //sumVentaSemanaCredito = ventaSemana.sumOf { it.sum_credito }
+    //}
+
 
     Column(
         modifier = Modifier
@@ -79,6 +125,10 @@ fun VentaScreen(
             modifier = Modifier.weight(0.33f)
         ){
             CardResumenVenta(
+                //titulo = "Día: $diaVenta",
+                //total = formatCurrency(sumVentaDia),
+                //efectivo = formatCurrency(sumVentaDiaEfectivo),
+                //credito = formatCurrency(sumVentaDiaCredito),
                 titulo = "Día: ${ventaDiaFmt.tituloDia}",
                 total = ventaDiaFmt.total,
                 efectivo = ventaDiaFmt.efectivo,
@@ -92,6 +142,10 @@ fun VentaScreen(
             modifier = Modifier.weight(0.33f)
         ){
             CardResumenVenta(
+                //titulo = "Semana: $semana",
+                //total = formatCurrency(sumVentaSemana),
+                //efectivo = formatCurrency(sumVentaSemanaEfectivo),
+                //credito = formatCurrency(sumVentaSemanaCredito),
                 titulo = "Semana: ${ventaSemanaFmt.tituloSemana}",
                 total = ventaSemanaFmt.total,
                 efectivo = ventaSemanaFmt.efectivo,

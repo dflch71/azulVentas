@@ -56,9 +56,9 @@ class VentaSemanaViewModel @Inject constructor(
             _ventaSemana.postValue(response)
 
             if (response.isNotEmpty()) {
-                val titulo = "${formatDate(response.first().fecha_dia)} - ${formatDate(response.last().fecha_dia)}"
+                val titulo = "${formatDate(response.first().fecha_dia)} a ${formatDate(response.last().fecha_dia)}"
                 _ventaSemanaFormatted.value = ResumenOperaciones(
-                    tituloPeriodos = titulo,
+                    tituloSemana = titulo,
                     total = formatCurrency(response.sumOf { it.sum_dia }),
                     efectivo = formatCurrency(response.sumOf { it.sum_contado }),
                     credito = formatCurrency(response.sumOf { it.sum_credito })

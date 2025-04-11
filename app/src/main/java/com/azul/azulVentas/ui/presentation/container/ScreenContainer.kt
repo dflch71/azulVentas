@@ -22,12 +22,13 @@ import com.azul.azulVentas.ui.presentation.otp.view.OTPScreen
 import com.azul.azulVentas.ui.presentation.recoverPassword.view.RecoverPasswordScreen
 import com.azul.azulVentas.ui.presentation.recoverPassword.viewmodel.RecoverPasswordViewModel
 import com.azul.azulVentas.ui.presentation.registration.view.RegistrationScreen
-import com.azul.azulVentas.ui.presentation.registrationEmail.viewmodel.RegisterEmailViewModel
 import com.azul.azulVentas.ui.presentation.registration.viewmodel.RegisterViewModel
 import com.azul.azulVentas.ui.presentation.registrationEmail.view.RegistrationEmailScreen
+import com.azul.azulVentas.ui.presentation.registrationEmail.viewmodel.RegisterEmailViewModel
 import com.azul.azulVentas.ui.presentation.userPG.viewmodel.UserPGViewModel
 import com.azul.azulVentas.ui.presentation.usuarioEmpresas.viewmodel.UsuarioEmpresasPGViewModel
 import com.azul.azulVentas.ui.presentation.venta.viewmodel.VentaDiaViewModel
+import com.azul.azulVentas.ui.presentation.venta.viewmodel.VentaPeriodoViewModel
 import com.azul.azulVentas.ui.presentation.venta.viewmodel.VentaSemanaViewModel
 import com.azul.azulVentas.ui.presentation.welcome.view.WelcomeScreen
 
@@ -47,7 +48,8 @@ fun ScreenContainer(
     recoverPasswordViewModel: RecoverPasswordViewModel,
     registerEmailViewModel: RegisterEmailViewModel,
     ventaDiaViewModel: VentaDiaViewModel,
-    ventaSemanaViewModel: VentaSemanaViewModel
+    ventaSemanaViewModel: VentaSemanaViewModel,
+    ventaPeriodoViewModel: VentaPeriodoViewModel
 ) {
 
     NavHost(
@@ -201,7 +203,8 @@ fun ScreenContainer(
                     },
                     idEmpresa = idEmpresa ?: "",
                     ventaDiaViewModel,
-                    ventaSemanaViewModel
+                    ventaSemanaViewModel,
+                    ventaPeriodoViewModel
                 )
             }
         }

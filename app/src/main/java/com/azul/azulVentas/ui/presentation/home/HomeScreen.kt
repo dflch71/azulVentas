@@ -31,6 +31,7 @@ import com.azul.azulVentas.ui.presentation.clientes.viewmodel.ClientesViewModel
 import com.azul.azulVentas.ui.presentation.login.viewmodel.AuthViewModel
 import com.azul.azulVentas.ui.presentation.venta.view.VentaScreen
 import com.azul.azulVentas.ui.presentation.venta.viewmodel.VentaDiaViewModel
+import com.azul.azulVentas.ui.presentation.venta.viewmodel.VentaPeriodoViewModel
 import com.azul.azulVentas.ui.presentation.venta.viewmodel.VentaSemanaViewModel
 
 
@@ -42,7 +43,8 @@ fun HomeScreen(
     onLogoutSuccess : () -> Unit,
     idEmpresa: String,
     ventaDiaViewModel: VentaDiaViewModel,
-    ventaSemanaViewModel: VentaSemanaViewModel
+    ventaSemanaViewModel: VentaSemanaViewModel,
+    ventaPeriodoViewModel: VentaPeriodoViewModel
 ) {
     var selectedItemIndex by remember { mutableStateOf(0) }
 
@@ -69,7 +71,7 @@ fun HomeScreen(
             ) {
                 when (selectedItemIndex) {
                     //0 -> { ClientsScreen(clientesViewModel) }
-                    0 -> { VentaScreen(idEmpresa, ventaDiaViewModel, ventaSemanaViewModel ) }
+                    0 -> { VentaScreen(idEmpresa, ventaDiaViewModel, ventaSemanaViewModel, ventaPeriodoViewModel ) }
                     1 -> { FavoritesScreen() }
                     2 -> { Text (text = "Notifications")}
                     3 -> { SettingsScreeen() }

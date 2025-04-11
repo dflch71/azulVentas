@@ -62,10 +62,14 @@ class VentaDiaViewModel @Inject constructor(
             if (response.isNotEmpty()) {
                 val fecha = response.first().fecha_dia + "T00:00:00"
                 val date = stringToLocalDateTime(fecha) ?: LocalDateTime.now()
-                val titulo = "${formatDate(response.first().fecha_dia)} - ${calculateDaysToTargetDate(date)} Días"
+                val tDia = "${formatDate(response.first().fecha_dia)} - ${calculateDaysToTargetDate(date)} Días"
+                //val tSemana = "${formatDate(response.first().fecha_dia)} - ${formatDate(response.last().fecha_dia)}"
+                //val tPeriodo = ""
 
                 _ventaDiaFormatted.value = ResumenOperaciones(
-                    tituloPeriodos = titulo,
+                    tituloDia = tDia,
+                    //tituloSemana = tSemana,
+                    //tituloPeriodo = tPeriodo,
                     total = formatCurrency(response.sumOf { it.sum_hora }),
                     efectivo = formatCurrency(response.sumOf { it.sum_contado }),
                     credito = formatCurrency(response.sumOf { it.sum_credito })
@@ -74,7 +78,4 @@ class VentaDiaViewModel @Inject constructor(
             _isLoading.value = false
         }
     }
-
-
-
 }

@@ -21,6 +21,6 @@
 #-renamesourcefileattribute SourceFile
 
 # Mantén el constructor sin argumentos de la clase Empresa
--keepclassmembers class com.azul.azulVentas.domain.model.empresaFB.Empresa {
+-keepclassmembers class com.azul.azulVentas.domain.model.empresaFB.EmpresaFB {
     public <init>();
 }
