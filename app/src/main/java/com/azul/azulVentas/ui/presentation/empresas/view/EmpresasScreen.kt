@@ -29,6 +29,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FloatingActionButton
@@ -41,6 +42,9 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -59,6 +63,7 @@ import com.azul.azulVentas.ui.presentation.empresas.viewmodel.EmpresasPGViewMode
 import com.azul.azulVentas.ui.presentation.login.viewmodel.AuthViewModel
 import com.azul.azulVentas.ui.theme.PrimaryViolet
 import com.azul.azulVentas.ui.theme.PrimaryVioletDark
+import kotlinx.coroutines.delay
 
 @Composable
 fun EmpresasScreen(
@@ -76,8 +81,11 @@ fun EmpresasScreen(
     val isLoadingPG by empresasPGViewModel.isLoading.collectAsState()
     val errorPG by empresasPGViewModel.error.collectAsState()
 
+    var showLoading by remember { mutableStateOf(true) }
     LaunchedEffect(key1 = true) {
+        delay(2000)
         empresasPGViewModel.listEmpresasPG(authViewModel.getUserEmail().toString())
+        showLoading = false
     }
 
     Box(
@@ -133,23 +141,29 @@ fun EmpresasScreen(
             Spacer(modifier = Modifier.height(8.dp))
 
             //TODO: Pendiente de verificar el scroll cuando se llega al final
-            Box(modifier = Modifier
-                .fillMaxSize()
-                .weight(1f)
-                .background(color = Color.Transparent)
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .weight(1f)
+                    .background(color = Color.Transparent)
             ){
-                if (empresasPG.isEmpty()) {
-                    Text(
-                        modifier = Modifier.padding(24.dp),
-                        text = "- No hay empresas registradas.\n\n- WS de empresas no responde. $errorPG",
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = Color.White
-                    )
+
+                if (showLoading) {
+                    // Show progress indicator during the delay
+                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center), color = Color.White)
                 } else {
-                    listarEmpresas(
-                        empresasPG,
-                        HomeScreenClicked
-                    )
+                    // Show the content after the delay
+                    if (empresasPG.isNotEmpty()) {
+                        listarEmpresas(empresasPG, HomeScreenClicked)
+                    } else {
+                        val msg: String = if (showLoading) "Cargando..." else "- No hay empresas registradas.\n\n- WS de empresas no responde. $errorPG"
+                        Text(
+                            modifier = Modifier.padding(24.dp),
+                            text = msg,
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = Color.White
+                        )
+                    }
                 }
             }
         }
@@ -166,7 +180,6 @@ private fun listarEmpresas(
         modifier = Modifier
             .fillMaxWidth()
     ) {
-
         items(empresasPG) { empresa ->
             CardEmpresa(
                 ID = empresa.EMP_TERCERO,

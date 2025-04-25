@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBackIos
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.ArrowBackIos
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -24,15 +25,25 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.azul.azulEgresos.ui.presentation.egreso.viewmodel.EgresoPeriodoViewModel
 import com.azul.azulVentas.ui.components.BottomNavigationBar
-import com.azul.azulVentas.ui.components.FavoritesScreen
-import com.azul.azulVentas.ui.components.SettingsScreeen
 import com.azul.azulVentas.ui.presentation.clientes.viewmodel.ClientesViewModel
+import com.azul.azulVentas.ui.presentation.compra.view.CompraScreen
+import com.azul.azulVentas.ui.presentation.compra.viewmodel.CompraDiaViewModel
+import com.azul.azulVentas.ui.presentation.compra.viewmodel.CompraPeriodoViewModel
+import com.azul.azulVentas.ui.presentation.compra.viewmodel.CompraSemanaViewModel
+import com.azul.azulVentas.ui.presentation.egreso.view.EgresoScreen
+import com.azul.azulVentas.ui.presentation.egreso.viewmodel.EgresoDiaViewModel
+import com.azul.azulVentas.ui.presentation.egreso.viewmodel.EgresoSemanaViewModel
 import com.azul.azulVentas.ui.presentation.login.viewmodel.AuthViewModel
 import com.azul.azulVentas.ui.presentation.venta.view.VentaScreen
 import com.azul.azulVentas.ui.presentation.venta.viewmodel.VentaDiaViewModel
 import com.azul.azulVentas.ui.presentation.venta.viewmodel.VentaPeriodoViewModel
 import com.azul.azulVentas.ui.presentation.venta.viewmodel.VentaSemanaViewModel
+import com.azul.azulVentas.ui.presentation.ventaPOS.view.VentaPosScreen
+import com.azul.azulVentas.ui.presentation.ventaPOS.viewModel.VentaPosDiaViewModel
+import com.azul.azulVentas.ui.presentation.ventaPOS.viewModel.VentaPosPeriodoViewModel
+import com.azul.azulVentas.ui.presentation.ventaPOS.viewModel.VentaPosSemanaViewModel
 
 
 @Composable
@@ -44,7 +55,16 @@ fun HomeScreen(
     idEmpresa: String,
     ventaDiaViewModel: VentaDiaViewModel,
     ventaSemanaViewModel: VentaSemanaViewModel,
-    ventaPeriodoViewModel: VentaPeriodoViewModel
+    ventaPeriodoViewModel: VentaPeriodoViewModel,
+    ventaPosDiaViewModel: VentaPosDiaViewModel,
+    ventaPosSemanaViewModel: VentaPosSemanaViewModel,
+    ventaPosPeriodoViewModel: VentaPosPeriodoViewModel,
+    egresoDiaViewModel: EgresoDiaViewModel,
+    egresoSemanaViewModel: EgresoSemanaViewModel,
+    egresoPeriodoViewModel: EgresoPeriodoViewModel,
+    compraDiaViewModel: CompraDiaViewModel,
+    compraSemanaViewModel: CompraSemanaViewModel,
+    compraPeriodoViewModel: CompraPeriodoViewModel
 ) {
     var selectedItemIndex by remember { mutableStateOf(0) }
 
@@ -70,11 +90,10 @@ fun HomeScreen(
                     //.verticalScroll(rememberScrollState())
             ) {
                 when (selectedItemIndex) {
-                    //0 -> { ClientsScreen(clientesViewModel) }
                     0 -> { VentaScreen(idEmpresa, ventaDiaViewModel, ventaSemanaViewModel, ventaPeriodoViewModel ) }
-                    1 -> { FavoritesScreen() }
-                    2 -> { Text (text = "Notifications")}
-                    3 -> { SettingsScreeen() }
+                    1 -> { VentaPosScreen(idEmpresa, ventaPosDiaViewModel, ventaPosSemanaViewModel, ventaPosPeriodoViewModel) }
+                    2 -> { CompraScreen(idEmpresa, compraDiaViewModel, compraSemanaViewModel, compraPeriodoViewModel)  }
+                    3 -> { EgresoScreen(idEmpresa, egresoDiaViewModel, egresoSemanaViewModel, egresoPeriodoViewModel)}
                 }
             }
         }
@@ -95,7 +114,7 @@ fun AzulVentasTopAppBar(
                 modifier = Modifier.padding(start = 8.dp)
             ) {
                 Icon(
-                    imageVector = Icons.Filled.ArrowBackIos,
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBackIos,
                     contentDescription = null
                 )
             }

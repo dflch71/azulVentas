@@ -92,9 +92,7 @@ fun EmpresaScreenTemplate(
     val animate = remember { mutableStateOf(true) }
 
     LaunchedEffect(keyboardHeight) {
-        coroutineScope.launch {
-            scrollState.scrollBy(keyboardHeight.toFloat())
-        }
+        coroutineScope.launch { scrollState.scrollBy(keyboardHeight.toFloat()) }
     }
 
     Column(
@@ -343,83 +341,3 @@ fun EmpresaScreenTemplate(
     }
 }
 
-/*
-@Composable
-private fun CustomTextField(
-    modifier: Modifier = Modifier,
-    placeholder: String,
-    @DrawableRes leadingIconRes: Int,
-    label: String,
-    keyboardType: KeyboardType,
-    visualTransformation: VisualTransformation,
-    errorState: MutableState<Boolean>,
-    imeAction: ImeAction,
-    onChanged: (TextFieldValue) -> Unit,
-    lengthChar: Int
-) {
-    //state
-    var selectedText by remember {
-        mutableStateOf(TextFieldValue(""))
-    }
-
-    TextField(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(62.dp),
-        value = selectedText,
-        onValueChange = { newText ->
-            if (newText.text.length <= lengthChar) {
-                selectedText = newText
-                onChanged(newText)
-            }
-        },
-        placeholder = { Text(text = placeholder) },
-        label = { Text(text = label) },
-        shape = RoundedCornerShape(percent = 50),
-        leadingIcon = {
-            Icon(
-                painter = painterResource(leadingIconRes),
-                contentDescription = null,
-                modifier = Modifier.size(24.dp)
-            )
-        },
-        singleLine = true,
-        colors = TextFieldDefaults.colors(
-            focusedIndicatorColor = Color.Transparent,
-            disabledIndicatorColor = Color.Transparent,
-            unfocusedIndicatorColor = Color.Transparent,
-            errorIndicatorColor = Color.Transparent,
-            focusedTextColor = DarkTextColor,
-            unfocusedTextColor = DarkTextColor,
-            unfocusedPlaceholderColor = DarkTextColor,
-            focusedPlaceholderColor = DarkTextColor,
-            focusedLeadingIconColor = DarkTextColor,
-            unfocusedLeadingIconColor = DarkTextColor,
-            focusedContainerColor = Color.White,
-            unfocusedContainerColor = Color.White,
-            errorLeadingIconColor = Color.Red
-        ),
-        textStyle = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Medium),
-        visualTransformation = visualTransformation,
-        keyboardOptions = KeyboardOptions.Default.copy(keyboardType = keyboardType, imeAction = imeAction),
-        isError = errorState.value
-    )
-}
-
-@Composable
-fun ErrorSuggestion(message: String, isError: Boolean = true) {
-    Row(
-        modifier = Modifier
-            .padding(horizontal = 24.dp)
-            .fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(
-            space = 10.dp,
-        ),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Image(painter = painterResource(id = if (isError) R.drawable.ic_error else R.drawable.ic_success), contentDescription = "Error Icon")
-        Text(text = message, color = MaterialTheme.colorScheme.primary, fontSize = 14.sp)
-    }
-}
-
-*/

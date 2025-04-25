@@ -1,6 +1,5 @@
 package com.azul.azulVentas.ui.presentation.venta.view
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -25,13 +24,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.azul.azulVentas.core.utils.Utility.Companion.ShowRealTimeClock
 import com.azul.azulVentas.core.utils.Utility.Companion.formatCurrency
-import com.azul.azulVentas.ui.presentation.venta.component.CardResumenVenta
+import com.azul.azulVentas.ui.presentation.venta.component.CardResumen
 import com.azul.azulVentas.ui.presentation.venta.component.TipoVentaCard
 import com.azul.azulVentas.ui.presentation.venta.viewmodel.VentaDiaViewModel
 import com.azul.azulVentas.ui.presentation.venta.viewmodel.VentaPeriodoViewModel
@@ -124,7 +122,7 @@ fun VentaScreenCopia(
         Box(
             modifier = Modifier.weight(0.33f)
         ){
-            CardResumenVenta(
+            CardResumen(
                 //titulo = "Día: $diaVenta",
                 //total = formatCurrency(sumVentaDia),
                 //efectivo = formatCurrency(sumVentaDiaEfectivo),
@@ -141,7 +139,7 @@ fun VentaScreenCopia(
         Box(
             modifier = Modifier.weight(0.33f)
         ){
-            CardResumenVenta(
+            CardResumen(
                 //titulo = "Semana: $semana",
                 //total = formatCurrency(sumVentaSemana),
                 //efectivo = formatCurrency(sumVentaSemanaEfectivo),
@@ -166,7 +164,7 @@ fun VentaScreenCopia(
                 horizontalArrangement = Arrangement.spacedBy(0.dp),
             ){
                 items(ventaPeriodo.reversed()) { venta ->
-                    CardResumenVenta(
+                    CardResumen(
                         modifier = Modifier.width(screenWidth/1.15f),
                         titulo = "Periodo: ${venta.nom_periodo}",
                         total = formatCurrency(venta.sum_periodo),

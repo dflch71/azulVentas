@@ -58,16 +58,16 @@ fun BottomNavigationBar(
         ),
 
         NavigationItem(
+            title = "Compras",
+            selectedIcon = Icons.Filled.ShoppingBag,
+            unselectedIcon = Icons.Outlined.ShoppingBag
+        ),
+
+        NavigationItem(
             title = "Egresos",
             selectedIcon = Icons.Filled.BusinessCenter,
             unselectedIcon = Icons.Outlined.BusinessCenter
         ),
-
-        NavigationItem(
-            title = "Compras",
-            selectedIcon = Icons.Filled.ShoppingBag,
-            unselectedIcon = Icons.Outlined.ShoppingBag
-        )
     )
 
     NavigationBar {

@@ -1,9 +1,9 @@
 package com.azul.azulVentas.data.repository.user
 
 
+import com.azul.azulVentas.core.utils.Result
 import com.azul.azulVentas.data.remote.model.EmpresaFB.FirebaseAuthService
 import com.azul.azulVentas.domain.model.user.User
-import com.azul.azulVentas.core.utils.Result
 import javax.inject.Inject
 
 class UserRepositoryImpl @Inject constructor(

@@ -17,10 +17,14 @@ class EmpresaPGRepositoryImpl @Inject constructor(
 
     override suspend fun getEmpresaPGNit(Nit_ID: String): List<EmpresaPG> {
         return withContext(Dispatchers.IO) {
-            val response = apiService.getEmpresaPGNit(Nit_ID)
-            if (response.isSuccessful) {
-                response.body()?.map { it.toDomain() } ?: emptyList()
-            } else {
+            try {
+                val response = apiService.getEmpresaPGNit(Nit_ID)
+                if (response.isSuccessful) {
+                    response.body()?.map { it.toDomain() } ?: emptyList()
+                } else {
+                    emptyList()
+                }
+            } catch (e: Exception) {
                 emptyList()
             }
         }
@@ -28,10 +32,14 @@ class EmpresaPGRepositoryImpl @Inject constructor(
 
     override suspend fun getEmpresaPGEmail(Email: String): List<EmpresaPG> {
         return withContext(Dispatchers.IO) {
-            val response = apiService.getEmpresasPGEmail(Email)
-            if (response.isSuccessful) {
-                response.body()?.map { it.toDomain() } ?: emptyList()
-            } else {
+            try {
+                val response = apiService.getEmpresasPGEmail(Email)
+                if (response.isSuccessful) {
+                    response.body()?.map { it.toDomain() } ?: emptyList()
+                } else {
+                    emptyList()
+                }
+            } catch (e: Exception) {
                 emptyList()
             }
         }
@@ -39,10 +47,14 @@ class EmpresaPGRepositoryImpl @Inject constructor(
 
     override suspend fun getEmpresasPGEmpresaEmail(idEmpresa: String, Email: String): List<UsuarioEmpresas> {
         return withContext(Dispatchers.IO) {
-            val response = apiService.getEmpresasPGEmpresaEmail(idEmpresa, Email)
-            if (response.isSuccessful) {
-                response.body()?.map { it.toDomain() } ?: emptyList()
-            } else {
+            try {
+                val response = apiService.getEmpresasPGEmpresaEmail(idEmpresa, Email)
+                if (response.isSuccessful) {
+                    response.body()?.map { it.toDomain() } ?: emptyList()
+                } else {
+                    emptyList()
+                }
+            } catch (e: Exception) {
                 emptyList()
             }
         }

@@ -6,5 +6,6 @@ data class ResumenOperaciones(
     val tituloPeriodo: String = "",
     val total: String = "",
     val efectivo: String = "",
-    val credito: String = ""
+    val credito: String = "",
+    val facturas: String = ""
 )

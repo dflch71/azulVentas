@@ -101,9 +101,7 @@ fun RegistrationScreenTemplate(
 
 
     LaunchedEffect(keyboardHeight) {
-        coroutineScope.launch {
-            scrollState.scrollBy(keyboardHeight.toFloat())
-        }
+        coroutineScope.launch { scrollState.scrollBy(keyboardHeight.toFloat()) }
     }
 
     val insertUserState by userPGViewModel.insertUserState.collectAsState()
@@ -306,7 +304,12 @@ fun MsgInsert(
                 exit = fadeOut()
             ) {
                 Column {
-                    Row { ErrorSuggestion("Registro exitoso", isError = false, isDark = false) }
+                    Row {
+                        ErrorSuggestion(
+                            "Registro exitoso",
+                            isError = false,
+                            isDark = false)
+                    }
                     Row {
                         ErrorSuggestion(
                             "Actualizando Datos ...",
@@ -336,28 +339,6 @@ fun MsgInsert(
         empresaScreenClicked()
     }
 }
-
-/*@Composable
-fun MsgError(
-    msg: String,
-    userPGViewModel: UserPGViewModel,
-    empresaScreenClicked: () -> Unit
-){
-    Box(
-        modifier = Modifier.fillMaxSize()
-    ) {
-
-        if (msg.contains("End of input at")) {
-            MsgInsert(
-                userPGViewModel,
-                empresaScreenClicked
-            )
-        }
-        else {
-            Row() { ErrorSuggestion("Error PG: $msg", isDark = false) }
-        }
-    }
-}*/
 
 @Composable
 fun MsgError(msg: String, ){

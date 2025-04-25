@@ -26,7 +26,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.azul.azulVentas.core.utils.Utility.Companion.ShowRealTimeClock
 import com.azul.azulVentas.core.utils.Utility.Companion.formatCurrency
-import com.azul.azulVentas.ui.presentation.venta.component.CardResumenVenta
+import com.azul.azulVentas.ui.presentation.venta.component.CardResumen
 import com.azul.azulVentas.ui.presentation.venta.component.TipoVentaCard
 import com.azul.azulVentas.ui.presentation.venta.viewmodel.VentaDiaViewModel
 import com.azul.azulVentas.ui.presentation.venta.viewmodel.VentaPeriodoViewModel
@@ -78,26 +78,46 @@ fun VentaScreen(
         Box(
             modifier = Modifier.weight(0.33f)
         ){
-            CardResumenVenta(
-                titulo = "Día: ${ventaDiaFmt.tituloDia}",
-                total = ventaDiaFmt.total,
-                efectivo = ventaDiaFmt.efectivo,
-                credito = ventaDiaFmt.credito,
-                tipo = TipoVentaCard.DIA
-            )
+            if (ventaDiaFmt.tituloDia.isEmpty()) {
+                CardResumen(
+                    titulo = "Día: no se reportan ventas",
+                    total = "$ 0",
+                    efectivo = "$ 0",
+                    credito = "$ 0",
+                    tipo = TipoVentaCard.DIA
+                )
+            } else {
+                CardResumen(
+                    titulo = "Día: ${ventaDiaFmt.tituloDia}",
+                    total = ventaDiaFmt.total,
+                    efectivo = ventaDiaFmt.efectivo,
+                    credito = ventaDiaFmt.credito,
+                    tipo = TipoVentaCard.DIA
+                )
+            }
         }
 
         Spacer(modifier = Modifier.height(16.dp))
         Box(
             modifier = Modifier.weight(0.33f)
         ){
-            CardResumenVenta(
-                titulo = "Semana: ${ventaSemanaFmt.tituloSemana}",
-                total = ventaSemanaFmt.total,
-                efectivo = ventaSemanaFmt.efectivo,
-                credito = ventaSemanaFmt.credito,
-                tipo = TipoVentaCard.SEMANA
-            )
+            if (ventaSemanaFmt.tituloSemana.isEmpty()) {
+                CardResumen(
+                    titulo = "Semana: no se reportan ventas",
+                    total = "$ 0",
+                    efectivo = "$ 0",
+                    credito = "$ 0",
+                    tipo = TipoVentaCard.SEMANA
+                )
+            } else {
+                CardResumen(
+                    titulo = "Semana: ${ventaSemanaFmt.tituloSemana}",
+                    total = ventaSemanaFmt.total,
+                    efectivo = ventaSemanaFmt.efectivo,
+                    credito = ventaSemanaFmt.credito,
+                    tipo = TipoVentaCard.SEMANA
+                )
+            }
         }
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -106,20 +126,30 @@ fun VentaScreen(
                 .fillMaxWidth()
                 .weight(0.34f)
         ) {
-            LazyRow(
-                modifier = Modifier.fillMaxWidth(),
-                contentPadding = PaddingValues(horizontal = 0.dp),
-                horizontalArrangement = Arrangement.spacedBy(0.dp),
-            ){
-                items(ventaPeriodo.reversed()) { venta ->
-                    CardResumenVenta(
-                        modifier = Modifier.width(screenWidth/1.15f),
-                        titulo = "Periodo: ${venta.nom_periodo}",
-                        total = formatCurrency(venta.sum_periodo),
-                        efectivo = formatCurrency(venta.sum_contado),
-                        credito = formatCurrency(venta.sum_credito),
-                        tipo = TipoVentaCard.PERIODO
-                    )
+            if (ventaPeriodo.isEmpty()) {
+                CardResumen(
+                    titulo = "Periodo: no se reportan ventas",
+                    total = "$ 0",
+                    efectivo = "$ 0",
+                    credito = "$ 0",
+                    tipo = TipoVentaCard.PERIODO
+                )
+            } else {
+                LazyRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentPadding = PaddingValues(horizontal = 0.dp),
+                    horizontalArrangement = Arrangement.spacedBy(0.dp),
+                ) {
+                    items(ventaPeriodo.reversed()) { venta ->
+                        CardResumen(
+                            modifier = Modifier.width(screenWidth / 1.15f),
+                            titulo = "Periodo: ${venta.nom_periodo}",
+                            total = formatCurrency(venta.sum_periodo),
+                            efectivo = formatCurrency(venta.sum_contado),
+                            credito = formatCurrency(venta.sum_credito),
+                            tipo = TipoVentaCard.PERIODO
+                        )
+                    }
                 }
             }
         }

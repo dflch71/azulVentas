@@ -4,11 +4,14 @@ import android.content.Context
 import android.content.SharedPreferences
 import com.azul.azulVentas.core.utils.Constants.AZUL_URL
 import com.azul.azulVentas.data.local.sharePreferences.SessionManager
-import com.azul.azulVentas.data.remote.model.EmpresaFB.EmpresaFBRemoteDataSource
-import com.azul.azulVentas.data.remote.model.EmpresaFB.FirebaseAuthService
+import com.azul.azulVentas.data.remote.api.Compra.CompraApiService
+import com.azul.azulVentas.data.remote.api.Egreso.EgresoApiService
 import com.azul.azulVentas.data.remote.api.EmpresaPG.EmpresaPGApiService
 import com.azul.azulVentas.data.remote.api.UsuarioPG.UsuarioPGApiService
 import com.azul.azulVentas.data.remote.api.Venta.VentaApiService
+import com.azul.azulVentas.data.remote.api.VentaPos.VentaPosApiService
+import com.azul.azulVentas.data.remote.model.EmpresaFB.EmpresaFBRemoteDataSource
+import com.azul.azulVentas.data.remote.model.EmpresaFB.FirebaseAuthService
 import com.azul.azulVentas.data.repository.auth.AuthRepository
 import com.azul.azulVentas.data.repository.auth.AuthRepositoryImp
 import com.azul.azulVentas.data.repository.empresa.EmpresaRepository
@@ -17,12 +20,18 @@ import com.azul.azulVentas.data.repository.empresaFB.EmpresaFBRepository
 import com.azul.azulVentas.data.repository.empresaFB.EmpresaFBRepositoryImpl
 import com.azul.azulVentas.data.repository.user.UserRepository
 import com.azul.azulVentas.data.repository.user.UserRepositoryImpl
+import com.azul.azulVentas.domain.repository.compra.CompraRepository
+import com.azul.azulVentas.domain.repository.compra.CompraRepositoryImpl
+import com.azul.azulVentas.domain.repository.egreso.EgresoRepository
+import com.azul.azulVentas.domain.repository.egreso.EgresoRepositoryImpl
 import com.azul.azulVentas.domain.repository.empresaPG.EmpresaPGRepository
 import com.azul.azulVentas.domain.repository.empresaPG.EmpresaPGRepositoryImpl
 import com.azul.azulVentas.domain.repository.userPG.UserPGRepository
 import com.azul.azulVentas.domain.repository.userPG.UserPGRepositoryImpl
 import com.azul.azulVentas.domain.repository.venta.VentaRepository
 import com.azul.azulVentas.domain.repository.venta.VentaRepositoryImpl
+import com.azul.azulVentas.domain.repository.ventaPos.VentaPosRepository
+import com.azul.azulVentas.domain.repository.ventaPos.VentaPosRepositoryImpl
 import com.azul.azulVentas.domain.usecases.auth.SendPasswordResetUseCase
 import com.azul.azulVentas.domain.usecases.empresa.AddEmpresaUseCase
 import com.azul.azulVentas.domain.usecases.empresaFB.BuscarEmpresaFBPorNitUseCase
@@ -41,11 +50,11 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
-import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -246,6 +255,44 @@ object AppModule {
         return VentaRepositoryImpl(apiService)
     }
 
+    @Provides
+    @Singleton
+    fun provideVentaPosApiService(retrofit: Retrofit): VentaPosApiService {
+        return retrofit.create(VentaPosApiService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideVentaPosRepository(apiService: VentaPosApiService): VentaPosRepository {
+        return VentaPosRepositoryImpl(apiService)
+    }
+
+    @Provides
+    @Singleton
+    fun provideEgresoApiService(retrofit: Retrofit): EgresoApiService {
+        return retrofit.create(EgresoApiService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideEgresoRepository(apiService: EgresoApiService): EgresoRepository {
+        return EgresoRepositoryImpl(apiService)
+    }
+
+    @Provides
+    @Singleton
+    fun provideCompraApiService(retrofit: Retrofit): CompraApiService {
+        return retrofit.create(CompraApiService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideCompraRepository(apiService: CompraApiService): CompraRepository {
+        return CompraRepositoryImpl(apiService)
+    }
+
+    //@Provides
+    //fun provideAuthRepository(): AuthRepository = AuthRepositoryImpl()
 
 }
 

@@ -8,5 +8,6 @@ data class ResumenDiaResponse(
     @SerializedName("hora_dia") val HoraDia: Int,
     @SerializedName("sum_hora") val SumHora: Double,
     @SerializedName("sum_contado") val SumContado: Double,
-    @SerializedName("sum_credito") val SumCredito: Double
+    @SerializedName("sum_credito") val SumCredito: Double,
+    @SerializedName("facturas") val SumFactura: Int
 )

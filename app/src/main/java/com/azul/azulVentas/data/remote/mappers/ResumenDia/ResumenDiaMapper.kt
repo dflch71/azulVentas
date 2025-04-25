@@ -10,6 +10,7 @@ fun ResumenDiaResponse.toDomain(): ResumenDia {
         hora_dia = this.HoraDia ?: 0,
         sum_hora = this.SumHora ?: 0.0,
         sum_contado = this.SumContado ?: 0.0,
-        sum_credito = this.SumCredito ?: 0.0
+        sum_credito = this.SumCredito ?: 0.0,
+        sum_factura = this.SumFactura ?: 0,
     )
 }

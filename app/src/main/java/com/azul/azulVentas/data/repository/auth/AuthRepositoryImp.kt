@@ -18,4 +18,16 @@ class AuthRepositoryImp @Inject constructor(
             Result.failure(Exception("Error al enviar el correo:\n${e.localizedMessage}"))
         }
     }
+
+    //Anonimus Authentication
+    override suspend fun signInAnonymously(): Result<Unit> = try {
+        firebaseAuth.signInAnonymously().await()
+        Result.success(Unit)
+    } catch (e: Exception) {
+        Result.failure(e)
+    }
+
+    override fun isUserAuthenticated(): Boolean {
+        return firebaseAuth.currentUser != null
+    }
 }

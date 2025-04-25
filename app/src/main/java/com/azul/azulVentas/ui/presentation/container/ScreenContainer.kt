@@ -6,7 +6,13 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.azul.azulEgresos.ui.presentation.egreso.viewmodel.EgresoPeriodoViewModel
 import com.azul.azulVentas.ui.presentation.clientes.viewmodel.ClientesViewModel
+import com.azul.azulVentas.ui.presentation.compra.viewmodel.CompraDiaViewModel
+import com.azul.azulVentas.ui.presentation.compra.viewmodel.CompraPeriodoViewModel
+import com.azul.azulVentas.ui.presentation.compra.viewmodel.CompraSemanaViewModel
+import com.azul.azulVentas.ui.presentation.egreso.viewmodel.EgresoDiaViewModel
+import com.azul.azulVentas.ui.presentation.egreso.viewmodel.EgresoSemanaViewModel
 import com.azul.azulVentas.ui.presentation.empresa.view.EmpresaScreen
 import com.azul.azulVentas.ui.presentation.empresa.viewmodel.EmpresaViewModel
 import com.azul.azulVentas.ui.presentation.empresaFB.view.EmpresaFBScreen
@@ -30,6 +36,9 @@ import com.azul.azulVentas.ui.presentation.usuarioEmpresas.viewmodel.UsuarioEmpr
 import com.azul.azulVentas.ui.presentation.venta.viewmodel.VentaDiaViewModel
 import com.azul.azulVentas.ui.presentation.venta.viewmodel.VentaPeriodoViewModel
 import com.azul.azulVentas.ui.presentation.venta.viewmodel.VentaSemanaViewModel
+import com.azul.azulVentas.ui.presentation.ventaPOS.viewModel.VentaPosDiaViewModel
+import com.azul.azulVentas.ui.presentation.ventaPOS.viewModel.VentaPosPeriodoViewModel
+import com.azul.azulVentas.ui.presentation.ventaPOS.viewModel.VentaPosSemanaViewModel
 import com.azul.azulVentas.ui.presentation.welcome.view.WelcomeScreen
 
 @Composable
@@ -49,8 +58,18 @@ fun ScreenContainer(
     registerEmailViewModel: RegisterEmailViewModel,
     ventaDiaViewModel: VentaDiaViewModel,
     ventaSemanaViewModel: VentaSemanaViewModel,
-    ventaPeriodoViewModel: VentaPeriodoViewModel
-) {
+    ventaPeriodoViewModel: VentaPeriodoViewModel,
+    ventaPosDiaViewModel: VentaPosDiaViewModel,
+    ventaPosSemanaViewModel: VentaPosSemanaViewModel,
+    ventaPosPeriodoViewModel: VentaPosPeriodoViewModel,
+    egresoDiaViewModel: EgresoDiaViewModel,
+    egresoSemanaViewModel: EgresoSemanaViewModel,
+    egresoPeriodoViewModel: EgresoPeriodoViewModel,
+    compraDiaViewModel: CompraDiaViewModel,
+    compraSemanaViewModel: CompraSemanaViewModel,
+    compraPeriodoViewModel: CompraPeriodoViewModel,
+
+    ) {
 
     NavHost(
         navController = navHost,
@@ -130,7 +149,7 @@ fun ScreenContainer(
             EmpresaScreen(
                 empresaViewModel,
                 navController = navHost,
-                onButtonClicked = { navHost.navigate(NavGraph.Login.route) {
+                onButtonClicked = { navHost.navigate(NavGraph.Welcome.route) {
                     popUpTo(NavGraph.Welcome.route) { inclusive = true }
                 } }
             )
@@ -188,8 +207,6 @@ fun ScreenContainer(
             backStackEntry ->
             val idEmpresa = backStackEntry.arguments?.getString(NavGraph.Home.idEmpresaArg)
 
-
-
             if (idEmpresa != null) {
                 HomeScreen(
                     navController = navHost,
@@ -204,7 +221,16 @@ fun ScreenContainer(
                     idEmpresa = idEmpresa ?: "",
                     ventaDiaViewModel,
                     ventaSemanaViewModel,
-                    ventaPeriodoViewModel
+                    ventaPeriodoViewModel,
+                    ventaPosDiaViewModel,
+                    ventaPosSemanaViewModel,
+                    ventaPosPeriodoViewModel,
+                    egresoDiaViewModel,
+                    egresoSemanaViewModel,
+                    egresoPeriodoViewModel,
+                    compraDiaViewModel,
+                    compraSemanaViewModel,
+                    compraPeriodoViewModel
                 )
             }
         }

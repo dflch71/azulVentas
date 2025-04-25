@@ -1,6 +1,5 @@
-package com.azul.azulVentas.ui.presentation.venta.component
+package com.azul.azulVentas.ui.presentation.egreso.component
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -13,10 +12,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
-import androidx.compose.material.icons.filled.AccountTree
-import androidx.compose.material.icons.filled.ArrowCircleRight
-import androidx.compose.material.icons.filled.ArrowForward
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
@@ -26,42 +21,40 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-enum class TipoVentaCard {
+enum class TipoCard {
     DIA, SEMANA, PERIODO
 }
 
 @Composable
-fun CardResumenVenta(
+fun CardEgreso(
     modifier: Modifier = Modifier,
     titulo: String,
     total: String,
-    efectivo: String,
-    credito: String,
-    tipo: TipoVentaCard,
+    facturas: String,
+    tipo: TipoCard,
     onClick: () -> Unit = {}
 ) {
     val fondoPrincipal = when (tipo) {
-        TipoVentaCard.DIA -> Color(0xFFe9e9e9)
-        TipoVentaCard.SEMANA -> Color(0xFFEFECF5)
-        TipoVentaCard.PERIODO -> Color(0xFFF9FBE7)
+        TipoCard.DIA -> Color(0xFFe9e9e9)
+        TipoCard.SEMANA -> Color(0xFFEFECF5)
+        TipoCard.PERIODO -> Color(0xFFF9FBE7)
     }
 
     val colorEfectivo = when (tipo) {
-        TipoVentaCard.DIA -> Color(0xFFDEDEDE)
-        TipoVentaCard.SEMANA -> Color(0xFFECE4FA)
-        TipoVentaCard.PERIODO -> Color(0xFFDCEDC8)
+        TipoCard.DIA -> Color(0xFFDEDEDE)
+        TipoCard.SEMANA -> Color(0xFFECE4FA)
+        TipoCard.PERIODO -> Color(0xFFDCEDC8)
     }
 
     val colorCredito = when (tipo) {
-        TipoVentaCard.DIA -> Color(0xFFDEDEDE)
-        TipoVentaCard.SEMANA -> Color(0xFFECE4FA)
-        TipoVentaCard.PERIODO -> Color(0xFFDCEDC8)
+        TipoCard.DIA -> Color(0xFFDEDEDE)
+        TipoCard.SEMANA -> Color(0xFFECE4FA)
+        TipoCard.PERIODO -> Color(0xFFDCEDC8)
     }
 
     ElevatedCard(
@@ -94,7 +87,7 @@ fun CardResumenVenta(
                     modifier = Modifier.weight(0.9f),
                 )
 
-                if (tipo == TipoVentaCard.PERIODO) {
+                if (tipo == TipoCard.PERIODO) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowForward,
                         contentDescription = "Estrella",
@@ -129,22 +122,8 @@ fun CardResumenVenta(
                     contentAlignment = Alignment.Center
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text(efectivo, fontSize = 16.sp, fontWeight = FontWeight.Light)
-                        Text("Efectivo", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = Color.DarkGray)
-                    }
-                }
-
-                // Crédito
-                Box(
-                    modifier = Modifier
-                        .padding(8.dp)
-                        .weight(0.5f)
-                        .background(colorCredito, shape = RoundedCornerShape(10.dp)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text(credito, fontSize = 16.sp, fontWeight = FontWeight.Light)
-                        Text("Crédito", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = Color.DarkGray)
+                        Text(facturas, fontSize = 16.sp, fontWeight = FontWeight.Light)
+                        Text("Facturas", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = Color.DarkGray)
                     }
                 }
             }

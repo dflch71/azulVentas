@@ -6,5 +6,6 @@ data class ResumenDia(
     val hora_dia: Int,
     val sum_hora: Double,
     val sum_contado: Double,
-    val sum_credito: Double
+    val sum_credito: Double,
+    val sum_factura: Int
 )
