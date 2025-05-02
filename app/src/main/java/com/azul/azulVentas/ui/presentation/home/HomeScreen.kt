@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBackIos
 import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.ArrowBackIos
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -48,11 +47,12 @@ import com.azul.azulVentas.ui.presentation.ventaPOS.viewModel.VentaPosSemanaView
 
 @Composable
 fun HomeScreen(
+    idEmpresa: String,
+    nombreEmpresa: String,
     navController: NavController,
     clientesViewModel: ClientesViewModel,
     authViewModel: AuthViewModel,
     onLogoutSuccess : () -> Unit,
-    idEmpresa: String,
     ventaDiaViewModel: VentaDiaViewModel,
     ventaSemanaViewModel: VentaSemanaViewModel,
     ventaPeriodoViewModel: VentaPeriodoViewModel,
@@ -90,10 +90,10 @@ fun HomeScreen(
                     //.verticalScroll(rememberScrollState())
             ) {
                 when (selectedItemIndex) {
-                    0 -> { VentaScreen(idEmpresa, ventaDiaViewModel, ventaSemanaViewModel, ventaPeriodoViewModel ) }
-                    1 -> { VentaPosScreen(idEmpresa, ventaPosDiaViewModel, ventaPosSemanaViewModel, ventaPosPeriodoViewModel) }
-                    2 -> { CompraScreen(idEmpresa, compraDiaViewModel, compraSemanaViewModel, compraPeriodoViewModel)  }
-                    3 -> { EgresoScreen(idEmpresa, egresoDiaViewModel, egresoSemanaViewModel, egresoPeriodoViewModel)}
+                    0 -> { VentaScreen(idEmpresa, nombreEmpresa, ventaDiaViewModel, ventaSemanaViewModel, ventaPeriodoViewModel ) }
+                    1 -> { VentaPosScreen(idEmpresa, nombreEmpresa, ventaPosDiaViewModel, ventaPosSemanaViewModel, ventaPosPeriodoViewModel) }
+                    2 -> { CompraScreen(idEmpresa, nombreEmpresa, compraDiaViewModel, compraSemanaViewModel, compraPeriodoViewModel)  }
+                    3 -> { EgresoScreen(idEmpresa, nombreEmpresa, egresoDiaViewModel, egresoSemanaViewModel, egresoPeriodoViewModel)}
                 }
             }
         }

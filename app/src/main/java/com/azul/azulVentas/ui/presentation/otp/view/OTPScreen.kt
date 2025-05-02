@@ -63,6 +63,9 @@ fun OTPScreen(
     val focusRequester4 = FocusRequester()
     val focusRequester5 = FocusRequester()
 
+    var isError by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf("") }
+
     //count down
     val timer = object : CountDownTimer(12000, 1000) {
         override fun onTick(millisUntilFinished: Long) {}
@@ -127,10 +130,9 @@ fun OTPScreen(
         ) {
             OTPTexField(focusRequester = focusRequester1) { newText ->
                 otp1 = newText
-                if (otp1.text.isNotEmpty()) {
-                    focusRequester2.requestFocus()
-                }
+                if (otp1.text.isNotEmpty()) { focusRequester2.requestFocus() }
             }
+
             OTPTexField(focusRequester = focusRequester2) { newText ->
                 otp2 = newText
                 if (otp2.text.length == 1) {
@@ -165,22 +167,22 @@ fun OTPScreen(
 
         Spacer(modifier = Modifier.fillMaxHeight(0.3f))
 
-        //Otro tipo de boton de verificacion
-        /*
-        CustomDefaultBtn(shapeSize = 50f, btnText = "Verify") {
-            onEmpresaClicked()
-            //if ((otp1.text + otp2.text + otp3.text + otp4.text + otp5.text).length == 5) {
-            //    onEmpresaClicked()
-            //}
-        }
-        */
-
         ActionButton(
             text = "Verificar",
             isNavigationArrowVisible = true,
             onClicked = {
-                onEmpresaClicked()
-                //if ((otp1.text + otp2.text + otp3.text + otp4.text + otp5.text).length == 5) { onEmpresaClicked() }
+                //onEmpresaClicked()
+                if ((otp1.text + otp2.text + otp3.text + otp4.text + otp5.text).length == 5) {
+                    if (otp1.text + otp2.text + otp3.text + otp4.text + otp5.text == "90125") {
+                        onEmpresaClicked()
+                    } else {
+                        isError = true
+                        errorMessage = "El código OTP es incorrecto."
+                    }
+                } else {
+                    isError = true
+                    errorMessage = "Por favor, ingrese el código completo."
+                }
             },
             onLongClicked = {},
             colors = ButtonDefaults.buttonColors(
@@ -190,8 +192,16 @@ fun OTPScreen(
             shadowColor = PrimaryYellowDark
         )
 
-        Spacer(modifier = Modifier.fillMaxHeight(0.3f))
+        Spacer(modifier = Modifier.height(20.dp))
+        if (isError) {
+            Text(
+                text = errorMessage,
+                color = MaterialTheme.colorScheme.primary,
+                textAlign = TextAlign.Center
+            )
+        }
 
+        Spacer(modifier = Modifier.fillMaxHeight(0.3f))
         Text(
             text = buildAnnotatedString {
                 append("Este código expira en: ")

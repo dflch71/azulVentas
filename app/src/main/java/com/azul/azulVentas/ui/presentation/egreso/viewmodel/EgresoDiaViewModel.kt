@@ -58,17 +58,21 @@ class EgresoDiaViewModel @Inject constructor(
             val response = getEgresoDiaUseCase(empresaID)
             _egresoDia.postValue(response)
 
+            _egresoDiaFormatted.value = ResumenOperaciones(
+                tituloDia = "",
+                total = "",
+                efectivo = "",
+                credito = "",
+                facturas = "",
+            )
+
             if (response.isNotEmpty()) {
                 val fecha = response.first().fecha_dia + "T00:00:00"
                 val date = stringToLocalDateTime(fecha) ?: LocalDateTime.now()
                 val tDia = "${formatDate(response.first().fecha_dia)} - ${calculateDaysToTargetDate(date)} Días"
-                //val tSemana = "${formatDate(response.first().fecha_dia)} - ${formatDate(response.last().fecha_dia)}"
-                //val tPeriodo = ""
 
                 _egresoDiaFormatted.value = ResumenOperaciones(
                     tituloDia = tDia,
-                    //tituloSemana = tSemana,
-                    //tituloPeriodo = tPeriodo,
                     total = formatCurrency(response.sumOf { it.sum_hora }),
                     efectivo = formatCurrency(response.sumOf { it.sum_contado }),
                     credito = formatCurrency(response.sumOf { it.sum_credito }),

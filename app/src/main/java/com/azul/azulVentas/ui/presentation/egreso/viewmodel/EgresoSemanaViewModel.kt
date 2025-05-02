@@ -55,6 +55,14 @@ class EgresoSemanaViewModel @Inject constructor(
             val response = getEgresoSemanaUseCase(empresaID)
             _egresoSemana.postValue(response)
 
+            _egresoSemanaFormatted.value = ResumenOperaciones(
+                tituloSemana = "",
+                total = "",
+                efectivo = "",
+                credito = "",
+                facturas = ""
+            )
+
             if (response.isNotEmpty()) {
                 val titulo = "${formatDate(response.first().fecha_dia)} a ${formatDate(response.last().fecha_dia)}"
                 _egresoSemanaFormatted.value = ResumenOperaciones(

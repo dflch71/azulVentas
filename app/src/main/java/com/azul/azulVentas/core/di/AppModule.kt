@@ -291,9 +291,6 @@ object AppModule {
         return CompraRepositoryImpl(apiService)
     }
 
-    //@Provides
-    //fun provideAuthRepository(): AuthRepository = AuthRepositoryImpl()
-
 }
 
 

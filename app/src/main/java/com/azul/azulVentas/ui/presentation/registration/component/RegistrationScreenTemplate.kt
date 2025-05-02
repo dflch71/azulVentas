@@ -145,9 +145,7 @@ fun RegistrationScreenTemplate(
         )
         {
             Box(modifier = Modifier.weight(0.5f)) {
-                DefaultBackArrow {
-                    navController.popBackStack()
-                }
+                DefaultBackArrow { navController.popBackStack() }
             }
             Box(modifier = Modifier.weight(1.5f)) {
                 Text(

@@ -21,6 +21,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -36,12 +37,13 @@ import com.azul.azulVentas.ui.theme.DarkTextColor
 @Composable
 fun VentaPosScreen(
     empresaID: String,
+    nombreEmpresa: String,
     ventaPosDiaViewModel: VentaPosDiaViewModel,
     ventaPosSemanaViewModel: VentaPosSemanaViewModel,
     ventaPosPeriodoViewModel: VentaPosPeriodoViewModel,
 ) {
 
-    val ventaDiaFmt by ventaPosDiaViewModel.ventaDiaFormatted
+    val ventaPosDiaFmt by ventaPosDiaViewModel.ventaPosDiaFormatted
     val ventaSemanaFmt by ventaPosSemanaViewModel.ventaSemanaFormatted
 
     //Venta Periodo
@@ -62,7 +64,6 @@ fun VentaPosScreen(
             .fillMaxSize()
             .systemBarsPadding()
     ) {
-        Spacer(modifier = Modifier.height(4.dp))
         Text(
             text = "Ventas POS",
             style = MaterialTheme.typography.headlineLarge,
@@ -71,27 +72,37 @@ fun VentaPosScreen(
             color = DarkTextColor
         )
 
-        Spacer(modifier = Modifier.height(4.dp))
+        Text(
+            text = "$nombreEmpresa - $empresaID",
+            style = MaterialTheme.typography.bodyMedium,
+            fontWeight = FontWeight.SemiBold,
+            modifier = Modifier.padding(horizontal = 16.dp),
+            color = Color.DarkGray,
+            maxLines = 1
+        )
+
         ShowRealTimeClock()
 
         Spacer(modifier = Modifier.height(16.dp))
         Box(
             modifier = Modifier.weight(0.33f)
         ){
-            if (ventaDiaFmt.tituloDia.isEmpty()) {
+            if (ventaPosDiaFmt.tituloDia.isEmpty()) {
                 CardResumen(
                     titulo = "Día: no se reportan ventas Pos",
                     total = "$ 0",
                     efectivo = "$ 0",
                     credito = "$ 0",
+                    tipoResumen = "POS",
                     tipo = TipoVentaCard.DIA
                 )
             } else {
                 CardResumen(
-                    titulo = "Día: ${ventaDiaFmt.tituloDia}",
-                    total = ventaDiaFmt.total,
-                    efectivo = ventaDiaFmt.efectivo,
-                    credito = ventaDiaFmt.credito,
+                    titulo = "Día: ${ventaPosDiaFmt.tituloDia}",
+                    total = ventaPosDiaFmt.total,
+                    efectivo = ventaPosDiaFmt.efectivo,
+                    credito = ventaPosDiaFmt.credito,
+                    tipoResumen = "POS",
                     tipo = TipoVentaCard.DIA
                 )
             }
@@ -103,18 +114,20 @@ fun VentaPosScreen(
         ){
             if (ventaSemanaFmt.tituloSemana.isEmpty()) {
                 CardResumen(
-                    titulo = "Semana: no se reportan ventas Pos",
+                    titulo = "Últ 7 Días: no se reportan ventas Pos",
                     total = "$ 0",
                     efectivo = "$ 0",
                     credito = "$ 0",
+                    tipoResumen = "POS",
                     tipo = TipoVentaCard.SEMANA
                 )
             } else {
                 CardResumen(
-                    titulo = "Semana: ${ventaSemanaFmt.tituloSemana}",
+                    titulo = "Últ 7 Días: ${ventaSemanaFmt.tituloSemana}",
                     total = ventaSemanaFmt.total,
                     efectivo = ventaSemanaFmt.efectivo,
                     credito = ventaSemanaFmt.credito,
+                    tipoResumen = "POS",
                     tipo = TipoVentaCard.SEMANA
                 )
             }
@@ -132,6 +145,7 @@ fun VentaPosScreen(
                     total = "$ 0",
                     efectivo = "$ 0",
                     credito = "$ 0",
+                    tipoResumen = "POS",
                     tipo = TipoVentaCard.PERIODO
                 )
             } else {
@@ -147,6 +161,7 @@ fun VentaPosScreen(
                             total = formatCurrency(venta.sum_periodo),
                             efectivo = formatCurrency(venta.sum_contado),
                             credito = formatCurrency(venta.sum_credito),
+                            tipoResumen = "POS",
                             tipo = TipoVentaCard.PERIODO
                         )
                     }

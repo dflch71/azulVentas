@@ -36,6 +36,7 @@ class EmpresaViewModel @Inject constructor(
     ){
         viewModelScope.launch {
 
+            //Autenticación Anónima para Firebase
             if (!authRepository.isUserAuthenticated()) {
                 val authResult = signInAnonymouslyUseCase()
                 if (authResult.isFailure) {

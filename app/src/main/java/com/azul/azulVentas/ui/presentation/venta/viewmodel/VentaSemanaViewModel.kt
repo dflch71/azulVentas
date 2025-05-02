@@ -55,6 +55,13 @@ class VentaSemanaViewModel @Inject constructor(
             val response = getVentaSemanaUseCase(empresaID)
             _ventaSemana.postValue(response)
 
+            _ventaSemanaFormatted.value = ResumenOperaciones(
+                tituloSemana = "",
+                total = "",
+                efectivo = "",
+                credito = ""
+            )
+
             if (response.isNotEmpty()) {
                 val titulo = "${formatDate(response.first().fecha_dia)} a ${formatDate(response.last().fecha_dia)}"
                 _ventaSemanaFormatted.value = ResumenOperaciones(

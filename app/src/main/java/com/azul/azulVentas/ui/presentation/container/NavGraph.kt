@@ -1,14 +1,17 @@
 package com.azul.azulVentas.ui.presentation.container
 
+
+
 sealed class NavGraph (val route: String) {
     object Welcome: NavGraph("welcome_screen")
     object Login: NavGraph("login_screen")
     object Registration: NavGraph("registration_screen/{idEmpresa}/{nomEmpresa}/{idPG}"){
         fun createRoute(idEmpresa: String, nomEmpresa: String, idPG: String) = "registration_screen/$idEmpresa/$nomEmpresa/$idPG"
     }
-    object Home: NavGraph("home_screen/{idEmpresa}") {
+    object Home: NavGraph("home_screen/{idEmpresa}/{nomEmpresa}") {
         const val idEmpresaArg = "idEmpresa"
-        fun createRoute(idEmpresa: String) = "home_screen/$idEmpresa"
+        const val nomEmpresaArg = "nomEmpresa"
+        fun createRoute(idEmpresa: String, nomEmpresa: String) = "home_screen/$idEmpresa/$nomEmpresa"
     }
     object OTP: NavGraph("otp_screen")
     object Empresa: NavGraph("empresa_screen")

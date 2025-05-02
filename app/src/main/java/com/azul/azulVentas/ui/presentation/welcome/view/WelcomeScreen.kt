@@ -140,19 +140,19 @@ private fun WelcomeContent(
 
         Spacer(modifier = Modifier.height(24.dp))
         Text(
-            text = "Let's start now!",
+            text = "Azul Soluciones",
             style = MaterialTheme.typography.headlineLarge,
             fontWeight = FontWeight.Black,
             modifier = Modifier.padding(horizontal = 24.dp),
             color = DarkTextColor
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        //Spacer(modifier = Modifier.height(16.dp))
         Text(
-            text = "Create a beautiful Login App using \n Kotlin, Jetpack Compose, and Material3",
+            text = "Registre su Empresa y tenga La información\n de los movimientos financieros de su Negocio",
             modifier = Modifier.padding(horizontal = 24.dp),
             textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.bodyLarge,
+            style = MaterialTheme.typography.bodyMedium,
             color = DarkTextColor
         )
 
@@ -238,7 +238,7 @@ private fun WelcomeContent(
         Spacer(modifier = Modifier.weight(weight = 1f))
 
         ActionButton(
-            text = "Next",
+            text = "Siguiente",
             isNavigationArrowVisible = true,
             onClicked = onOpenLoginClicked,
             onLongClicked = onOpenOTPClicked,

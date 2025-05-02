@@ -309,7 +309,7 @@ fun EmpresaScreenTemplate(
                         toUpperCase(direccion.text),
                         toUpperCase(ciudad.text),
                         toUpperCase(departamento.text),
-                        "gs://azul-invoice.appspot.com/azulSoluciones.png",
+                        "https://firebasestorage.googleapis.com/v0/b/azul-invoice.appspot.com/o/azulSoluciones.png?alt=media&token=c2d697cd-1151-4577-94a6-f39a41da656c",
                         email.text,
                         toUpperCase(repLegal.text),
                         toUpperCase(telefono.text)

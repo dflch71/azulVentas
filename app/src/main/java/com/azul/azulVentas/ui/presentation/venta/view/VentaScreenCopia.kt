@@ -123,14 +123,11 @@ fun VentaScreenCopia(
             modifier = Modifier.weight(0.33f)
         ){
             CardResumen(
-                //titulo = "Día: $diaVenta",
-                //total = formatCurrency(sumVentaDia),
-                //efectivo = formatCurrency(sumVentaDiaEfectivo),
-                //credito = formatCurrency(sumVentaDiaCredito),
                 titulo = "Día: ${ventaDiaFmt.tituloDia}",
                 total = ventaDiaFmt.total,
                 efectivo = ventaDiaFmt.efectivo,
                 credito = ventaDiaFmt.credito,
+                tipoResumen = "",
                 tipo = TipoVentaCard.DIA
             )
         }
@@ -140,14 +137,11 @@ fun VentaScreenCopia(
             modifier = Modifier.weight(0.33f)
         ){
             CardResumen(
-                //titulo = "Semana: $semana",
-                //total = formatCurrency(sumVentaSemana),
-                //efectivo = formatCurrency(sumVentaSemanaEfectivo),
-                //credito = formatCurrency(sumVentaSemanaCredito),
                 titulo = "Semana: ${ventaSemanaFmt.tituloSemana}",
                 total = ventaSemanaFmt.total,
                 efectivo = ventaSemanaFmt.efectivo,
                 credito = ventaSemanaFmt.credito,
+                tipoResumen = "",
                 tipo = TipoVentaCard.SEMANA
             )
         }
@@ -170,6 +164,7 @@ fun VentaScreenCopia(
                         total = formatCurrency(venta.sum_periodo),
                         efectivo = formatCurrency(venta.sum_contado),
                         credito = formatCurrency(venta.sum_credito),
+                        tipoResumen = "",
                         tipo = TipoVentaCard.PERIODO
                     )
                 }

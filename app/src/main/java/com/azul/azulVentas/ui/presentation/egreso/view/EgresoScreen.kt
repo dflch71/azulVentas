@@ -21,12 +21,14 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.azul.azulEgresos.ui.presentation.egreso.viewmodel.EgresoPeriodoViewModel
 import com.azul.azulVentas.core.utils.Utility.Companion.ShowRealTimeClock
 import com.azul.azulVentas.core.utils.Utility.Companion.formatCurrency
+import com.azul.azulVentas.domain.model.resumenOperaciones.ResumenOperaciones
 import com.azul.azulVentas.ui.presentation.egreso.viewmodel.EgresoDiaViewModel
 import com.azul.azulVentas.ui.presentation.egreso.viewmodel.EgresoSemanaViewModel
 import com.azul.azulVentas.ui.presentation.venta.component.CardResumen
@@ -38,6 +40,7 @@ import com.azul.azulVentas.ui.theme.DarkTextColor
 @Composable
 fun EgresoScreen(
     empresaID: String,
+    nombreEmpresa: String,
     egresoDiaViewModel: EgresoDiaViewModel,
     egresoSemanaViewModel: EgresoSemanaViewModel,
     egresoPeriodoViewModel: EgresoPeriodoViewModel,
@@ -63,7 +66,7 @@ fun EgresoScreen(
             .fillMaxSize()
             .systemBarsPadding()
     ) {
-        Spacer(modifier = Modifier.height(4.dp))
+
         Text(
             text = "Egresos",
             style = MaterialTheme.typography.headlineLarge,
@@ -72,7 +75,15 @@ fun EgresoScreen(
             color = DarkTextColor
         )
 
-        Spacer(modifier = Modifier.height(4.dp))
+        Text(
+            text = "$nombreEmpresa - $empresaID",
+            style = MaterialTheme.typography.bodyMedium,
+            fontWeight = FontWeight.SemiBold,
+            modifier = Modifier.padding(horizontal = 16.dp),
+            color = Color.DarkGray,
+            maxLines = 1
+        )
+
         ShowRealTimeClock()
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -102,14 +113,14 @@ fun EgresoScreen(
         ){
             if (egresoSemanaFmt.tituloSemana.isEmpty()) {
                 CardEgreso(
-                    titulo = "Semana: no se reportan egresos",
+                    titulo = "Últ 7 Días: no se reportan egresos",
                     total = "$ 0",
                     facturas = "0",
                     tipo = TipoCard.SEMANA
                 )
             } else {
                 CardEgreso(
-                    titulo = "Semana: ${egresoSemanaFmt.tituloSemana}",
+                    titulo = "Últ 7 Días: ${egresoSemanaFmt.tituloSemana}",
                     total = egresoSemanaFmt.total,
                     facturas = egresoSemanaFmt.facturas,
                     tipo = TipoCard.SEMANA
@@ -124,12 +135,11 @@ fun EgresoScreen(
                 .weight(0.34f)
         ) {
             if (egresoPeriodo.isEmpty()) {
-                CardResumen(
+                CardEgreso(
                     titulo = "Periodo: no se reportan egresos",
                     total = "$ 0",
-                    efectivo = "$ 0",
-                    credito = "$ 0",
-                    tipo = TipoVentaCard.PERIODO
+                    facturas = "0",
+                    tipo = TipoCard.PERIODO
                 )
             } else {
                 LazyRow(

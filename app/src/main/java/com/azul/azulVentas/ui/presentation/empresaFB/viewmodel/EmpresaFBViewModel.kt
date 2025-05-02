@@ -1,8 +1,11 @@
 package com.azul.azulVentas.ui.presentation.empresaFB.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.azul.azulVentas.data.repository.auth.AuthRepository
 import com.azul.azulVentas.domain.model.empresaFB.EmpresaFB
+import com.azul.azulVentas.domain.usecases.auth.SignInAnonymouslyUseCase
 import com.azul.azulVentas.domain.usecases.empresaFB.BuscarEmpresaFBPorNitUseCase
 import com.azul.azulVentas.domain.usecases.empresaFB.ObtenerEmpresasFBUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -14,7 +17,9 @@ import javax.inject.Inject
 @HiltViewModel
 class EmpresaFBViewModel @Inject constructor(
     private val obtenerEmpresasUseCase: ObtenerEmpresasFBUseCase,
-    private val buscarEmpresaPorNitUseCase: BuscarEmpresaFBPorNitUseCase
+    private val buscarEmpresaPorNitUseCase: BuscarEmpresaFBPorNitUseCase,
+    private val signInAnonymouslyUseCase: SignInAnonymouslyUseCase,
+    private val authRepository: AuthRepository
 ) : ViewModel() {
 
     // Sealed class for state management
@@ -58,6 +63,15 @@ class EmpresaFBViewModel @Inject constructor(
         viewModelScope.launch {
             _empresaEncontradaState.value = EmpresaEncontradaState.Loading
             try {
+
+                if (!authRepository.isUserAuthenticated()) {
+                    val authResult = signInAnonymouslyUseCase()
+                    if (authResult.isFailure) {
+                        Log.e("Auth", "Fallo autenticación anónima: ${authResult.exceptionOrNull()?.message}")
+                        return@launch
+                    }
+                }
+
                 buscarEmpresaPorNitUseCase(nit).collect { empresa ->
                     _empresaEncontradaState.value = EmpresaEncontradaState.Success(empresa)
                     if ((empresa == null) && (nit.isNotEmpty())) {
@@ -66,7 +80,7 @@ class EmpresaFBViewModel @Inject constructor(
                 }
             } catch (e: Exception) {
                 _empresaEncontradaState.value =
-                    EmpresaEncontradaState.Error("Error finding company")
+                    EmpresaEncontradaState.Error("Error Firebase RealtimeDatabase: ${e.message}")
             }
         }
     }

@@ -21,6 +21,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -36,6 +37,7 @@ import com.azul.azulVentas.ui.theme.DarkTextColor
 @Composable
 fun VentaScreen(
     empresaID: String,
+    nombreEmpresa: String,
     ventaDiaViewModel: VentaDiaViewModel,
     ventaSemanaViewModel: VentaSemanaViewModel,
     ventaPeriodoViewModel: VentaPeriodoViewModel,
@@ -62,7 +64,7 @@ fun VentaScreen(
             .fillMaxSize()
             .systemBarsPadding()
     ) {
-        Spacer(modifier = Modifier.height(4.dp))
+
         Text(
             text = "Ventas",
             style = MaterialTheme.typography.headlineLarge,
@@ -71,7 +73,16 @@ fun VentaScreen(
             color = DarkTextColor
         )
 
-        Spacer(modifier = Modifier.height(4.dp))
+        Text(
+            text = "$nombreEmpresa - $empresaID",
+            style = MaterialTheme.typography.bodyMedium,
+            fontWeight = FontWeight.SemiBold,
+            modifier = Modifier.padding(horizontal = 16.dp),
+            color = Color.DarkGray,
+            maxLines = 1,
+
+        )
+
         ShowRealTimeClock()
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -84,6 +95,7 @@ fun VentaScreen(
                     total = "$ 0",
                     efectivo = "$ 0",
                     credito = "$ 0",
+                    tipoResumen = "",
                     tipo = TipoVentaCard.DIA
                 )
             } else {
@@ -92,6 +104,7 @@ fun VentaScreen(
                     total = ventaDiaFmt.total,
                     efectivo = ventaDiaFmt.efectivo,
                     credito = ventaDiaFmt.credito,
+                    tipoResumen = "",
                     tipo = TipoVentaCard.DIA
                 )
             }
@@ -103,18 +116,20 @@ fun VentaScreen(
         ){
             if (ventaSemanaFmt.tituloSemana.isEmpty()) {
                 CardResumen(
-                    titulo = "Semana: no se reportan ventas",
+                    titulo = "Últ 7 Días: no se reportan ventas",
                     total = "$ 0",
                     efectivo = "$ 0",
                     credito = "$ 0",
+                    tipoResumen = "",
                     tipo = TipoVentaCard.SEMANA
                 )
             } else {
                 CardResumen(
-                    titulo = "Semana: ${ventaSemanaFmt.tituloSemana}",
+                    titulo = "Últ 7 Días: ${ventaSemanaFmt.tituloSemana}",
                     total = ventaSemanaFmt.total,
                     efectivo = ventaSemanaFmt.efectivo,
                     credito = ventaSemanaFmt.credito,
+                    tipoResumen = "",
                     tipo = TipoVentaCard.SEMANA
                 )
             }
@@ -132,6 +147,7 @@ fun VentaScreen(
                     total = "$ 0",
                     efectivo = "$ 0",
                     credito = "$ 0",
+                    tipoResumen = "",
                     tipo = TipoVentaCard.PERIODO
                 )
             } else {
@@ -147,6 +163,7 @@ fun VentaScreen(
                             total = formatCurrency(venta.sum_periodo),
                             efectivo = formatCurrency(venta.sum_contado),
                             credito = formatCurrency(venta.sum_credito),
+                            tipoResumen = "",
                             tipo = TipoVentaCard.PERIODO
                         )
                     }

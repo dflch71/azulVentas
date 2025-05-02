@@ -21,6 +21,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -36,6 +37,7 @@ import com.azul.azulVentas.ui.theme.DarkTextColor
 @Composable
 fun CompraScreen(
     empresaID: String,
+    nombreEmpresa: String,
     compraDiaViewModel: CompraDiaViewModel,
     compraSemanaViewModel: CompraSemanaViewModel,
     compraPeriodoViewModel: CompraPeriodoViewModel,
@@ -62,7 +64,7 @@ fun CompraScreen(
             .fillMaxSize()
             .systemBarsPadding()
     ) {
-        Spacer(modifier = Modifier.height(4.dp))
+
         Text(
             text = "Compras",
             style = MaterialTheme.typography.headlineLarge,
@@ -71,7 +73,15 @@ fun CompraScreen(
             color = DarkTextColor
         )
 
-        Spacer(modifier = Modifier.height(4.dp))
+        Text(
+            text = "$nombreEmpresa - $empresaID",
+            style = MaterialTheme.typography.bodyMedium,
+            fontWeight = FontWeight.SemiBold,
+            modifier = Modifier.padding(horizontal = 16.dp),
+            color = Color.DarkGray,
+            maxLines = 1
+        )
+
         ShowRealTimeClock()
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -84,6 +94,7 @@ fun CompraScreen(
                     total = "$ 0",
                     efectivo = "$ 0",
                     credito = "$ 0",
+                    tipoResumen = "",
                     tipo = TipoVentaCard.DIA
                 )
             } else {
@@ -92,6 +103,7 @@ fun CompraScreen(
                     total = compraDiaFmt.total,
                     efectivo = compraDiaFmt.efectivo,
                     credito = compraDiaFmt.credito,
+                    tipoResumen = "",
                     tipo = TipoVentaCard.DIA
                 )
             }
@@ -103,18 +115,20 @@ fun CompraScreen(
         ){
             if (compraSemanaFmt.tituloSemana.isEmpty()) {
                 CardResumen(
-                    titulo = "Semana: no se reportan compras",
+                    titulo = "Últ 7 Días: no se reportan compras",
                     total = "$ 0",
                     efectivo = "$ 0",
                     credito = "$ 0",
+                    tipoResumen = "",
                     tipo = TipoVentaCard.SEMANA
                 )
             } else {
                 CardResumen(
-                    titulo = "Semana: ${compraSemanaFmt.tituloSemana}",
+                    titulo = "Últ 7 Días: ${compraSemanaFmt.tituloSemana}",
                     total = compraSemanaFmt.total,
                     efectivo = compraSemanaFmt.efectivo,
                     credito = compraSemanaFmt.credito,
+                    tipoResumen = "",
                     tipo = TipoVentaCard.SEMANA
                 )
             }
@@ -132,6 +146,7 @@ fun CompraScreen(
                     total = "$ 0",
                     efectivo = "$ 0",
                     credito = "$ 0",
+                    tipoResumen = "",
                     tipo = TipoVentaCard.PERIODO
                 )
             } else {
@@ -147,6 +162,7 @@ fun CompraScreen(
                             total = formatCurrency(compra.sum_periodo),
                             efectivo = formatCurrency(compra.sum_contado),
                             credito = formatCurrency(compra.sum_credito),
+                            tipoResumen = "",
                             tipo = TipoVentaCard.PERIODO
                         )
                     }

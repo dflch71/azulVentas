@@ -19,8 +19,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
@@ -51,7 +49,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -60,7 +57,6 @@ import coil.compose.rememberAsyncImagePainter
 import com.azul.azulVentas.R
 import com.azul.azulVentas.domain.model.empresaFB.EmpresaFB
 import com.azul.azulVentas.ui.components.ActionButton
-import com.azul.azulVentas.ui.components.CancelDialog
 import com.azul.azulVentas.ui.components.DefaultBackArrow
 import com.azul.azulVentas.ui.components.ErrorSuggestion
 import com.azul.azulVentas.ui.components.ReadTextField
@@ -69,7 +65,6 @@ import com.azul.azulVentas.ui.presentation.empresaFB.viewmodel.EmpresaFBViewMode
 import com.azul.azulVentas.ui.presentation.empresaPG.viewmodel.EmpresaPGViewModel
 import com.azul.azulVentas.ui.presentation.login.viewmodel.AuthViewModel
 import com.azul.azulVentas.ui.presentation.usuarioEmpresas.viewmodel.UsuarioEmpresasPGViewModel
-import com.azul.azulVentas.ui.theme.DarkTextColor
 import com.azul.azulVentas.ui.theme.PrimaryViolet
 import com.azul.azulVentas.ui.theme.PrimaryVioletDark
 import com.azul.azulVentas.ui.theme.PrimaryVioletLight
@@ -82,7 +77,7 @@ fun EmpresaFBScreen(
     empresaPGViewModel: EmpresaPGViewModel,
     usuarioEmpresasPGViewModel: UsuarioEmpresasPGViewModel,
     authViewModel: AuthViewModel,
-    empresasScreenClicked: () -> Unit,
+    empresasScreenClicked: (String) -> Unit,
     onRegistrationClicked: ( idEmpresa: String, nomEmpresa: String, idPG: String ) -> Unit
 ) {
 
@@ -314,7 +309,9 @@ fun EmpresaFBScreen(
 
                 is EmpresaFBViewModel.EmpresaEncontradaState.Error -> {
                     // Show an error message
-                    Text("Error (WS-AZUL): ${state.message}")
+                    //Text("Error (WS-AZUL): ${state.message}")
+                    Spacer(modifier = Modifier.height(8.dp))
+                    ErrorSuggestion("Error (WS-AZUL): ${state.message}", isDark = false)
                 }
             }
 
@@ -364,7 +361,7 @@ fun EmpresaFBScreen(
                 isNavigationArrowVisible = false,
                 onClicked = {
                     viewModel.buscarEmpresaPorNit("")
-                    empresasScreenClicked()
+                    empresasScreenClicked("")
                 },
                 onLongClicked = {},
                 colors = ButtonDefaults.buttonColors(
@@ -374,14 +371,14 @@ fun EmpresaFBScreen(
                 shadowColor = PrimaryYellowDark,
                 modifier = Modifier.padding(top = 8.dp, bottom = 16.dp, start = 24.dp, end = 24.dp)
             )
-
         }
     }
 }
 
 @Composable
 fun EmpresaItem(
-    empresa: EmpresaFB,
+    empresa:
+    EmpresaFB,
     registrationScreen: () -> Unit
 ) {
 

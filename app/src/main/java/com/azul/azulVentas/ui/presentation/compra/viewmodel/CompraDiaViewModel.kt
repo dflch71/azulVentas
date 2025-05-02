@@ -60,17 +60,20 @@ class CompraDiaViewModel @Inject constructor(
             val response = getCompraDiaUseCase(empresaID)
             _compraDia.postValue(response)
 
+            _compraFormatted.value = ResumenOperaciones(
+                tituloDia = "",
+                total = "",
+                efectivo = "",
+                credito = ""
+            )
+
             if (response.isNotEmpty()) {
                 val fecha = response.first().fecha_dia + "T00:00:00"
                 val date = stringToLocalDateTime(fecha) ?: LocalDateTime.now()
                 val tDia = "${formatDate(response.first().fecha_dia)} - ${calculateDaysToTargetDate(date)} Días"
-                //val tSemana = "${formatDate(response.first().fecha_dia)} - ${formatDate(response.last().fecha_dia)}"
-                //val tPeriodo = ""
 
                 _compraFormatted.value = ResumenOperaciones(
                     tituloDia = tDia,
-                    //tituloSemana = tSemana,
-                    //tituloPeriodo = tPeriodo,
                     total = formatCurrency(response.sumOf { it.sum_hora }),
                     efectivo = formatCurrency(response.sumOf { it.sum_contado }),
                     credito = formatCurrency(response.sumOf { it.sum_credito })

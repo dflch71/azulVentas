@@ -16,27 +16,35 @@ class EmpresaFBRemoteDataSource @Inject constructor(
     private val database: DatabaseReference
 ) {
     fun obtenerEmpresas(): Flow<List<EmpresaFB>> = callbackFlow {
-        val empresasRef = database.child("Empresas")
-        val listener = empresasRef.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                val empresas = mutableListOf<EmpresaFB>()
-                for (empresaSnapshot in snapshot.children) {
-                    val empresa = empresaSnapshot.getValue(EmpresaFB::class.java)
-                    if (empresa != null) {
-                        empresas.add(empresa.copy(nit = empresaSnapshot.key ?: ""))
-                    } else {
-                        Log.e("EmpresaRemoteDataSource", "Error: Could not deserialize Empresa from snapshot: ${empresaSnapshot.key}")
+        try {
+            val empresasRef = database.child("Empresas")
+            val listener = empresasRef.addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val empresas = mutableListOf<EmpresaFB>()
+                    for (empresaSnapshot in snapshot.children) {
+                        val empresa = empresaSnapshot.getValue(EmpresaFB::class.java)
+                        if (empresa != null) {
+                            empresas.add(empresa.copy(nit = empresaSnapshot.key ?: ""))
+                        } else {
+                            Log.e(
+                                "EmpresaRemoteDataSource",
+                                "Error: Could not deserialize Empresa from snapshot: ${empresaSnapshot.key}"
+                            )
+                        }
                     }
+                    trySend(empresas).isSuccess
                 }
-                trySend(empresas).isSuccess
-            }
 
-            override fun onCancelled(error: DatabaseError) {
-                Log.e("EmpresaRemoteDataSource", "Error getting empresas", error.toException())
-                close(error.toException())
-            }
-        })
-        awaitClose { empresasRef.removeEventListener(listener) }
+                override fun onCancelled(error: DatabaseError) {
+                    Log.e("EmpresaRemoteDataSource", "Error getting empresas", error.toException())
+                    close(error.toException())
+                }
+            })
+            awaitClose { empresasRef.removeEventListener(listener) }
+        }  catch (e: Exception) {
+            Log.e("EmpresaRemoteDataSource", "Error getting empresas", e)
+            close(e)
+        }
     }
 
     fun buscarEmpresaPorNit(nit: String): Flow<EmpresaFB?> = callbackFlow {

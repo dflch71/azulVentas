@@ -37,6 +37,7 @@ fun CardResumen(
     total: String,
     efectivo: String,
     credito: String,
+    tipoResumen: String,
     tipo: TipoVentaCard,
     onClick: () -> Unit = {}
 ) {
@@ -76,7 +77,7 @@ fun CardResumen(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(8.dp),
+                    .padding(top =  8.dp, start = 8.dp, end = 8.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -138,7 +139,7 @@ fun CardResumen(
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(credito, fontSize = 16.sp, fontWeight = FontWeight.Light)
-                        Text("Crédito", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = Color.DarkGray)
+                        Text(if (tipoResumen == "POS") "Tarjeta" else "Crédito", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = Color.DarkGray)
                     }
                 }
             }

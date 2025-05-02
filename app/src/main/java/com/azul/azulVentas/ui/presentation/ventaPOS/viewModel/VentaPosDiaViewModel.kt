@@ -50,8 +50,8 @@ class VentaPosDiaViewModel @Inject constructor(
         }
     }
 
-    private val _ventaDiaFormatted = mutableStateOf(ResumenOperaciones())
-    val ventaDiaFormatted: State<ResumenOperaciones> = _ventaDiaFormatted
+    private val _ventaPosDiaFormatted = mutableStateOf(ResumenOperaciones())
+    val ventaPosDiaFormatted: State<ResumenOperaciones> = _ventaPosDiaFormatted
 
     fun ventaPosDiaView(empresaID: String) {
         viewModelScope.launch {
@@ -59,17 +59,20 @@ class VentaPosDiaViewModel @Inject constructor(
             val response = getVentaPosDiaUseCase(empresaID)
             _ventaPosDia.postValue(response)
 
+            _ventaPosDiaFormatted.value = ResumenOperaciones(
+                tituloDia = "",
+                total = "",
+                efectivo = "",
+                credito = ""
+            )
+
             if (response.isNotEmpty()) {
                 val fecha = response.first().fecha_dia + "T00:00:00"
                 val date = stringToLocalDateTime(fecha) ?: LocalDateTime.now()
                 val tDia = "${formatDate(response.first().fecha_dia)} - ${calculateDaysToTargetDate(date)} Días"
-                //val tSemana = "${formatDate(response.first().fecha_dia)} - ${formatDate(response.last().fecha_dia)}"
-                //val tPeriodo = ""
 
-                _ventaDiaFormatted.value = ResumenOperaciones(
+                _ventaPosDiaFormatted.value = ResumenOperaciones(
                     tituloDia = tDia,
-                    //tituloSemana = tSemana,
-                    //tituloPeriodo = tPeriodo,
                     total = formatCurrency(response.sumOf { it.sum_hora }),
                     efectivo = formatCurrency(response.sumOf { it.sum_contado }),
                     credito = formatCurrency(response.sumOf { it.sum_credito })
