@@ -97,6 +97,8 @@ class Utility {
 
         fun formatCurrency(amount: Double): String {
             val format = NumberFormat.getCurrencyInstance(java.util.Locale("es", "CO")) // Cambia 'US' según tu país
+            format.maximumFractionDigits = 0 // 🔒 No mostrar decimales
+            format.minimumFractionDigits = 0 // 🔒 Asegurar que no se muestren ceros
             return format.format(amount)
         }
 

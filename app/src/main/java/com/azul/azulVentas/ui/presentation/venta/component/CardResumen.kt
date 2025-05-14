@@ -4,10 +4,13 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -30,11 +33,13 @@ enum class TipoVentaCard {
     DIA, SEMANA, PERIODO
 }
 
+/*
 @Composable
 fun CardResumen(
     modifier: Modifier = Modifier,
     titulo: String,
     total: String,
+    facturas: String = "0",
     efectivo: String,
     credito: String,
     tipoResumen: String,
@@ -60,7 +65,7 @@ fun CardResumen(
     }
 
     ElevatedCard(
-        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         modifier = Modifier
             .padding(horizontal = 16.dp)
             .fillMaxSize()
@@ -71,13 +76,15 @@ fun CardResumen(
             )
     ) {
         Column(
-            modifier = modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.SpaceEvenly
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(12.dp),
+            verticalArrangement = Arrangement.spacedBy(6.dp),
         ) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top =  8.dp, start = 8.dp, end = 8.dp),
+                    ,//.padding(top =  8.dp, start = 8.dp, end = 8.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -99,28 +106,51 @@ fun CardResumen(
                 }
             }
 
-            Text(
-                text = total,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp),
-                color = Color.DarkGray,
-                textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.headlineLarge,
-                fontWeight = FontWeight.Light
-            )
+            //Total + Facturas
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(2.dp)
+            ) {
+                Text(
+                    text = total,
+                    //modifier = Modifier
+                    //    .fillMaxWidth()
+                    //    .padding(top = 4.dp),
+                    color = Color.DarkGray,
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.headlineLarge,
+                    fontWeight = FontWeight.Light
+                )
 
+                Text(
+                    text = "Facturas: $facturas",
+                    //modifier = Modifier
+                    //    .fillMaxWidth(),
+                    //textAlign = TextAlign.Center,
+                    //style = MaterialTheme.typography.headlineLarge,
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Gray
+                )
+            }
+
+            //Efectivo y Crédito
             Row(
                 modifier = Modifier
-                    .weight(1f)
+                    //.weight(1f)
                     .fillMaxWidth()
-                    .background(fondoPrincipal)
+                    .padding(top = 8.dp)
+                    .background(fondoPrincipal),
+                //horizontalArrangement = Arrangement.SpaceEvenly,
+                //verticalAlignment = Alignment.CenterVertically
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Box(
                     modifier = Modifier
-                        .padding(8.dp)
-                        .weight(0.5f)
-                        .background(colorEfectivo, shape = RoundedCornerShape(10.dp)),
+                        .weight(1.0f)
+                        .background(colorEfectivo, shape = RoundedCornerShape(10.dp))
+                        .padding(vertical = 8.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -132,14 +162,155 @@ fun CardResumen(
                 // Crédito
                 Box(
                     modifier = Modifier
-                        .padding(8.dp)
-                        .weight(0.5f)
-                        .background(colorCredito, shape = RoundedCornerShape(10.dp)),
+                        .weight(1.0f)
+                        .background(colorCredito, shape = RoundedCornerShape(10.dp))
+                        .padding(8.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(credito, fontSize = 16.sp, fontWeight = FontWeight.Light)
                         Text(if (tipoResumen == "POS") "Tarjeta" else "Crédito", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = Color.DarkGray)
+                    }
+                }
+            }
+        }
+    }
+}
+*/
+
+@Composable
+fun CardResumen(
+    modifier: Modifier = Modifier,
+    titulo: String,
+    total: String,
+    facturas: String = "0",
+    efectivo: String,
+    credito: String,
+    tipoResumen: String,
+    tipo: TipoVentaCard,
+    onClick: () -> Unit = {}
+) {
+
+    val fondoPrincipal = when (tipo) {
+        TipoVentaCard.DIA -> Color(0xFFe9e9e9)
+        TipoVentaCard.SEMANA -> Color(0xFFEFECF5)
+        TipoVentaCard.PERIODO -> Color(0xFFF9FBE7)
+    }
+
+    val colorEfectivo = when (tipo) {
+        TipoVentaCard.DIA -> Color(0xFFDEDEDE)
+        TipoVentaCard.SEMANA -> Color(0xFFECE4FA)
+        TipoVentaCard.PERIODO -> Color(0xFFDCEDC8)
+    }
+
+    val colorCredito = colorEfectivo
+
+
+    BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+        val tarjetaAltura = maxHeight / 3 - 24.dp  // Calculamos altura para 3 tarjetas con espacio
+
+        ElevatedCard(
+            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+            modifier = modifier
+                .padding(horizontal = 16.dp, vertical = 6.dp)
+                .fillMaxWidth()
+                .height(tarjetaAltura)
+                .clickable { onClick() }
+                .background(
+                    color = fondoPrincipal,
+                    shape = RoundedCornerShape(10.dp),
+                )
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize(),
+                verticalArrangement = Arrangement.SpaceBetween
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(). padding(top= 4.dp, start = 8.dp, end = 8.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = titulo,
+                        fontWeight = FontWeight.Light,
+                        color = Color.Black,
+                        maxLines = 1,
+                        modifier = Modifier.weight(1f)
+                    )
+                    if (tipo == TipoVentaCard.PERIODO) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                            contentDescription = null,
+                            tint = Color.DarkGray
+                        )
+                    }
+                }
+
+                Box(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = total,
+                            style = MaterialTheme.typography.headlineLarge,
+                            fontWeight = FontWeight.Light,
+                            color = Color.DarkGray
+                        )
+                        Text(
+                            text = "Facturas: $facturas",
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.Gray
+                        )
+                    }
+                }
+
+                Box(
+                    modifier = Modifier.background(fondoPrincipal).padding(8.dp)
+                ) {
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .background(colorEfectivo, RoundedCornerShape(10.dp)),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Column(horizontalAlignment = Alignment.CenterHorizontally)
+                            {
+                                Text(efectivo, fontSize = 14.sp, fontWeight = FontWeight.Light)
+                                Text(
+                                    "Efectivo",
+                                    fontSize = 11.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.DarkGray
+                                )
+                            }
+                        }
+
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .background(colorCredito, RoundedCornerShape(10.dp)),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                Text(credito, fontSize = 14.sp, fontWeight = FontWeight.Light)
+                                Text(
+                                    if (tipoResumen == "POS") "Tarjeta" else "Crédito",
+                                    fontSize = 11.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.DarkGray
+                                )
+                            }
+                        }
                     }
                 }
             }

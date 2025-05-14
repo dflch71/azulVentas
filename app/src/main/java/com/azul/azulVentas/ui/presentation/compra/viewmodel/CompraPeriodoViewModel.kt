@@ -27,17 +27,28 @@ class CompraPeriodoViewModel @Inject constructor(
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error
 
-    fun compraPeriodo(EmpresaID: String) {
+    fun cargarCompraPeriodo(EmpresaID: String) {
         viewModelScope.launch {
             _isLoading.value = true
-            try {
-                _compraPeriodo.value = getCompraPeriodoUseCase(EmpresaID)
-                _error.value = null
-            } catch (e: Exception) {
-                _error.value = "Error .. (WS-AZUL): ${e.message}"
-            } finally {
-                _isLoading.value = false
+
+            // Assign the result of the use case call to a variable
+            val result = getCompraPeriodoUseCase(EmpresaID)
+
+            when {
+                result.isSuccess -> {
+                    val response = result.getOrDefault(emptyList())
+                    _compraPeriodo.postValue(response)
+                    _error.value = null
+                }
+
+                result.isFailure -> {
+                    _compraPeriodo.postValue(emptyList())
+                    _error.value = result.exceptionOrNull()?.message ?: "Error desconocido"
+                }
             }
+
+            _isLoading.value = false
+
         }
     }
 }

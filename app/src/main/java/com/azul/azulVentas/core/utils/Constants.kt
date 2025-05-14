@@ -2,9 +2,11 @@ package com.azul.azulVentas.core.utils
 
 object Constants {
 
-    var IP      = "192.168.72.222" //LocalHost
+
+    //var IP      = "192.168.72.222" //LocalHost
     //var IP      = "5.189.133.32" //Remote Host .. Contabo
-    var PUERTO  = "9060"
+    var IP       = "144.91.111.80" //Contabo-Nuevo
+    var PUERTO   = "9060"
     var AZUL_URL = "http://$IP:$PUERTO/datasnap/rest/TServerMethods/"
 
     //EMPRESA

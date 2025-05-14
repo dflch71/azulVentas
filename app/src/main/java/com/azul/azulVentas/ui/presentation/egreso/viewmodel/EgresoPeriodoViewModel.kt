@@ -30,14 +30,23 @@ class EgresoPeriodoViewModel @Inject constructor(
     fun egresoPeriodo(EmpresaID: String) {
         viewModelScope.launch {
             _isLoading.value = true
-            try {
-                _egresoPeriodo.value = getEgresoPeriodoUseCase(EmpresaID)
-                _error.value = null
-            } catch (e: Exception) {
-                _error.value = "Error .. (WS-AZUL): ${e.message}"
-            } finally {
-                _isLoading.value = false
+
+            val result = getEgresoPeriodoUseCase(EmpresaID)
+
+            when {
+                result.isSuccess -> {
+                    val response = result.getOrDefault(emptyList())
+                    _egresoPeriodo.postValue(response)
+                    _error.value = null
+                    // Puedes realizar acciones adicionales aquí si es necesario
+                }
+
+                result.isFailure -> {
+                    _egresoPeriodo.postValue(emptyList())
+                    _error.value = result.exceptionOrNull()?.message ?: "Error desconocido"
+                }
             }
+            _isLoading.value = false
         }
     }
 }

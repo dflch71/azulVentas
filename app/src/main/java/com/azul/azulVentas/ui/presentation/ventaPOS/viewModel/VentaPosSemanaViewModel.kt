@@ -7,7 +7,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.azul.azulVentas.domain.model.resumenOperaciones.ResumenOperaciones
 import com.azul.azulVentas.domain.model.resumenSemana.ResumenSemana
-import com.azul.azulVentas.domain.usecases.venta.GetVentaSemanaUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -33,44 +32,45 @@ class VentaPosSemanaViewModel @Inject constructor(
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error
 
-    fun ventaPosSemana(EmpresaID: String) {
-        viewModelScope.launch {
-            _isLoading.value = true
-            try {
-                _ventaPosSemana.value = getVentaPosSemanaUseCase(EmpresaID)
-                _error.value = null
-            } catch (e: Exception) {
-                _error.value = "Error .. (WS-AZUL): ${e.message}"
-            } finally {
-                _isLoading.value = false
-            }
-        }
-    }
-
     private val _ventaSemanaFormatted = mutableStateOf(ResumenOperaciones())
     val ventaSemanaFormatted: State<ResumenOperaciones> = _ventaSemanaFormatted
 
-    fun ventaPosSemanaView(empresaID: String) {
+    fun cargarVentaPosSemana(empresaID: String) {
         viewModelScope.launch {
             _isLoading.value = true
-            val response = getVentaPosSemanaUseCase(empresaID)
-            _ventaPosSemana.postValue(response)
 
-            _ventaSemanaFormatted.value = ResumenOperaciones(
-                tituloSemana = "",
-                total = "",
-                efectivo = "",
-                credito = ""
-            )
+            val result = getVentaPosSemanaUseCase(empresaID)
 
-            if (response.isNotEmpty()) {
-                val titulo = "${formatDate(response.first().fecha_dia)} a ${formatDate(response.last().fecha_dia)}"
-                _ventaSemanaFormatted.value = ResumenOperaciones(
-                    tituloSemana = titulo,
-                    total = formatCurrency(response.sumOf { it.sum_dia }),
-                    efectivo = formatCurrency(response.sumOf { it.sum_contado }),
-                    credito = formatCurrency(response.sumOf { it.sum_credito })
-                )
+            when {
+                result.isSuccess -> {
+                    val response = result.getOrDefault(emptyList())
+                    _ventaPosSemana.postValue(response)
+                    _error.value = null
+
+                    _ventaSemanaFormatted.value = ResumenOperaciones(
+                        tituloSemana = "",
+                        total = "",
+                        efectivo = "",
+                        credito = ""
+                    )
+
+                    if (response.isNotEmpty()) {
+                        val titulo =
+                            "${formatDate(response.first().fecha_dia)} a ${formatDate(response.last().fecha_dia)}"
+                        _ventaSemanaFormatted.value = ResumenOperaciones(
+                            tituloSemana = titulo,
+                            total = formatCurrency(response.sumOf { it.sum_dia }),
+                            efectivo = formatCurrency(response.sumOf { it.sum_contado }),
+                            credito = formatCurrency(response.sumOf { it.sum_credito }),
+                            facturas = response.sumOf { it.facturas }.toString()
+                        )
+                    }
+                }
+
+                result.isFailure -> {
+                    _ventaPosSemana.postValue(emptyList())
+                    _error.value = result.exceptionOrNull()?.message ?: "Error desconocido"
+                }
             }
             _isLoading.value = false
         }

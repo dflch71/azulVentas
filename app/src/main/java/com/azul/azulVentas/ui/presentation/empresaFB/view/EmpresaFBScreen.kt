@@ -271,6 +271,7 @@ fun EmpresaFBScreen(
                         }
                         else {
                             if (empresaPG.isEmpty()) {
+                                Spacer(modifier = Modifier.height(16.dp))
                                 ErrorSuggestion("Debe registrar la EMPRESA en ambiente local (WS - AZUL WEB) y/o Iniciar WS-Contabo.", isDark = false)
                             }
                              //Empresa no existe en PostGresql

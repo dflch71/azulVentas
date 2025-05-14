@@ -1,25 +1,32 @@
 package com.azul.azulVentas.ui.presentation.ventaPOS.view
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
@@ -27,6 +34,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.azul.azulVentas.core.utils.Utility.Companion.ShowRealTimeClock
 import com.azul.azulVentas.core.utils.Utility.Companion.formatCurrency
+import com.azul.azulVentas.ui.components.ErrorDialog
+import com.azul.azulVentas.ui.presentation.network.sync.NetworkSyncManager
+import com.azul.azulVentas.ui.presentation.network.viewmodel.NetworkViewModel
 import com.azul.azulVentas.ui.presentation.venta.component.CardResumen
 import com.azul.azulVentas.ui.presentation.venta.component.TipoVentaCard
 import com.azul.azulVentas.ui.presentation.ventaPOS.viewModel.VentaPosDiaViewModel
@@ -41,130 +51,156 @@ fun VentaPosScreen(
     ventaPosDiaViewModel: VentaPosDiaViewModel,
     ventaPosSemanaViewModel: VentaPosSemanaViewModel,
     ventaPosPeriodoViewModel: VentaPosPeriodoViewModel,
+    networkViewModel: NetworkViewModel
 ) {
 
     val ventaPosDiaFmt by ventaPosDiaViewModel.ventaPosDiaFormatted
     val ventaSemanaFmt by ventaPosSemanaViewModel.ventaSemanaFormatted
-
-    //Venta Periodo
     val ventaPosPeriodo by ventaPosPeriodoViewModel.ventaPosPeriodo.observeAsState(initial = emptyList())
-    val isLoadingVentaPeriodo by ventaPosPeriodoViewModel.isLoading.collectAsState()
+
+    val isLoadingVentaPosPeriodo by ventaPosPeriodoViewModel.isLoading.collectAsState()
+
+    val errorVentaPosDia by ventaPosDiaViewModel.error.collectAsState()
+    val errorVentaPosSemana by ventaPosSemanaViewModel.error.collectAsState()
     val errorVentaPosPeriodo by ventaPosPeriodoViewModel.error.collectAsState()
+    var showErrorDialog by remember { mutableStateOf(false) }
 
     val screenWidth = LocalConfiguration.current.screenWidthDp.dp
 
-    LaunchedEffect(key1 = true) {
-        ventaPosDiaViewModel.ventaPosDiaView(empresaID)
-        ventaPosSemanaViewModel.ventaPosSemanaView(empresaID)
-        ventaPosPeriodoViewModel.ventaPosPeriodo(empresaID)
+    val snackbarHostState = remember { SnackbarHostState() }  // Para el Snackbar
+    val isNetworkAvailable by networkViewModel.networkStatus.collectAsState()
+    val scope = rememberCoroutineScope()
+
+    fun cargarDatos() {
+        ventaPosDiaViewModel.cargarVentaPosDia(empresaID)
+        ventaPosSemanaViewModel.cargarVentaPosSemana(empresaID)
+        ventaPosPeriodoViewModel.cargarVentaPosPeriodo(empresaID)
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .systemBarsPadding()
-    ) {
-        Text(
-            text = "Ventas POS",
-            style = MaterialTheme.typography.headlineLarge,
-            fontWeight = FontWeight.Black,
-            modifier = Modifier.padding(horizontal = 16.dp),
-            color = DarkTextColor
-        )
+    // ✅ Al primer render, cargar si hay conexión
+    LaunchedEffect(key1 = isNetworkAvailable) {
+        if (isNetworkAvailable) { cargarDatos() }
+    }
 
-        Text(
-            text = "$nombreEmpresa - $empresaID",
-            style = MaterialTheme.typography.bodyMedium,
-            fontWeight = FontWeight.SemiBold,
-            modifier = Modifier.padding(horizontal = 16.dp),
-            color = Color.DarkGray,
-            maxLines = 1
-        )
+    // ✅ Mostrar el Snackbar si hay un error
+    LaunchedEffect(errorVentaPosDia, errorVentaPosSemana, errorVentaPosPeriodo) {
+        val error = errorVentaPosDia ?: errorVentaPosSemana ?: errorVentaPosPeriodo
+        error?.let {
+            showErrorDialog = true
+            snackbarHostState.showSnackbar("Error: $it")
+        }
+    }
 
-        ShowRealTimeClock()
+    Scaffold (
+        modifier = Modifier.fillMaxSize(),
+        snackbarHost = { SnackbarHost(snackbarHostState) }
+    ) { padding ->
 
-        Spacer(modifier = Modifier.height(16.dp))
-        Box(
-            modifier = Modifier.weight(0.33f)
-        ){
-            if (ventaPosDiaFmt.tituloDia.isEmpty()) {
-                CardResumen(
-                    titulo = "Día: no se reportan ventas Pos",
-                    total = "$ 0",
-                    efectivo = "$ 0",
-                    credito = "$ 0",
-                    tipoResumen = "POS",
-                    tipo = TipoVentaCard.DIA
-                )
-            } else {
-                CardResumen(
-                    titulo = "Día: ${ventaPosDiaFmt.tituloDia}",
-                    total = ventaPosDiaFmt.total,
-                    efectivo = ventaPosDiaFmt.efectivo,
-                    credito = ventaPosDiaFmt.credito,
-                    tipoResumen = "POS",
-                    tipo = TipoVentaCard.DIA
-                )
-            }
+        LaunchedEffect(Unit) {
+            NetworkSyncManager(
+                networkViewModel = networkViewModel,
+                snackbarHostState = snackbarHostState,
+                coroutineScope = scope,
+                onRefresh = { cargarDatos() },
+                //refreshIntervalMs = 10_000 // 10 segundos opcional por defecto es 10 Min
+            ).startObserving()
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
-        Box(
-            modifier = Modifier.weight(0.33f)
-        ){
-            if (ventaSemanaFmt.tituloSemana.isEmpty()) {
-                CardResumen(
-                    titulo = "Últ 7 Días: no se reportan ventas Pos",
-                    total = "$ 0",
-                    efectivo = "$ 0",
-                    credito = "$ 0",
-                    tipoResumen = "POS",
-                    tipo = TipoVentaCard.SEMANA
-                )
-            } else {
-                CardResumen(
-                    titulo = "Últ 7 Días: ${ventaSemanaFmt.tituloSemana}",
-                    total = ventaSemanaFmt.total,
-                    efectivo = ventaSemanaFmt.efectivo,
-                    credito = ventaSemanaFmt.credito,
-                    tipoResumen = "POS",
-                    tipo = TipoVentaCard.SEMANA
-                )
-            }
+        // Conditionally show the dialog
+        if ((showErrorDialog) &&
+            (errorVentaPosDia != null || errorVentaPosSemana != null || errorVentaPosPeriodo != null)
+            ) {
+            ErrorDialog(
+                onDismissRequest = { showErrorDialog = false },
+                onConfirmation = {
+                    // Close the dialog when confirmed
+                    showErrorDialog = false
+                    // You can add other actions here if needed, e.g., retry loading data
+                },
+                dialogTitle = "ERROR VENTA POS",
+                dialogText = "$errorVentaPosDia",
+                icon = Icons.Default.Info
+            )
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
-        Box (
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .weight(0.34f)
+                .fillMaxSize()
+                .systemBarsPadding()
         ) {
-            if (ventaPosPeriodo.isEmpty()) {
-                CardResumen(
-                    titulo = "Periodo: no se reportan ventas Pos",
-                    total = "$ 0",
-                    efectivo = "$ 0",
-                    credito = "$ 0",
-                    tipoResumen = "POS",
-                    tipo = TipoVentaCard.PERIODO
-                )
-            } else {
-                LazyRow(
-                    modifier = Modifier.fillMaxWidth(),
-                    contentPadding = PaddingValues(horizontal = 0.dp),
-                    horizontalArrangement = Arrangement.spacedBy(0.dp),
-                ) {
-                    items(ventaPosPeriodo.reversed()) { venta ->
-                        CardResumen(
-                            modifier = Modifier.width(screenWidth / 1.15f),
-                            titulo = "Periodo: ${venta.nom_periodo}",
-                            total = formatCurrency(venta.sum_periodo),
-                            efectivo = formatCurrency(venta.sum_contado),
-                            credito = formatCurrency(venta.sum_credito),
-                            tipoResumen = "POS",
-                            tipo = TipoVentaCard.PERIODO
-                        )
+            if (isLoadingVentaPosPeriodo) { LinearProgressIndicator(modifier = Modifier.fillMaxWidth()) }
+
+            Text(
+                text = "Ventas POS",
+                style = MaterialTheme.typography.headlineLarge,
+                fontWeight = FontWeight.Black,
+                modifier = Modifier.padding(horizontal = 16.dp),
+                color = DarkTextColor
+            )
+
+            Text(
+                text = "$nombreEmpresa - $empresaID",
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.SemiBold,
+                modifier = Modifier.padding(horizontal = 16.dp),
+                color = Color.DarkGray,
+                maxLines = 1
+            )
+
+            ShowRealTimeClock()
+
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .systemBarsPadding(),
+                contentPadding = PaddingValues(vertical = 8.dp)
+            ) {
+
+                item {
+                    CardResumen(
+                        titulo = "Día: ${ventaPosDiaFmt.tituloDia}",
+                        total = ventaPosDiaFmt.total,
+                        facturas = ventaPosDiaFmt.facturas,
+                        efectivo = ventaPosDiaFmt.efectivo,
+                        credito = ventaPosDiaFmt.credito,
+                        tipoResumen = "POS",
+                        tipo = TipoVentaCard.DIA
+                    )
+                }
+
+                item {
+                    CardResumen(
+                        titulo = "Últ 7 Días: ${ventaSemanaFmt.tituloSemana}",
+                        total = ventaSemanaFmt.total,
+                        facturas = ventaSemanaFmt.facturas,
+                        efectivo = ventaSemanaFmt.efectivo,
+                        credito = ventaSemanaFmt.credito,
+                        tipoResumen = "POS",
+                        tipo = TipoVentaCard.SEMANA
+                    )
+                }
+
+                item {
+
+                    LazyRow(
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        items(ventaPosPeriodo.reversed()) { venta ->
+                            CardResumen(
+                                modifier = Modifier
+                                    .width(screenWidth / 1.0f)
+                                    .padding(end = 8.dp), // evita que se pegue al borde,
+                                titulo = "Periodo: ${venta.nom_periodo}",
+                                total = formatCurrency(venta.sum_periodo),
+                                facturas = (venta.facturas).toString(),
+                                efectivo = formatCurrency(venta.sum_contado),
+                                credito = formatCurrency(venta.sum_credito),
+                                tipoResumen = "POS",
+                                tipo = TipoVentaCard.PERIODO
+                            )
+                        }
                     }
+
                 }
             }
         }

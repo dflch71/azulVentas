@@ -5,7 +5,7 @@ import com.azul.azulVentas.domain.model.resumenPeriodo.ResumenPeriodo
 import com.azul.azulVentas.domain.model.resumenSemana.ResumenSemana
 
 interface VentaPosRepository {
-    suspend fun getVentaPosHora(EmpresaID: String): List<ResumenDia>
-    suspend fun getVentaPosSemana(EmpresaID: String): List<ResumenSemana>
-    suspend fun getVentaPosPeriodo(EmpresaID: String): List<ResumenPeriodo>
+    suspend fun getVentaPosHora(EmpresaID: String): Result<List<ResumenDia>>
+    suspend fun getVentaPosSemana(EmpresaID: String): Result<List<ResumenSemana>>
+    suspend fun getVentaPosPeriodo(EmpresaID: String): Result<List<ResumenPeriodo>>
 }

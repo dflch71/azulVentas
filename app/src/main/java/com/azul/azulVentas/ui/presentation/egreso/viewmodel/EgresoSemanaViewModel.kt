@@ -32,46 +32,46 @@ class EgresoSemanaViewModel @Inject constructor(
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error
 
-    fun egresoSemana(EmpresaID: String) {
-        viewModelScope.launch {
-            _isLoading.value = true
-            try {
-                _egresoSemana.value = getEgresoSemanaUseCase(EmpresaID)
-                _error.value = null
-            } catch (e: Exception) {
-                _error.value = "Error .. (WS-AZUL): ${e.message}"
-            } finally {
-                _isLoading.value = false
-            }
-        }
-    }
-
     private val _egresoSemanaFormatted = mutableStateOf(ResumenOperaciones())
     val egresoSemanaFormatted: State<ResumenOperaciones> = _egresoSemanaFormatted
 
-    fun egresoSemanaView(empresaID: String) {
+    fun cargarEgresoSemana(empresaID: String) {
         viewModelScope.launch {
             _isLoading.value = true
-            val response = getEgresoSemanaUseCase(empresaID)
-            _egresoSemana.postValue(response)
 
-            _egresoSemanaFormatted.value = ResumenOperaciones(
-                tituloSemana = "",
-                total = "",
-                efectivo = "",
-                credito = "",
-                facturas = ""
-            )
+            val result = getEgresoSemanaUseCase(empresaID)
 
-            if (response.isNotEmpty()) {
-                val titulo = "${formatDate(response.first().fecha_dia)} a ${formatDate(response.last().fecha_dia)}"
-                _egresoSemanaFormatted.value = ResumenOperaciones(
-                    tituloSemana = titulo,
-                    total = formatCurrency(response.sumOf { it.sum_dia }),
-                    efectivo = formatCurrency(response.sumOf { it.sum_contado }),
-                    credito = formatCurrency(response.sumOf { it.sum_credito }),
-                    facturas = response.sumOf { it.facturas }.toString()
-                )
+            when {
+                result.isSuccess -> {
+                    val response = result.getOrDefault(emptyList())
+                    _egresoSemana.postValue(response)
+                    _error.value = null
+
+                    _egresoSemanaFormatted.value = ResumenOperaciones(
+                        tituloSemana = "",
+                        total = "",
+                        efectivo = "",
+                        credito = "",
+                        facturas = ""
+                    )
+
+                    if (response.isNotEmpty()) {
+                        val titulo =
+                            "${formatDate(response.first().fecha_dia)} a ${formatDate(response.last().fecha_dia)}"
+                        _egresoSemanaFormatted.value = ResumenOperaciones(
+                            tituloSemana = titulo,
+                            total = formatCurrency(response.sumOf { it.sum_dia }),
+                            efectivo = formatCurrency(response.sumOf { it.sum_contado }),
+                            credito = formatCurrency(response.sumOf { it.sum_credito }),
+                            facturas = response.sumOf { it.facturas }.toString()
+                        )
+                    }
+                }
+
+                result.isFailure -> {
+                    _egresoSemana.postValue(emptyList())
+                    _error.value = result.exceptionOrNull()?.message ?: "Error desconocido"
+                }
             }
             _isLoading.value = false
         }

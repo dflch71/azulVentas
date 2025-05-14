@@ -1,25 +1,32 @@
 package com.azul.azulVentas.ui.presentation.venta.view
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
@@ -27,6 +34,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.azul.azulVentas.core.utils.Utility.Companion.ShowRealTimeClock
 import com.azul.azulVentas.core.utils.Utility.Companion.formatCurrency
+import com.azul.azulVentas.ui.components.ErrorDialog
+import com.azul.azulVentas.ui.presentation.network.sync.NetworkSyncManager
+import com.azul.azulVentas.ui.presentation.network.viewmodel.NetworkViewModel
 import com.azul.azulVentas.ui.presentation.venta.component.CardResumen
 import com.azul.azulVentas.ui.presentation.venta.component.TipoVentaCard
 import com.azul.azulVentas.ui.presentation.venta.viewmodel.VentaDiaViewModel
@@ -41,136 +51,192 @@ fun VentaScreen(
     ventaDiaViewModel: VentaDiaViewModel,
     ventaSemanaViewModel: VentaSemanaViewModel,
     ventaPeriodoViewModel: VentaPeriodoViewModel,
+    networkViewModel: NetworkViewModel,
 ) {
 
     val ventaDiaFmt by ventaDiaViewModel.ventaDiaFormatted
     val ventaSemanaFmt by ventaSemanaViewModel.ventaSemanaFormatted
-
-    //Venta Periodo
     val ventaPeriodo by ventaPeriodoViewModel.ventaPeriodo.observeAsState(initial = emptyList())
+
     val isLoadingVentaPeriodo by ventaPeriodoViewModel.isLoading.collectAsState()
+
+    val errorVentaDia by ventaDiaViewModel.error.collectAsState()
+    val errorVentaSemana by ventaSemanaViewModel.error.collectAsState()
     val errorVentaPeriodo by ventaPeriodoViewModel.error.collectAsState()
+    var showErrorDialog by remember { mutableStateOf(false) }
 
     val screenWidth = LocalConfiguration.current.screenWidthDp.dp
 
-    LaunchedEffect(key1 = true) {
-        ventaDiaViewModel.ventaDiaView(empresaID)
-        ventaSemanaViewModel.ventaSemanaView(empresaID)
-        ventaPeriodoViewModel.ventaPeriodo(empresaID)
+    val snackbarHostState = remember { SnackbarHostState() }  // Para el Snackbar
+    val isNetworkAvailable by networkViewModel.networkStatus.collectAsState()
+    val scope = rememberCoroutineScope()
+
+    fun cargarDatos() {
+        ventaDiaViewModel.cargarVentaDia(empresaID)
+        ventaSemanaViewModel.cargarVentaSemana(empresaID)
+        ventaPeriodoViewModel.cargarVentaPeriodo(empresaID)
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .systemBarsPadding()
-    ) {
+    // ✅ Al primer render, cargar si hay conexión
+    LaunchedEffect(key1 = isNetworkAvailable) {
+        if (isNetworkAvailable) { cargarDatos() }
+    }
 
-        Text(
-            text = "Ventas",
-            style = MaterialTheme.typography.headlineLarge,
-            fontWeight = FontWeight.Black,
-            modifier = Modifier.padding(horizontal = 16.dp),
-            color = DarkTextColor
-        )
+    // ✅ Mostrar el Snackbar si hay un error
+    LaunchedEffect(errorVentaDia, errorVentaSemana, errorVentaPeriodo) {
+        val error = errorVentaDia ?: errorVentaSemana ?: errorVentaPeriodo
+        error?.let {
+            showErrorDialog = true
+            snackbarHostState.showSnackbar("Error: $it")
+        }
+    }
 
-        Text(
-            text = "$nombreEmpresa - $empresaID",
-            style = MaterialTheme.typography.bodyMedium,
-            fontWeight = FontWeight.SemiBold,
-            modifier = Modifier.padding(horizontal = 16.dp),
-            color = Color.DarkGray,
-            maxLines = 1,
+    Scaffold (
+        modifier = Modifier.fillMaxSize(),
+        snackbarHost = { SnackbarHost(snackbarHostState) }
+    ) { padding ->
 
-        )
-
-        ShowRealTimeClock()
-
-        Spacer(modifier = Modifier.height(16.dp))
-        Box(
-            modifier = Modifier.weight(0.33f)
-        ){
-            if (ventaDiaFmt.tituloDia.isEmpty()) {
-                CardResumen(
-                    titulo = "Día: no se reportan ventas",
-                    total = "$ 0",
-                    efectivo = "$ 0",
-                    credito = "$ 0",
-                    tipoResumen = "",
-                    tipo = TipoVentaCard.DIA
-                )
-            } else {
-                CardResumen(
-                    titulo = "Día: ${ventaDiaFmt.tituloDia}",
-                    total = ventaDiaFmt.total,
-                    efectivo = ventaDiaFmt.efectivo,
-                    credito = ventaDiaFmt.credito,
-                    tipoResumen = "",
-                    tipo = TipoVentaCard.DIA
-                )
-            }
+        LaunchedEffect(Unit) {
+            NetworkSyncManager(
+                networkViewModel = networkViewModel,
+                snackbarHostState = snackbarHostState,
+                coroutineScope = scope,
+                onRefresh = { cargarDatos() },
+                //refreshIntervalMs = 10_000 // 10 segundos opcional por defecto es 10 Min
+            ).startObserving()
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
-        Box(
-            modifier = Modifier.weight(0.33f)
-        ){
-            if (ventaSemanaFmt.tituloSemana.isEmpty()) {
-                CardResumen(
-                    titulo = "Últ 7 Días: no se reportan ventas",
-                    total = "$ 0",
-                    efectivo = "$ 0",
-                    credito = "$ 0",
-                    tipoResumen = "",
-                    tipo = TipoVentaCard.SEMANA
-                )
-            } else {
-                CardResumen(
-                    titulo = "Últ 7 Días: ${ventaSemanaFmt.tituloSemana}",
-                    total = ventaSemanaFmt.total,
-                    efectivo = ventaSemanaFmt.efectivo,
-                    credito = ventaSemanaFmt.credito,
-                    tipoResumen = "",
-                    tipo = TipoVentaCard.SEMANA
-                )
-            }
+        // Conditionally show the dialog
+        if ((showErrorDialog) &&
+            (errorVentaDia != null || errorVentaSemana != null || errorVentaPeriodo != null)
+            ) {
+            ErrorDialog(
+                onDismissRequest = { showErrorDialog = false },
+                onConfirmation = {
+                    // Close the dialog when confirmed
+                    showErrorDialog = false
+                    // You can add other actions here if needed, e.g., retry loading data
+                },
+                dialogTitle = "ERROR VENTA",
+                dialogText = "$errorVentaDia",
+                icon = Icons.Default.Info
+            )
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
-        Box (
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .weight(0.34f)
+                .fillMaxSize()
+                .systemBarsPadding()
         ) {
-            if (ventaPeriodo.isEmpty()) {
-                CardResumen(
-                    titulo = "Periodo: no se reportan ventas",
-                    total = "$ 0",
-                    efectivo = "$ 0",
-                    credito = "$ 0",
-                    tipoResumen = "",
-                    tipo = TipoVentaCard.PERIODO
-                )
-            } else {
-                LazyRow(
-                    modifier = Modifier.fillMaxWidth(),
-                    contentPadding = PaddingValues(horizontal = 0.dp),
-                    horizontalArrangement = Arrangement.spacedBy(0.dp),
-                ) {
-                    items(ventaPeriodo.reversed()) { venta ->
+            if (isLoadingVentaPeriodo) { LinearProgressIndicator(modifier = Modifier.fillMaxWidth()) }
+
+            Text(
+                text = "Ventas",
+                style = MaterialTheme.typography.headlineLarge,
+                fontWeight = FontWeight.Black,
+                modifier = Modifier.padding(horizontal = 16.dp),
+                color = DarkTextColor
+            )
+
+            Text(
+                text = "$nombreEmpresa - $empresaID",
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.SemiBold,
+                modifier = Modifier.padding(horizontal = 16.dp),
+                color = Color.DarkGray
+            )
+
+            ShowRealTimeClock()
+
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .systemBarsPadding(),
+                contentPadding = PaddingValues(vertical = 8.dp)
+            ) {
+
+                item {
+                    if (ventaDiaFmt.tituloDia.isEmpty()) {
                         CardResumen(
-                            modifier = Modifier.width(screenWidth / 1.15f),
-                            titulo = "Periodo: ${venta.nom_periodo}",
-                            total = formatCurrency(venta.sum_periodo),
-                            efectivo = formatCurrency(venta.sum_contado),
-                            credito = formatCurrency(venta.sum_credito),
+                            titulo = "Día: no se reportan ventas",
+                            total = "$ 0",
+                            efectivo = "$ 0",
+                            credito = "$ 0",
+                            tipoResumen = "",
+                            tipo = TipoVentaCard.DIA
+                        )
+                    } else {
+                        CardResumen(
+                            titulo = "Día: ${ventaDiaFmt.tituloDia}",
+                            total = ventaDiaFmt.total,
+                            facturas = ventaDiaFmt.facturas,
+                            efectivo = ventaDiaFmt.efectivo,
+                            credito = ventaDiaFmt.credito,
+                            tipoResumen = "",
+                            tipo = TipoVentaCard.DIA
+                        )
+                    }
+                }
+
+                item {
+                    if (ventaSemanaFmt.tituloSemana.isEmpty()) {
+                        CardResumen(
+                            titulo = "Últ 7 Días: no se reportan ventas",
+                            total = "$ 0",
+                            efectivo = "$ 0",
+                            credito = "$ 0",
+                            tipoResumen = "",
+                            tipo = TipoVentaCard.SEMANA
+                        )
+                    } else {
+                        CardResumen(
+                            titulo = "Últ 7 Días: ${ventaSemanaFmt.tituloSemana}",
+                            total = ventaSemanaFmt.total,
+                            facturas = ventaSemanaFmt.facturas,
+                            efectivo = ventaSemanaFmt.efectivo,
+                            credito = ventaSemanaFmt.credito,
+                            tipoResumen = "",
+                            tipo = TipoVentaCard.SEMANA
+                        )
+                    }
+                }
+
+                item {
+                    if (ventaPeriodo.isEmpty()) {
+                        CardResumen(
+                            titulo = "Periodo: no se reportan ventas",
+                            total = "$ 0",
+                            efectivo = "$ 0",
+                            credito = "$ 0",
                             tipoResumen = "",
                             tipo = TipoVentaCard.PERIODO
                         )
+                    } else {
+                        LazyRow(modifier = Modifier.fillMaxWidth()) {
+                            items(ventaPeriodo.reversed()) { venta ->
+                                CardResumen(
+                                    modifier = Modifier
+                                        .width(screenWidth / 1.0f)
+                                        .padding(end = 8.dp), // evita que se pegue al borde
+                                    titulo = "Periodo: ${venta.nom_periodo}",
+                                    total = formatCurrency(venta.sum_periodo),
+                                    facturas = (venta.facturas).toString(),
+                                    efectivo = formatCurrency(venta.sum_contado),
+                                    credito = formatCurrency(venta.sum_credito),
+                                    tipoResumen = "",
+                                    tipo = TipoVentaCard.PERIODO
+                                )
+                            }
+                        }
                     }
                 }
             }
         }
     }
 }
+
+
+
+
 
 

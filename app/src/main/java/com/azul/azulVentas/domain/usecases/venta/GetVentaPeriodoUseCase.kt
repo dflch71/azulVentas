@@ -8,7 +8,7 @@ import javax.inject.Inject
 class GetVentaPeriodoUseCase @Inject constructor(
     private val repository: VentaRepository
 ) {
-    suspend operator fun invoke(EmpresaID: String): List<ResumenPeriodo> {
+    suspend operator fun invoke(EmpresaID: String): Result<List<ResumenPeriodo>> {
         return repository.getVentaPeriodo(EmpresaID)
     }
 }

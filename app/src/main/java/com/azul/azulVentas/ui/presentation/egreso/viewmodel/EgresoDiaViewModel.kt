@@ -35,50 +35,52 @@ class EgresoDiaViewModel @Inject constructor(
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error
 
-    fun egresoDia(EmpresaID: String) {
-        viewModelScope.launch {
-            _isLoading.value = true
-            try {
-                _egresoDia.value = getEgresoDiaUseCase(EmpresaID)
-                _error.value = null
-            } catch (e: Exception) {
-                _error.value = "Error .. (WS-AZUL): ${e.message}"
-            } finally {
-                _isLoading.value = false
-            }
-        }
-    }
-
     private val _egresoDiaFormatted = mutableStateOf(ResumenOperaciones())
     val egresoDiaFormatted: State<ResumenOperaciones> = _egresoDiaFormatted
 
-    fun egresoDiaView(empresaID: String) {
+    fun cargarEgresoDia(empresaID: String) {
         viewModelScope.launch {
             _isLoading.value = true
-            val response = getEgresoDiaUseCase(empresaID)
-            _egresoDia.postValue(response)
 
-            _egresoDiaFormatted.value = ResumenOperaciones(
-                tituloDia = "",
-                total = "",
-                efectivo = "",
-                credito = "",
-                facturas = "",
-            )
+            val result = getEgresoDiaUseCase(empresaID)
 
-            if (response.isNotEmpty()) {
-                val fecha = response.first().fecha_dia + "T00:00:00"
-                val date = stringToLocalDateTime(fecha) ?: LocalDateTime.now()
-                val tDia = "${formatDate(response.first().fecha_dia)} - ${calculateDaysToTargetDate(date)} Días"
+            when {
+                result.isSuccess -> {
+                    val response = result.getOrDefault(emptyList())
+                    _egresoDia.postValue(response)
+                    _error.value = null
 
-                _egresoDiaFormatted.value = ResumenOperaciones(
-                    tituloDia = tDia,
-                    total = formatCurrency(response.sumOf { it.sum_hora }),
-                    efectivo = formatCurrency(response.sumOf { it.sum_contado }),
-                    credito = formatCurrency(response.sumOf { it.sum_credito }),
-                    facturas = response.sumOf { it.sum_factura }.toString(),
-                )
+                    _egresoDiaFormatted.value = ResumenOperaciones(
+                        tituloDia = "",
+                        total = "",
+                        efectivo = "",
+                        credito = "",
+                        facturas = "",
+                    )
+
+                    if (response.isNotEmpty()) {
+                        val fecha = response.first().fecha_dia + "T00:00:00"
+                        val date = stringToLocalDateTime(fecha) ?: LocalDateTime.now()
+                        val tDia = "${formatDate(response.first().fecha_dia)} - ${
+                            calculateDaysToTargetDate(date)
+                        } Días"
+
+                        _egresoDiaFormatted.value = ResumenOperaciones(
+                            tituloDia = tDia,
+                            total = formatCurrency(response.sumOf { it.sum_hora }),
+                            efectivo = formatCurrency(response.sumOf { it.sum_contado }),
+                            credito = formatCurrency(response.sumOf { it.sum_credito }),
+                            facturas = response.sumOf { it.sum_factura }.toString(),
+                        )
+                    }
+                }
+
+                result.isFailure -> {
+                    _egresoDia.postValue(emptyList())
+                    _error.value = result.exceptionOrNull()?.message ?: "Error desconocido"
+                }
             }
+
             _isLoading.value = false
         }
     }

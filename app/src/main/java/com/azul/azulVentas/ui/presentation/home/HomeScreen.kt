@@ -16,15 +16,18 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.azul.azulEgresos.ui.presentation.egreso.viewmodel.EgresoPeriodoViewModel
+import com.azul.azulVentas.R
 import com.azul.azulVentas.ui.components.BottomNavigationBar
 import com.azul.azulVentas.ui.presentation.clientes.viewmodel.ClientesViewModel
 import com.azul.azulVentas.ui.presentation.compra.view.CompraScreen
@@ -35,6 +38,7 @@ import com.azul.azulVentas.ui.presentation.egreso.view.EgresoScreen
 import com.azul.azulVentas.ui.presentation.egreso.viewmodel.EgresoDiaViewModel
 import com.azul.azulVentas.ui.presentation.egreso.viewmodel.EgresoSemanaViewModel
 import com.azul.azulVentas.ui.presentation.login.viewmodel.AuthViewModel
+import com.azul.azulVentas.ui.presentation.network.viewmodel.NetworkViewModel
 import com.azul.azulVentas.ui.presentation.venta.view.VentaScreen
 import com.azul.azulVentas.ui.presentation.venta.viewmodel.VentaDiaViewModel
 import com.azul.azulVentas.ui.presentation.venta.viewmodel.VentaPeriodoViewModel
@@ -64,13 +68,15 @@ fun HomeScreen(
     egresoPeriodoViewModel: EgresoPeriodoViewModel,
     compraDiaViewModel: CompraDiaViewModel,
     compraSemanaViewModel: CompraSemanaViewModel,
-    compraPeriodoViewModel: CompraPeriodoViewModel
+    compraPeriodoViewModel: CompraPeriodoViewModel,
+    networkViewModel: NetworkViewModel
 ) {
     var selectedItemIndex by remember { mutableStateOf(0) }
+    val isNetworkAvailable by networkViewModel.networkStatus.collectAsState()
 
     Scaffold(
         topBar = {
-            AzulVentasTopAppBar(authViewModel, onLogoutSuccess, navController)
+            AzulVentasTopAppBar(authViewModel, onLogoutSuccess, navController, isNetworkAvailable)
         },
 
         bottomBar = {
@@ -86,14 +92,14 @@ fun HomeScreen(
                 verticalArrangement = Arrangement.Top,
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
-                    .padding(10.dp)
+                    .padding(4.dp)
                     //.verticalScroll(rememberScrollState())
             ) {
                 when (selectedItemIndex) {
-                    0 -> { VentaScreen(idEmpresa, nombreEmpresa, ventaDiaViewModel, ventaSemanaViewModel, ventaPeriodoViewModel ) }
-                    1 -> { VentaPosScreen(idEmpresa, nombreEmpresa, ventaPosDiaViewModel, ventaPosSemanaViewModel, ventaPosPeriodoViewModel) }
-                    2 -> { CompraScreen(idEmpresa, nombreEmpresa, compraDiaViewModel, compraSemanaViewModel, compraPeriodoViewModel)  }
-                    3 -> { EgresoScreen(idEmpresa, nombreEmpresa, egresoDiaViewModel, egresoSemanaViewModel, egresoPeriodoViewModel)}
+                    0 -> { VentaScreen(idEmpresa, nombreEmpresa, ventaDiaViewModel, ventaSemanaViewModel, ventaPeriodoViewModel, networkViewModel ) }
+                    1 -> { VentaPosScreen(idEmpresa, nombreEmpresa, ventaPosDiaViewModel, ventaPosSemanaViewModel, ventaPosPeriodoViewModel, networkViewModel) }
+                    2 -> { CompraScreen(idEmpresa, nombreEmpresa, compraDiaViewModel, compraSemanaViewModel, compraPeriodoViewModel, networkViewModel)  }
+                    3 -> { EgresoScreen(idEmpresa, nombreEmpresa, egresoDiaViewModel, egresoSemanaViewModel, egresoPeriodoViewModel, networkViewModel) }
                 }
             }
         }
@@ -105,7 +111,8 @@ fun HomeScreen(
 fun AzulVentasTopAppBar(
     authViewModel: AuthViewModel,
     onLogoutSuccess: () -> Unit,
-    navController: NavController
+    navController: NavController,
+    hayInternet: Boolean = true
 ) {
     TopAppBar(
         navigationIcon = {
@@ -122,9 +129,22 @@ fun AzulVentasTopAppBar(
         },
 
         actions = {
-            //IconButton(onClick = {}) {
-            //    Icon(imageVector = Icons.Filled.Add, contentDescription = null )
-            //}
+
+            if (!hayInternet) {
+                IconButton(onClick = {
+                    authViewModel.signout()
+                    authViewModel.isLoggedIn()
+                    onLogoutSuccess()
+                }) {
+                    Icon(
+                        //imageVector = Icons.Filled.SignalWifiConnectedNoInternet4,
+                        painter = painterResource(id = R.drawable.ic_wifi_off), // Replace with your image resource
+                        contentDescription = null,
+                        //tint = MaterialTheme.colorScheme.inversePrimary,
+                        //modifier = Modifier.size(24.dp)
+                    )
+                }
+            }
 
             IconButton(onClick = {
                 authViewModel.signout()
@@ -138,6 +158,7 @@ fun AzulVentasTopAppBar(
                     //modifier = Modifier.size(24.dp)
                 )
             }
+
         },
 
         colors = TopAppBarDefaults.topAppBarColors(

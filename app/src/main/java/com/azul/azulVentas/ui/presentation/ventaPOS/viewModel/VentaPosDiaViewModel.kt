@@ -36,47 +36,49 @@ class VentaPosDiaViewModel @Inject constructor(
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error
 
-    fun ventaPosDia(EmpresaID: String) {
-        viewModelScope.launch {
-            _isLoading.value = true
-            try {
-                _ventaPosDia.value = getVentaPosDiaUseCase(EmpresaID)
-                _error.value = null
-            } catch (e: Exception) {
-                _error.value = "Error .. (WS-AZUL): ${e.message}"
-            } finally {
-                _isLoading.value = false
-            }
-        }
-    }
-
     private val _ventaPosDiaFormatted = mutableStateOf(ResumenOperaciones())
     val ventaPosDiaFormatted: State<ResumenOperaciones> = _ventaPosDiaFormatted
 
-    fun ventaPosDiaView(empresaID: String) {
+    fun cargarVentaPosDia(empresaID: String) {
         viewModelScope.launch {
             _isLoading.value = true
-            val response = getVentaPosDiaUseCase(empresaID)
-            _ventaPosDia.postValue(response)
 
-            _ventaPosDiaFormatted.value = ResumenOperaciones(
-                tituloDia = "",
-                total = "",
-                efectivo = "",
-                credito = ""
-            )
+            val result = getVentaPosDiaUseCase(empresaID)
 
-            if (response.isNotEmpty()) {
-                val fecha = response.first().fecha_dia + "T00:00:00"
-                val date = stringToLocalDateTime(fecha) ?: LocalDateTime.now()
-                val tDia = "${formatDate(response.first().fecha_dia)} - ${calculateDaysToTargetDate(date)} Días"
+            when {
+                result.isSuccess -> {
+                    val response = result.getOrDefault(emptyList())
+                    _ventaPosDia.postValue(response)
+                    _error.value = null
 
-                _ventaPosDiaFormatted.value = ResumenOperaciones(
-                    tituloDia = tDia,
-                    total = formatCurrency(response.sumOf { it.sum_hora }),
-                    efectivo = formatCurrency(response.sumOf { it.sum_contado }),
-                    credito = formatCurrency(response.sumOf { it.sum_credito })
-                )
+                    _ventaPosDiaFormatted.value = ResumenOperaciones(
+                        tituloDia = "",
+                        total = "",
+                        efectivo = "",
+                        credito = ""
+                    )
+
+                    if (response.isNotEmpty()) {
+                        val fecha = response.first().fecha_dia + "T00:00:00"
+                        val date = stringToLocalDateTime(fecha) ?: LocalDateTime.now()
+                        val tDia = "${formatDate(response.first().fecha_dia)} - ${
+                            calculateDaysToTargetDate(date)
+                        } Días"
+
+                        _ventaPosDiaFormatted.value = ResumenOperaciones(
+                            tituloDia = tDia,
+                            total = formatCurrency(response.sumOf { it.sum_hora }),
+                            efectivo = formatCurrency(response.sumOf { it.sum_contado }),
+                            credito = formatCurrency(response.sumOf { it.sum_credito }),
+                            facturas = response.sumOf { it.sum_factura }.toString()
+                        )
+                    }
+                }
+
+                result.isFailure -> {
+                    _ventaPosDia.postValue(emptyList())
+                    _error.value = result.exceptionOrNull()?.message ?: "Error desconocido"
+                }
             }
             _isLoading.value = false
         }

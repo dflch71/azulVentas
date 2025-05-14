@@ -283,7 +283,6 @@ fun ScreenContainer(
     compraDiaViewModel: CompraDiaViewModel,
     compraSemanaViewModel: CompraSemanaViewModel,
     compraPeriodoViewModel: CompraPeriodoViewModel,
-
     ) {
 
     NavHost(
@@ -450,7 +449,8 @@ fun ScreenContainer(
                     egresoPeriodoViewModel,
                     compraDiaViewModel,
                     compraSemanaViewModel,
-                    compraPeriodoViewModel
+                    compraPeriodoViewModel,
+                    networkViewModel
                 )
             }
         }

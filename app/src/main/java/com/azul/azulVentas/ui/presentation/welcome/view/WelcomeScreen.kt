@@ -64,7 +64,6 @@ fun WelcomeScreen(
 ) {
     val isNetworkAvailable by networkViewModel.networkStatus.collectAsState()
     val isConnect = remember { mutableStateOf(true) }
-
     val snackbarHostState = remember { SnackbarHostState() }  // Para el Snackbar
     val context = LocalContext.current
 
@@ -101,11 +100,6 @@ fun WelcomeScreen(
             )
         }
     }
-}
-
-@Composable
-fun ShowToast(context: Context, message: String) {
-    Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
 }
 
 @Composable
@@ -147,14 +141,57 @@ private fun WelcomeContent(
             color = DarkTextColor
         )
 
-        //Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(8.dp))
         Text(
-            text = "Registre su Empresa y tenga La información\n de los movimientos financieros de su Negocio",
-            modifier = Modifier.padding(horizontal = 24.dp),
+            text = "¡Gestione su negocio!",
+            modifier = Modifier.padding(horizontal = 36.dp),
             textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.bodyLarge,
+            fontWeight = FontWeight.Bold,
+            color = DarkTextColor
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            text = "Registre su empresa en segundos y acceda a información real y oportuna.",
+            modifier = Modifier.padding(horizontal = 24.dp),
+            textAlign = TextAlign.Start,
             style = MaterialTheme.typography.bodyMedium,
             color = DarkTextColor
         )
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 24.dp)
+                .padding(top = 16.dp),
+            contentAlignment = Alignment.TopStart
+        ) {
+            Column() {
+                Text(
+                    text = "✔ Movimientos financieros.",
+                    modifier = Modifier.padding(horizontal = 24.dp),
+                    textAlign = TextAlign.Start,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = DarkTextColor
+                )
+
+                Text(
+                    text = "✔ Análisis gráficos fáciles de entender.",
+                    modifier = Modifier.padding(horizontal = 24.dp),
+                    textAlign = TextAlign.Start,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = DarkTextColor
+                )
+
+                Text(
+                    text = "✔ Alertas intgeligentes.",
+                    modifier = Modifier.padding(horizontal = 24.dp),
+                    textAlign = TextAlign.Start,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = DarkTextColor
+                )
+            }
+        }
 
         val user = "${authViewModel.getUserEmail() ?: ""}\n${authViewModel.getUserLastDay() ?: ""}"
         Spacer(modifier = Modifier.height(16.dp))
@@ -165,25 +202,6 @@ private fun WelcomeContent(
             style = MaterialTheme.typography.bodyLarge,
             color = DarkTextColor
         )
-
-        /*
-        Text(
-            text = authViewModel.getUserEmail() ?: "",
-            modifier = Modifier.padding(horizontal = 24.dp),
-            textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.bodyLarge,
-            color = DarkTextColor
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-        Text(
-            text = authViewModel.getUserLastDay() ?: "",
-            modifier = Modifier.padding(horizontal = 24.dp),
-            textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.bodyLarge,
-            color = DarkTextColor
-        )
-        */
 
         var daysLogged = 0L
         if (!authViewModel.getUserLastDay().isNullOrEmpty()) {
@@ -201,7 +219,7 @@ private fun WelcomeContent(
         if (daysLogged > 0L) {
             Spacer(modifier = Modifier.height(16.dp))
             Text(
-                text = "Days logged: $daysLogged",
+                text = "Inicio sesión: $daysLogged días",
                 modifier = Modifier.padding(horizontal = 24.dp),
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.bodyLarge,

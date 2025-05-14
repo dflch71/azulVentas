@@ -32,44 +32,45 @@ class CompraSemanaViewModel @Inject constructor(
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error
 
-    fun compraSemana(EmpresaID: String) {
-        viewModelScope.launch {
-            _isLoading.value = true
-            try {
-                _compraSemana.value = getCompraSemanaUseCase(EmpresaID)
-                _error.value = null
-            } catch (e: Exception) {
-                _error.value = "Error .. (WS-AZUL): ${e.message}"
-            } finally {
-                _isLoading.value = false
-            }
-        }
-    }
-
     private val _compraSemanaFormatted = mutableStateOf(ResumenOperaciones())
     val compraSemanaFormatted: State<ResumenOperaciones> = _compraSemanaFormatted
 
-    fun compraSemanaView(empresaID: String) {
+    fun cargarCompraSemana(empresaID: String) {
         viewModelScope.launch {
             _isLoading.value = true
-            val response = getCompraSemanaUseCase(empresaID)
-            _compraSemana.postValue(response)
 
-            _compraSemanaFormatted.value = ResumenOperaciones(
-                tituloSemana = "",
-                total = "",
-                efectivo = "",
-                credito = ""
-            )
+            val result = getCompraSemanaUseCase(empresaID)
 
-            if (response.isNotEmpty()) {
-                val titulo = "${formatDate(response.first().fecha_dia)} a ${formatDate(response.last().fecha_dia)}"
-                _compraSemanaFormatted.value = ResumenOperaciones(
-                    tituloSemana = titulo,
-                    total = formatCurrency(response.sumOf { it.sum_dia }),
-                    efectivo = formatCurrency(response.sumOf { it.sum_contado }),
-                    credito = formatCurrency(response.sumOf { it.sum_credito })
-                )
+            when {
+                result.isSuccess -> {
+                    val response = result.getOrDefault(emptyList())
+                    _compraSemana.postValue(response)
+                    _error.value = null
+
+                    _compraSemanaFormatted.value = ResumenOperaciones(
+                        tituloSemana = "",
+                        total = "",
+                        efectivo = "",
+                        credito = ""
+                    )
+
+                    if (response.isNotEmpty()) {
+                        val titulo =
+                            "${formatDate(response.first().fecha_dia)} a ${formatDate(response.last().fecha_dia)}"
+                        _compraSemanaFormatted.value = ResumenOperaciones(
+                            tituloSemana = titulo,
+                            total = formatCurrency(response.sumOf { it.sum_dia }),
+                            efectivo = formatCurrency(response.sumOf { it.sum_contado }),
+                            credito = formatCurrency(response.sumOf { it.sum_credito }),
+                            facturas = response.sumOf { it.facturas }.toString()
+                        )
+                    }
+                }
+
+                result.isFailure -> {
+                    _compraSemana.postValue(emptyList())
+                    _error.value = result.exceptionOrNull()?.message ?: "Error desconocido"
+                }
             }
             _isLoading.value = false
         }

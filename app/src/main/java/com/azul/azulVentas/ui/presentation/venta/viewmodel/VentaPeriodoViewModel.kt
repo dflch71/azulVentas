@@ -15,7 +15,7 @@ import javax.inject.Inject
 // presentation/viewmodel/EmpresaViewModel.kt
 @HiltViewModel
 class VentaPeriodoViewModel @Inject constructor(
-    private val getVentaPeriodoUseCase: GetVentaPeriodoUseCase,
+    private val getVentaPeriodoUseCase: GetVentaPeriodoUseCase
 ) : ViewModel() {
 
     private val _ventaPeriodo = MutableLiveData<List<ResumenPeriodo>>()
@@ -27,17 +27,30 @@ class VentaPeriodoViewModel @Inject constructor(
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error
 
-    fun ventaPeriodo(EmpresaID: String) {
+    fun cargarVentaPeriodo(EmpresaID: String) {
         viewModelScope.launch {
             _isLoading.value = true
-            try {
-                _ventaPeriodo.value = getVentaPeriodoUseCase(EmpresaID)
-                _error.value = null
-            } catch (e: Exception) {
-                _error.value = "Error .. (WS-AZUL): ${e.message}"
-            } finally {
-                _isLoading.value = false
+
+            // Assign the result of the use case call to a variable
+            val result = getVentaPeriodoUseCase(EmpresaID)
+
+            when {
+                result.isSuccess -> {
+                    val response = result.getOrDefault(emptyList())
+                    _ventaPeriodo.postValue(response)
+                    _error.value = null
+                    // Puedes realizar acciones adicionales aquí si es necesario
+                }
+
+                result.isFailure -> {
+                    _ventaPeriodo.postValue(emptyList())
+                    _error.value = result.exceptionOrNull()?.message ?: "Error desconocido"
+                }
             }
+
+            _isLoading.value = false
+
         }
     }
+
 }
