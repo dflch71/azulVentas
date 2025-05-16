@@ -8,6 +8,7 @@ fun ResumenPeriodoResponse.toDomain(): ResumenPeriodo {
         tipo = this.Tipo ?: "",
         periodo = this.Periodo ?: 0,
         nom_periodo = this.NomPerido ?: "",
+        tipo_pago = this.TipoPago ?: "",
         facturas = this.Facturas ?: 0,
         sum_periodo = this.SumPeriodo ?: 0.0,
         sum_contado = this.SumContado ?: 0.0,

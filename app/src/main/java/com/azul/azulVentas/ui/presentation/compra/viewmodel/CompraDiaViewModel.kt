@@ -54,6 +54,7 @@ class CompraDiaViewModel @Inject constructor(
 
                     _compraFormatted.value = ResumenOperaciones(
                         tituloDia = "",
+                        tipo_pago = "",
                         total = "",
                         efectivo = "",
                         credito = ""
@@ -68,6 +69,7 @@ class CompraDiaViewModel @Inject constructor(
 
                         _compraFormatted.value = ResumenOperaciones(
                             tituloDia = tDia,
+                            tipo_pago = response.first().tipo_pago,
                             total = formatCurrency(response.sumOf { it.sum_hora }),
                             efectivo = formatCurrency(response.sumOf { it.sum_contado }),
                             credito = formatCurrency(response.sumOf { it.sum_credito }),

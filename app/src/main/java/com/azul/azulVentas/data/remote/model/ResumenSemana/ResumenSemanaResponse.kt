@@ -7,6 +7,7 @@ data class ResumenSemanaResponse(
     @SerializedName("fecha_dia") val FechaDia: String,
     @SerializedName("dia_mes") val DiaMes: Int,
     @SerializedName("dia_semana") val DiaSemana: String,
+    @SerializedName("tipo_pago") val TipoPago: String,
     @SerializedName("facturas") val Facturas: Int,
     @SerializedName("sum_dia") val SumDia: Double,
     @SerializedName("sum_contado") val SumContado: Double,

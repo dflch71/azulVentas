@@ -19,4 +19,7 @@ sealed class NavGraph (val route: String) {
     object Empresas: NavGraph("empresas_screen")
     object RegistrationEmail: NavGraph("registrationEmail_screen")
     object RecoverPassword: NavGraph("recoverPassword_screen")
+    object DiaEstadistica: NavGraph("dia_estadistica_screen/{title}/{fecha}") {
+        fun createRoute(title: String, fecha: String) = "dia_estadistica_screen/$title/$fecha"
+    }
 }

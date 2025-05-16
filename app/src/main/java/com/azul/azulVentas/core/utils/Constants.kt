@@ -26,7 +26,6 @@ object Constants {
     //http://localhost:9060/datasnap/rest/TServerMethods/validarEmpresasEmail/EMAIL
     const val GET_PATH_VALIDAR_EMPRESAS_EMAIL = "validarEmpresaSEmail/{Email}"
 
-
     //VENTA
     //http://localhost:9060/datasnap/rest/TServerMethods/VentaxHora/901253102
     const val GET_PATH_VENTA_DIA = "VentaxHora/{EmpresaID}"

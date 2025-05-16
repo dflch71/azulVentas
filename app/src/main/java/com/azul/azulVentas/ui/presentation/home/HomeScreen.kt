@@ -96,7 +96,7 @@ fun HomeScreen(
                     //.verticalScroll(rememberScrollState())
             ) {
                 when (selectedItemIndex) {
-                    0 -> { VentaScreen(idEmpresa, nombreEmpresa, ventaDiaViewModel, ventaSemanaViewModel, ventaPeriodoViewModel, networkViewModel ) }
+                    0 -> { VentaScreen( navController, idEmpresa, nombreEmpresa, ventaDiaViewModel, ventaSemanaViewModel, ventaPeriodoViewModel, networkViewModel ) }
                     1 -> { VentaPosScreen(idEmpresa, nombreEmpresa, ventaPosDiaViewModel, ventaPosSemanaViewModel, ventaPosPeriodoViewModel, networkViewModel) }
                     2 -> { CompraScreen(idEmpresa, nombreEmpresa, compraDiaViewModel, compraSemanaViewModel, compraPeriodoViewModel, networkViewModel)  }
                     3 -> { EgresoScreen(idEmpresa, nombreEmpresa, egresoDiaViewModel, egresoSemanaViewModel, egresoPeriodoViewModel, networkViewModel) }

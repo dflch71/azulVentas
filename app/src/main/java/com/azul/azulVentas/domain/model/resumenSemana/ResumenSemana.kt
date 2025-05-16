@@ -5,6 +5,7 @@ data class ResumenSemana(
     val fecha_dia: String,
     val dia_mes: Int,
     val dia_semana: String,
+    val tipo_pago: String,
     val facturas: Int,
     val sum_dia: Double,
     val sum_contado: Double,

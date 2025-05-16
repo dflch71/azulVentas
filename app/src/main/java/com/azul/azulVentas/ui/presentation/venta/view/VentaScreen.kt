@@ -32,9 +32,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.azul.azulVentas.core.utils.Utility.Companion.ShowRealTimeClock
 import com.azul.azulVentas.core.utils.Utility.Companion.formatCurrency
 import com.azul.azulVentas.ui.components.ErrorDialog
+import com.azul.azulVentas.ui.presentation.container.NavGraph
 import com.azul.azulVentas.ui.presentation.network.sync.NetworkSyncManager
 import com.azul.azulVentas.ui.presentation.network.viewmodel.NetworkViewModel
 import com.azul.azulVentas.ui.presentation.venta.component.CardResumen
@@ -43,9 +45,11 @@ import com.azul.azulVentas.ui.presentation.venta.viewmodel.VentaDiaViewModel
 import com.azul.azulVentas.ui.presentation.venta.viewmodel.VentaPeriodoViewModel
 import com.azul.azulVentas.ui.presentation.venta.viewmodel.VentaSemanaViewModel
 import com.azul.azulVentas.ui.theme.DarkTextColor
+import android.net.Uri
 
 @Composable
 fun VentaScreen(
+    navController: NavController,
     empresaID: String,
     nombreEmpresa: String,
     ventaDiaViewModel: VentaDiaViewModel,
@@ -166,6 +170,8 @@ fun VentaScreen(
                             tipo = TipoVentaCard.DIA
                         )
                     } else {
+                        //Para poder enviar el argumento a la pantalla de detalle de venta
+                        val fechaCodificada = Uri.encode(ventaDiaFmt.tituloDia)
                         CardResumen(
                             titulo = "Día: ${ventaDiaFmt.tituloDia}",
                             total = ventaDiaFmt.total,
@@ -173,7 +179,8 @@ fun VentaScreen(
                             efectivo = ventaDiaFmt.efectivo,
                             credito = ventaDiaFmt.credito,
                             tipoResumen = "",
-                            tipo = TipoVentaCard.DIA
+                            tipo = TipoVentaCard.DIA,
+                            onClick = { navController.navigate(NavGraph.DiaEstadistica.createRoute("Venta Día", fechaCodificada)) }
                         )
                     }
                 }

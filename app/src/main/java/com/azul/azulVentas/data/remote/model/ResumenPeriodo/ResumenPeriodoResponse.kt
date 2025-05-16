@@ -6,6 +6,7 @@ data class ResumenPeriodoResponse(
     @SerializedName("tipo") val Tipo: String,
     @SerializedName("periodo") val Periodo: Int,
     @SerializedName("nom_periodo") val NomPerido: String,
+    @SerializedName("tipo_pago") val TipoPago: String,
     @SerializedName("facturas") val Facturas: Int,
     @SerializedName("sum_periodo") val SumPeriodo: Double,
     @SerializedName("sum_contado") val SumContado: Double,

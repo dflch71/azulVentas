@@ -59,9 +59,9 @@ class VentaSemanaViewModel @Inject constructor(
                         _ventaSemanaFormatted.value = ResumenOperaciones(
                             tituloSemana = titulo,
                             total = formatCurrency(response.sumOf { it.sum_dia }),
+                            facturas = response.sumOf { it.facturas }.toString(),
                             efectivo = formatCurrency(response.sumOf { it.sum_contado }),
-                            credito = formatCurrency(response.sumOf { it.sum_credito }),
-                            facturas = response.sumOf { it.facturas }.toString()
+                            credito = formatCurrency(response.sumOf { it.sum_credito })
                         )
                     }
                 }
