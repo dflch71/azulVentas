@@ -86,4 +86,27 @@ class CompraDiaViewModel @Inject constructor(
             _isLoading.value = false
         }
     }
+
+    fun listarCompraDia(empresaID: String) {
+        viewModelScope.launch {
+            _isLoading.value = true
+
+            // Assign the result of the use case call to a variable
+            val result = getCompraDiaUseCase(empresaID)
+
+            when {
+                result.isSuccess -> {
+                    val response = result.getOrDefault(emptyList())
+                    _compraDia.postValue(response)
+                    _error.value = null
+                }
+
+                result.isFailure -> {
+                    _compraDia.postValue(emptyList())
+                    _error.value = result.exceptionOrNull()?.message ?: "Error desconocido"
+                }
+            }
+            _isLoading.value = false
+        }
+    }
 }

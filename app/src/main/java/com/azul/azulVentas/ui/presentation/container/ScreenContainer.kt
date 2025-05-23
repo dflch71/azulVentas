@@ -242,17 +242,40 @@ fun ScreenContainer(
         }
 
         composable(
-            //route = "dia_estadistica_screen/{title}/{fecha}",
             route = NavGraph.DiaEstadistica.route,
             arguments = listOf(
+                navArgument("empresaID") { type = NavType.StringType },
+                navArgument("tipoOperacion") { type = NavType.StringType },
                 navArgument("title") { type = NavType.StringType },
-                navArgument("fecha") { type = NavType.StringType }
+                navArgument("fecha") { type = NavType.StringType },
+                navArgument("efectivo") { type = NavType.StringType },
+                navArgument("credito") { type = NavType.StringType },
+                navArgument("total") { type = NavType.StringType }
             )
 
         ) { backStackEntry ->
+            val empresaID = backStackEntry.arguments?.getString("empresaID") ?: ""
+            val tipoOperacion = backStackEntry.arguments?.getString("tipoOperacion") ?: ""
             val title = backStackEntry.arguments?.getString("title") ?: ""
             val fecha = backStackEntry.arguments?.getString("fecha") ?: ""
-            DiaEstadisticaScreen(title = title, fecha = fecha, navController = navHost)
+            val efectivo = backStackEntry.arguments?.getString("efectivo") ?: ""
+            val credito = backStackEntry.arguments?.getString("credito") ?: ""
+            val total = backStackEntry.arguments?.getString("total") ?: ""
+            DiaEstadisticaScreen(
+                navController = navHost,
+                tipoOperacion = tipoOperacion,
+                ventaDiaViewModel = ventaDiaViewModel,
+                ventaPosDiaViewModel = ventaPosDiaViewModel,
+                compraDiaViewModel = compraDiaViewModel,
+                egresoDiaViewModel = egresoDiaViewModel,
+                networkViewModel = networkViewModel,
+                empresaID = empresaID,
+                title = title,
+                fecha = fecha,
+                efectivo = efectivo,
+                credito = credito,
+                total = total
+            )
         }
     }
 }

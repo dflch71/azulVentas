@@ -1,5 +1,6 @@
 package com.azul.azulVentas.ui.presentation.venta.view
 
+import android.net.Uri
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -45,7 +46,7 @@ import com.azul.azulVentas.ui.presentation.venta.viewmodel.VentaDiaViewModel
 import com.azul.azulVentas.ui.presentation.venta.viewmodel.VentaPeriodoViewModel
 import com.azul.azulVentas.ui.presentation.venta.viewmodel.VentaSemanaViewModel
 import com.azul.azulVentas.ui.theme.DarkTextColor
-import android.net.Uri
+import kotlinx.coroutines.launch
 
 @Composable
 fun VentaScreen(
@@ -71,8 +72,8 @@ fun VentaScreen(
 
     val screenWidth = LocalConfiguration.current.screenWidthDp.dp
 
-    val snackbarHostState = remember { SnackbarHostState() }  // Para el Snackbar
     val isNetworkAvailable by networkViewModel.networkStatus.collectAsState()
+    val snackbarHostState = remember { SnackbarHostState() }  // Para el Snackbar
     val scope = rememberCoroutineScope()
 
     fun cargarDatos() {
@@ -180,7 +181,26 @@ fun VentaScreen(
                             credito = ventaDiaFmt.credito,
                             tipoResumen = "",
                             tipo = TipoVentaCard.DIA,
-                            onClick = { navController.navigate(NavGraph.DiaEstadistica.createRoute("Venta Día", fechaCodificada)) }
+                            onClick = {
+                                if (ventaSemanaFmt.facturas != "0") {
+                                    navController.navigate(
+                                        NavGraph.DiaEstadistica.createRoute(
+                                            "Venta",
+                                            empresaID,
+                                            "Venta Día",
+                                            fechaCodificada,
+                                            ventaDiaFmt.efectivo,
+                                            ventaDiaFmt.credito,
+                                            ventaDiaFmt.total
+                                        )
+                                    )
+                                } else {
+                                    // Mostrar Snackbar dentro de una corrutina
+                                    scope.launch {
+                                        snackbarHostState.showSnackbar("No hay datos disponibles para mostrar")
+                                    }
+                                }
+                            }
                         )
                     }
                 }

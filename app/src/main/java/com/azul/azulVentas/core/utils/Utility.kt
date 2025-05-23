@@ -102,5 +102,19 @@ class Utility {
             return format.format(amount)
         }
 
+        fun formatearEtiqueta(texto: String): String {
+            return texto.split("_").joinToString(" ") { palabra ->
+                when (palabra.lowercase()) {
+                    "hora" -> "hora"
+                    "dia" -> "día"
+                    "mes" -> "mes"
+                    "anio", "año" -> "año"
+                    "por" -> "por"
+                    else -> palabra.replaceFirstChar { it.uppercase() }
+                }
+            }.replace(" ", " por ", ignoreCase = true)
+                .replaceFirstChar { it.uppercase() }
+        }
+
     }
 }

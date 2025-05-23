@@ -1,5 +1,6 @@
 package com.azul.azulVentas.ui.presentation.ventaPOS.view
 
+import android.net.Uri
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -32,9 +33,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.azul.azulVentas.core.utils.Utility.Companion.ShowRealTimeClock
 import com.azul.azulVentas.core.utils.Utility.Companion.formatCurrency
 import com.azul.azulVentas.ui.components.ErrorDialog
+import com.azul.azulVentas.ui.presentation.container.NavGraph
 import com.azul.azulVentas.ui.presentation.network.sync.NetworkSyncManager
 import com.azul.azulVentas.ui.presentation.network.viewmodel.NetworkViewModel
 import com.azul.azulVentas.ui.presentation.venta.component.CardResumen
@@ -43,9 +46,11 @@ import com.azul.azulVentas.ui.presentation.ventaPOS.viewModel.VentaPosDiaViewMod
 import com.azul.azulVentas.ui.presentation.ventaPOS.viewModel.VentaPosPeriodoViewModel
 import com.azul.azulVentas.ui.presentation.ventaPOS.viewModel.VentaPosSemanaViewModel
 import com.azul.azulVentas.ui.theme.DarkTextColor
+import kotlinx.coroutines.launch
 
 @Composable
 fun VentaPosScreen(
+    navController: NavController,
     empresaID: String,
     nombreEmpresa: String,
     ventaPosDiaViewModel: VentaPosDiaViewModel,
@@ -67,8 +72,8 @@ fun VentaPosScreen(
 
     val screenWidth = LocalConfiguration.current.screenWidthDp.dp
 
-    val snackbarHostState = remember { SnackbarHostState() }  // Para el Snackbar
     val isNetworkAvailable by networkViewModel.networkStatus.collectAsState()
+    val snackbarHostState = remember { SnackbarHostState() }  // Para el Snackbar
     val scope = rememberCoroutineScope()
 
     fun cargarDatos() {
@@ -157,6 +162,8 @@ fun VentaPosScreen(
             ) {
 
                 item {
+                    //Para poder enviar el argumento a la pantalla de detalle de venta
+                    val fechaCodificada = Uri.encode(ventaPosDiaFmt.tituloDia)
                     CardResumen(
                         titulo = "Día: ${ventaPosDiaFmt.tituloDia}",
                         total = ventaPosDiaFmt.total,
@@ -164,7 +171,27 @@ fun VentaPosScreen(
                         efectivo = ventaPosDiaFmt.efectivo,
                         credito = ventaPosDiaFmt.credito,
                         tipoResumen = "POS",
-                        tipo = TipoVentaCard.DIA
+                        tipo = TipoVentaCard.DIA,
+                        onClick = {
+                            if (ventaPosDiaFmt.facturas != "0") {
+                                navController.navigate(
+                                    NavGraph.DiaEstadistica.createRoute(
+                                        "VentaPos",
+                                        empresaID,
+                                        "Ventapos Día",
+                                        fechaCodificada,
+                                        ventaPosDiaFmt.efectivo,
+                                        ventaPosDiaFmt.credito,
+                                        ventaPosDiaFmt.total
+                                    )
+                                )
+                            }  else {
+                                // Mostrar Snackbar dentro de una corrutina
+                                scope.launch {
+                                    snackbarHostState.showSnackbar("No hay datos disponibles para mostrar")
+                                }
+                            }
+                        }
                     )
                 }
 
@@ -176,7 +203,7 @@ fun VentaPosScreen(
                         efectivo = ventaSemanaFmt.efectivo,
                         credito = ventaSemanaFmt.credito,
                         tipoResumen = "POS",
-                        tipo = TipoVentaCard.SEMANA
+                        tipo = TipoVentaCard.SEMANA,
                     )
                 }
 
@@ -186,6 +213,7 @@ fun VentaPosScreen(
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         items(ventaPosPeriodo.reversed()) { venta ->
+
                             CardResumen(
                                 modifier = Modifier
                                     .width(screenWidth / 1.0f)
@@ -200,7 +228,6 @@ fun VentaPosScreen(
                             )
                         }
                     }
-
                 }
             }
         }

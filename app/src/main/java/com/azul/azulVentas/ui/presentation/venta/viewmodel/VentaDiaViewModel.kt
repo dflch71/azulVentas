@@ -81,4 +81,27 @@ class VentaDiaViewModel @Inject constructor(
             _isLoading.value = false
         }
     }
+
+    fun listarVentaDia(empresaID: String) {
+        viewModelScope.launch {
+            _isLoading.value = true
+
+            // Assign the result of the use case call to a variable
+            val result = getVentaDiaUseCase(empresaID)
+
+            when {
+                result.isSuccess -> {
+                    val response = result.getOrDefault(emptyList())
+                    _ventaDia.postValue(response)
+                    _error.value = null
+                }
+
+                result.isFailure -> {
+                    _ventaDia.postValue(emptyList())
+                    _error.value = result.exceptionOrNull()?.message ?: "Error desconocido"
+                }
+            }
+            _isLoading.value = false
+        }
+    }
 }

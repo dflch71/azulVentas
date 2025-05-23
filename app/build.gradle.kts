@@ -131,5 +131,8 @@ dependencies {
     implementation(libs.androidx.material.icons.core)
     implementation(libs.androidx.material.icons.extended)
 
+    // Compose Charts
+    implementation (libs.compose.charts)
+
 }
 

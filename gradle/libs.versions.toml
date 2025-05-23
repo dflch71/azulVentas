@@ -1,5 +1,6 @@
 [versions]
 agp = "8.10.0"
+composeCharts = "0.0.19"
 converterGson = "2.11.0"
 gson = "2.12.1"
 kotlin = "2.0.20"
@@ -29,7 +30,7 @@ coil = "2.7.0"
 navigationCompose = "2.9.0"
 
 konfetti = "2.0.5"
-media3CommonKtx = "1.6.1"
+media3CommonKtx = "1.7.1"
 uiautomator = "2.3.0"
 benchmarkMacroJunit4 = "1.3.4"
 #baselineprofile = "1.3.4"
@@ -95,6 +96,9 @@ androidx-media3-common-ktx = { group = "androidx.media3", name = "media3-common-
 androidx-uiautomator = { group = "androidx.test.uiautomator", name = "uiautomator", version.ref = "uiautomator" }
 androidx-benchmark-macro-junit4 = { group = "androidx.benchmark", name = "benchmark-macro-junit4", version.ref = "benchmarkMacroJunit4" }
 #androidx-profileinstaller = { group = "androidx.profileinstaller", name = "profileinstaller", version.ref = "profileinstaller" }
+
+#For the chart system.
+compose-charts = { module = "io.github.ehsannarmani:compose-charts", version.ref = "composeCharts" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
