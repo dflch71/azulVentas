@@ -1,12 +1,10 @@
 package com.azul.azulVentas.ui.presentation.compra.view
 
-import androidx.compose.foundation.layout.Box
+import android.net.Uri
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
@@ -35,20 +33,24 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.azul.azulVentas.core.utils.Utility.Companion.ShowRealTimeClock
 import com.azul.azulVentas.core.utils.Utility.Companion.formatCurrency
 import com.azul.azulVentas.ui.components.ErrorDialog
 import com.azul.azulVentas.ui.presentation.compra.viewmodel.CompraDiaViewModel
 import com.azul.azulVentas.ui.presentation.compra.viewmodel.CompraPeriodoViewModel
 import com.azul.azulVentas.ui.presentation.compra.viewmodel.CompraSemanaViewModel
+import com.azul.azulVentas.ui.presentation.container.NavGraph
 import com.azul.azulVentas.ui.presentation.network.sync.NetworkSyncManager
 import com.azul.azulVentas.ui.presentation.network.viewmodel.NetworkViewModel
 import com.azul.azulVentas.ui.presentation.venta.component.CardResumen
 import com.azul.azulVentas.ui.presentation.venta.component.TipoVentaCard
 import com.azul.azulVentas.ui.theme.DarkTextColor
+import kotlinx.coroutines.launch
 
 @Composable
 fun CompraScreen(
+    navController: NavController,
     empresaID: String,
     nombreEmpresa: String,
     compraDiaViewModel: CompraDiaViewModel,
@@ -159,6 +161,8 @@ fun CompraScreen(
                 contentPadding = PaddingValues(vertical = 8.dp)
             ) {
                 item{
+                    //Para poder enviar el argumento a la pantalla de detalle de venta
+                    val fechaCodificada = Uri.encode(compraDiaFmt.tituloDia)
                     CardResumen(
                         titulo = "Día: ${compraDiaFmt.tituloDia}",
                         total = compraDiaFmt.total,
@@ -166,7 +170,27 @@ fun CompraScreen(
                         efectivo = compraDiaFmt.efectivo,
                         credito = compraDiaFmt.credito,
                         tipoResumen = "",
-                        tipo = TipoVentaCard.DIA
+                        tipo = TipoVentaCard.DIA,
+                        onClick = {
+                            if (compraDiaFmt.facturas != "0") {
+                                navController.navigate(
+                                    NavGraph.DiaEstadistica.createRoute(
+                                        "Compra",
+                                        empresaID,
+                                        "Compras Día",
+                                        fechaCodificada,
+                                        compraDiaFmt.efectivo,
+                                        compraDiaFmt.credito,
+                                        compraDiaFmt.total
+                                    )
+                                )
+                            }  else {
+                                // Mostrar Snackbar dentro de una corrutina
+                                scope.launch {
+                                    snackbarHostState.showSnackbar("No hay datos disponibles para mostrar")
+                                }
+                            }
+                        }
                     )
                 }
 

@@ -1,5 +1,6 @@
 package com.azul.azulVentas.ui.presentation.egreso.view
 
+import android.net.Uri
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -31,10 +32,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.azul.azulEgresos.ui.presentation.egreso.viewmodel.EgresoPeriodoViewModel
 import com.azul.azulVentas.core.utils.Utility.Companion.ShowRealTimeClock
 import com.azul.azulVentas.core.utils.Utility.Companion.formatCurrency
 import com.azul.azulVentas.ui.components.ErrorDialog
+import com.azul.azulVentas.ui.presentation.container.NavGraph
 import com.azul.azulVentas.ui.presentation.egreso.component.CardEgreso
 import com.azul.azulVentas.ui.presentation.egreso.component.TipoCard
 import com.azul.azulVentas.ui.presentation.egreso.viewmodel.EgresoDiaViewModel
@@ -42,9 +45,11 @@ import com.azul.azulVentas.ui.presentation.egreso.viewmodel.EgresoSemanaViewMode
 import com.azul.azulVentas.ui.presentation.network.sync.NetworkSyncManager
 import com.azul.azulVentas.ui.presentation.network.viewmodel.NetworkViewModel
 import com.azul.azulVentas.ui.theme.DarkTextColor
+import kotlinx.coroutines.launch
 
 @Composable
 fun EgresoScreen(
+    navController: NavController,
     empresaID: String,
     nombreEmpresa: String,
     egresoDiaViewModel: EgresoDiaViewModel,
@@ -162,11 +167,33 @@ fun EgresoScreen(
                         tipo = TipoCard.DIA
                     )
                 } else {
+                    //Para poder enviar el argumento a la pantalla de detalle de venta
+                    val fechaCodificada = Uri.encode(egresoDiaFmt.tituloDia)
                     CardEgreso(
                         titulo = "Día: ${egresoDiaFmt.tituloDia}",
                         total = egresoDiaFmt.total,
                         facturas = egresoDiaFmt.facturas,
-                        tipo = TipoCard.DIA
+                        tipo = TipoCard.DIA,
+                        onClick = {
+                            if (egresoDiaFmt.facturas != "0") {
+                                navController.navigate(
+                                    NavGraph.DiaEstadistica.createRoute(
+                                        "Egreso",
+                                        empresaID,
+                                        "Egresos Día",
+                                        fechaCodificada,
+                                        egresoDiaFmt.total,
+                                        egresoDiaFmt.credito,
+                                        egresoDiaFmt.total
+                                    )
+                                )
+                            }  else {
+                                // Mostrar Snackbar dentro de una corrutina
+                                scope.launch {
+                                    snackbarHostState.showSnackbar("No hay datos disponibles para mostrar")
+                                }
+                            }
+                        }
                     )
                 }
             }

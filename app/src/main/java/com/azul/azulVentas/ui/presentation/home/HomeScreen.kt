@@ -98,8 +98,8 @@ fun HomeScreen(
                 when (selectedItemIndex) {
                     0 -> { VentaScreen(navController, idEmpresa, nombreEmpresa, ventaDiaViewModel, ventaSemanaViewModel, ventaPeriodoViewModel, networkViewModel ) }
                     1 -> { VentaPosScreen(navController, idEmpresa, nombreEmpresa, ventaPosDiaViewModel, ventaPosSemanaViewModel, ventaPosPeriodoViewModel, networkViewModel) }
-                    2 -> { CompraScreen(idEmpresa, nombreEmpresa, compraDiaViewModel, compraSemanaViewModel, compraPeriodoViewModel, networkViewModel)  }
-                    3 -> { EgresoScreen(idEmpresa, nombreEmpresa, egresoDiaViewModel, egresoSemanaViewModel, egresoPeriodoViewModel, networkViewModel) }
+                    2 -> { CompraScreen(navController, idEmpresa, nombreEmpresa, compraDiaViewModel, compraSemanaViewModel, compraPeriodoViewModel, networkViewModel)  }
+                    3 -> { EgresoScreen(navController, idEmpresa, nombreEmpresa, egresoDiaViewModel, egresoSemanaViewModel, egresoPeriodoViewModel, networkViewModel) }
                 }
             }
         }

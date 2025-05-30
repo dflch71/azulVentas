@@ -1,10 +1,6 @@
 package com.azul.azulVentas.ui.presentation.diaEstadistica.view
 
 import android.net.Uri
-import androidx.compose.animation.core.EaseInOutCubic
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.spring
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -18,16 +14,16 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -51,14 +47,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.navigation.NavController
@@ -70,19 +64,12 @@ import com.azul.azulVentas.ui.components.ErrorDialog
 import com.azul.azulVentas.ui.presentation.compra.viewmodel.CompraDiaViewModel
 import com.azul.azulVentas.ui.presentation.egreso.viewmodel.EgresoDiaViewModel
 import com.azul.azulVentas.ui.presentation.graficas.grafColumn
+import com.azul.azulVentas.ui.presentation.graficas.grafPie
 import com.azul.azulVentas.ui.presentation.network.sync.NetworkSyncManager
 import com.azul.azulVentas.ui.presentation.network.viewmodel.NetworkViewModel
-import com.azul.azulVentas.ui.presentation.venta.component.TipoVentaCard
 import com.azul.azulVentas.ui.presentation.venta.viewmodel.VentaDiaViewModel
 import com.azul.azulVentas.ui.presentation.ventaPOS.viewModel.VentaPosDiaViewModel
 import com.azul.azulVentas.ui.theme.DarkTextColor
-import ir.ehsannarmani.compose_charts.LineChart
-import ir.ehsannarmani.compose_charts.PieChart
-import ir.ehsannarmani.compose_charts.models.AnimationMode
-import ir.ehsannarmani.compose_charts.models.Bars
-import ir.ehsannarmani.compose_charts.models.DrawStyle
-import ir.ehsannarmani.compose_charts.models.Line
-import ir.ehsannarmani.compose_charts.models.Pie
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -139,9 +126,11 @@ fun DiaEstadisticaScreen(
     }
 
     var showErrorDialog by remember { mutableStateOf(false) }
-    var selectedButton by remember { mutableStateOf("Línea") }
-    var selectedChart by remember { mutableStateOf<CharTypes?>(CharTypes.Line) }
+    var selectedButton by remember { mutableStateOf("Bar") }
+    var selectedChart by remember { mutableStateOf<CharTypes?>(CharTypes.Bar) }
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+    val isSelectColor = remember {  Color(0xFFFFAB40) }
+    val isUnSelectColor = remember {  Color(0xFF7C4DFF) }
 
     val isNetworkAvailable by networkViewModel.networkStatus.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }  // Para el Snackbar
@@ -157,16 +146,7 @@ fun DiaEstadisticaScreen(
     }
 
     LaunchedEffect(isNetworkAvailable, empresaID) {
-        if (isNetworkAvailable) { cargarDatos()
-            /*
-            when (tipoOperacion) {
-                "Venta" -> { ventaDiaViewModel.listarVentaDia(empresaID) }
-                "VentaPos" -> { ventaPosDiaViewModel.listarVentaPosDia(empresaID) }
-                "Egreso" -> { egresoDiaViewModel.listarEgresoDia(empresaID) }
-                "Compra" -> { compraDiaViewModel.listarCompraDia(empresaID) }
-            }
-            */
-        }
+        if (isNetworkAvailable) { cargarDatos() }
     }
 
     // ✅ Mostrar el Snackbar si hay un error
@@ -180,7 +160,6 @@ fun DiaEstadisticaScreen(
 
     val datosDiaState = datosDia.observeAsState(emptyList())
     if ((datosDiaState.value.isEmpty()) || (datosDiaState.value.first().sum_factura == 0)) return
-
 
     //Fecha decodificada para aceptar los formatos de la fecha /
     val fechaDecode: String = Uri.decode(fecha)
@@ -214,29 +193,20 @@ fun DiaEstadisticaScreen(
 
 
         bottomBar = {
+
             BottomAppBar(actions = {
 
                 Spacer(modifier = Modifier.width(12.dp))
 
                 IconButton(onClick = {
-                    selectedButton = "Línea"
-                    selectedChart = CharTypes.Line
-                }
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_line_chart),
-                        contentDescription = "Build description"
-                    )
-                }
-
-                IconButton(onClick = {
-                    selectedButton = "Barra"
+                    selectedButton = "Bar"
                     selectedChart = CharTypes.Bar
                 }
                 ) {
                     Icon(
-                        painter = painterResource(id = R.drawable.ic_bar_chart),
-                        contentDescription = "Menu description",
+                        painter = painterResource(id = R.drawable.ic_stacked_chart),
+                        contentDescription = "Build description",
+                        tint = if (selectedChart == CharTypes.Bar) isSelectColor else isUnSelectColor
                     )
                 }
 
@@ -246,8 +216,21 @@ fun DiaEstadisticaScreen(
                 }
                 ) {
                     Icon(
-                        painter = painterResource(id = R.drawable.ic_linear_scale),
+                        painter = painterResource(id = R.drawable.ic_bar_chart),
                         contentDescription = "Menu description",
+                        tint = if (selectedChart == CharTypes.Column) isSelectColor else isUnSelectColor
+                    )
+                }
+
+                IconButton(onClick = {
+                    selectedButton = "Pie"
+                    selectedChart = CharTypes.Pie
+                }
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_pie_chart),
+                        contentDescription = "Menu description",
+                        tint = if (selectedChart == CharTypes.Pie) isSelectColor else isUnSelectColor
                     )
                 }
             })
@@ -281,15 +264,16 @@ fun DiaEstadisticaScreen(
             )
         }
 
-
         Box(
             modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxSize()
         ) {
             Column() {
-                Spacer(modifier = Modifier.padding(8.dp))
-                if (isLoading) { LinearProgressIndicator(modifier = Modifier.fillMaxWidth()) }
+                if (isLoading) {
+                    Spacer(modifier = Modifier.padding(8.dp))
+                    LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+                }
 
                 //Fecha del dia Seleccionado
                 Spacer(modifier = Modifier.padding(8.dp))
@@ -310,99 +294,111 @@ fun DiaEstadisticaScreen(
                 )
 
                 Spacer(modifier = Modifier.padding(4.dp))
-                Box(modifier = Modifier
-                    .padding(horizontal = 16.dp)
-                    .fillMaxWidth(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Column(
-                    ) {
-                        Text(
-                            text = "TOTAL",
-                            style = MaterialTheme.typography.bodyMedium,
-                            fontWeight = FontWeight.Normal,
-                            modifier = Modifier.padding(horizontal = 16.dp),
-                            color = Color.Gray,
-                            textAlign = TextAlign.Center
-                        )
 
-                        Text(
-                            text = total,
-                            style = MaterialTheme.typography.headlineLarge,
-                            fontWeight = FontWeight.SemiBold,
-                            modifier = Modifier.padding(horizontal = 16.dp),
-                            color = DarkTextColor,
-                            textAlign = TextAlign.Center
-                        )
-                    }
-                }
-
-
-                Row(
-                    Modifier
+                Card(
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
                         .padding(horizontal = 16.dp)
-                        .fillMaxWidth(),
-                    verticalAlignment = Alignment.Bottom,
-                    horizontalArrangement = Arrangement.Center,
-
-                ){
+                ) {
 
                     Box(
                         modifier = Modifier
-                            .background(
-                                color = Color(0xFFEDE7F6),
-                                shape = RoundedCornerShape(10.dp)
-                            )
-                            .weight(1f)
-                            .padding(horizontal = 16.dp),
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp),
                         contentAlignment = Alignment.Center
-
                     ) {
                         Column() {
                             Text(
-                                text = "EFECTIVO",
+                                text = "TOTAL",
                                 style = MaterialTheme.typography.bodyMedium,
                                 fontWeight = FontWeight.Normal,
                                 modifier = Modifier.padding(horizontal = 16.dp),
                                 color = Color.Gray,
                                 textAlign = TextAlign.Center
                             )
+
                             Text(
-                                text = efectivo,
-                                style = MaterialTheme.typography.bodyMedium,
+                                text = total,
+                                style = MaterialTheme.typography.headlineLarge,
                                 fontWeight = FontWeight.SemiBold,
-                                modifier = Modifier.padding(horizontal = 16.dp)
+                                modifier = Modifier.padding(horizontal = 16.dp),
+                                color = DarkTextColor,
+                                textAlign = TextAlign.Center
                             )
                         }
                     }
 
-                    Spacer(modifier = Modifier.padding(4.dp))
+                    if (!tipoOperacion.equals("Egreso")) {
 
-                    Box(
-                        modifier = Modifier
-                            .background(
-                                color = Color(0xFFEDE7F6),
-                                shape = RoundedCornerShape(10.dp)
-                            )
-                            .weight(1f)
-                            .padding(horizontal = 16.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Column() {
-                            Text(
-                                text = "CRÉDITO",
-                                style = MaterialTheme.typography.bodyMedium,
-                                fontWeight = FontWeight.Normal,
-                                modifier = Modifier.padding(horizontal = 16.dp),
-                                color = Color.Gray,
-                                textAlign = TextAlign.Center
-                            )
-                            Text(
-                                text = credito,
-                                style = MaterialTheme.typography.bodyMedium,
-                                fontWeight = FontWeight.SemiBold,
-                                modifier = Modifier.padding(horizontal = 16.dp)
-                            )
+                        Row(
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(start = 8.dp, end = 8.dp, bottom = 8.dp),
+                            verticalAlignment = Alignment.Bottom,
+                            horizontalArrangement = Arrangement.Center,
+
+                            ) {
+                            Box(
+                                modifier = Modifier
+                                    .background(
+                                        color = Color(0xFFEDE7F6),
+                                        shape = RoundedCornerShape(10.dp)
+                                    )
+                                    .weight(1f)
+                                    .padding(horizontal = 16.dp),
+                                contentAlignment = Alignment.Center
+
+                            ) {
+                                Column() {
+                                    Text(
+                                        text = "EFECTIVO",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        fontWeight = FontWeight.Normal,
+                                        modifier = Modifier.padding(horizontal = 16.dp),
+                                        color = Color.Gray,
+                                        textAlign = TextAlign.Center
+                                    )
+                                    Text(
+                                        text = efectivo,
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        fontWeight = FontWeight.SemiBold,
+                                        modifier = Modifier.padding(horizontal = 16.dp)
+                                    )
+                                }
+                            }
+
+                            Spacer(modifier = Modifier.padding(4.dp))
+
+                            Box(
+                                modifier = Modifier
+                                    .background(
+                                        color = Color(0xFFEDE7F6),
+                                        shape = RoundedCornerShape(10.dp)
+                                    )
+                                    .weight(1f)
+                                    .padding(horizontal = 16.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Column() {
+                                    Text(
+                                        text = "CRÉDITO",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        fontWeight = FontWeight.Normal,
+                                        modifier = Modifier.padding(horizontal = 16.dp),
+                                        color = Color.Gray,
+                                        textAlign = TextAlign.Center
+                                    )
+                                    Text(
+                                        text = credito,
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        fontWeight = FontWeight.SemiBold,
+                                        modifier = Modifier.padding(horizontal = 16.dp)
+                                    )
+                                }
+                            }
                         }
                     }
                 }
@@ -419,42 +415,67 @@ fun DiaEstadisticaScreen(
                     //val cardHeight = (totalAvailableHeight - 12.dp) / 2  // Espacio entre tarjetas
                     val cardHeight = (totalAvailableHeight - 12.dp) / 1  // Espacio entre tarjetas
 
-                    LazyColumn(
-                        contentPadding = PaddingValues(vertical = 4.dp),
-                        verticalArrangement = Arrangement.spacedBy(4.dp),
-                        modifier = Modifier.fillMaxSize()
-                    ) {
+                    when (selectedChart)  {
+                        CharTypes.Bar -> {
+                            LazyColumn(
+                                contentPadding = PaddingValues(vertical = 4.dp),
+                                verticalArrangement = Arrangement.spacedBy(4.dp),
+                                modifier = Modifier.fillMaxSize()
+                            ) {
 
-                        item {
-                            CardResumenDia(
-                                datosDia,
-                                'V',
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(cardHeight),
-                            )
+                                item {
+                                    CardResumenDia(
+                                        datosDia,
+                                        'V',
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .height(cardHeight),
+                                    )
+                                }
+                            }
+
                         }
+                        CharTypes.Column -> {
+                            LazyColumn(
+                                contentPadding = PaddingValues(vertical = 4.dp),
+                                verticalArrangement = Arrangement.spacedBy(4.dp),
+                                modifier = Modifier.fillMaxSize()
+                            ) {
 
-                        item {
+                                item {
 
-                            CardResumenDia(
-                                datosDia,
-                                'F',
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(cardHeight),
-                            )
+                                    CardResumenDia(
+                                        datosDia,
+                                        'F',
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .height(cardHeight),
+                                    )
+                                }
+
+                            }
+
                         }
+                        CharTypes.Pie -> {
+                            LazyColumn(
+                                contentPadding = PaddingValues(vertical = 4.dp),
+                                verticalArrangement = Arrangement.spacedBy(4.dp),
+                                modifier = Modifier.fillMaxSize()
+                            ) {
 
 
-                        item {
-                            CardResumenPie(
-                                datosDia,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(cardHeight)
-                            )
+                                item {
+                                    CardResumenPie(
+                                        datosDia,
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .height(cardHeight)
+                                    )
+                                }
+                            }
+
                         }
+                        else -> {}
                     }
                 }
             }
@@ -521,8 +542,7 @@ fun CardResumenPie(
                 .padding(8.dp)
                 .fillMaxSize()
         ) {
-            val tituloOperacion = formatearEtiqueta((listValues.value.first().tipo).lowercase())+
-                    "\nEfectivo Vs Crédito"
+            val tituloOperacion = formatearEtiqueta((listValues.value.first().tipo).lowercase())
 
             Column(
                 modifier = Modifier.fillMaxSize(),
@@ -544,112 +564,8 @@ fun CardResumenPie(
     }
 }
 
-@Composable
-fun grafPie(listaValores: LiveData<List<ResumenDia>>,){
-    val datos by listaValores.observeAsState(initial = emptyList())
-
-    var totalEfectivo = 0.0
-    var totalCredito = 0.0
-
-    for (i in datos) {
-        totalEfectivo += i.sum_contado
-        totalCredito += i.sum_credito
-    }
-
-    var data by remember {
-        mutableStateOf(
-            listOf(
-                Pie(
-                    label = "Efectivo",
-                    data = totalEfectivo,
-                    color = Color.Gray,
-                    selectedColor = Color.LightGray
-                ),
-                Pie(
-                    label = "Crédito",
-                    data = totalCredito,
-                    color = Color.Cyan,
-                    selectedColor = Color.Blue
-                ),
-            )
-        )
-    }
-
-    val colors = listOf(
-        Color(0xFF00ACC1),
-        Color(0xFF039BE5),
-        Color(0xFF7CB342),
-        Color(0xFF43A047),
-        Color(0xFFFB8C00),
-        Color(0xFFFDD835),
-        Color(0xFF6A1B9A)
-    )
-
-    // Transformamos los datos a la estructura que necesita el ColumnChart
-    val chartData = remember(datos) {
-        datos.mapIndexed { index, resumen ->
-            Pie(
-                label = resumen.hora_am_pm,
-                data = resumen.sum_hora,
-                color = colors[index % colors.size],
-                selectedColor = colors[index % colors.size].copy(alpha = 0.5f)
-            )
-        }
-    }
 
 
-    PieChart(
-        modifier = Modifier
-            .wrapContentWidth()
-            .fillMaxSize()
-            .padding(24.dp),
-        data = chartData,
-        onPieClick = {
-            println("${it.label} Clicked")
-            val pieIndex = data.indexOf(it)
-            data = data.mapIndexed { mapIndex, pie -> pie.copy(selected = pieIndex == mapIndex) }
-        },
-        selectedScale = 1.1f,
-        scaleAnimEnterSpec = spring<Float>(
-            dampingRatio = Spring.DampingRatioMediumBouncy,
-            stiffness = Spring.StiffnessLow
-        ),
-        colorAnimEnterSpec = tween(300),
-        colorAnimExitSpec = tween(300),
-        scaleAnimExitSpec = tween(300),
-        spaceDegreeAnimExitSpec = tween(300),
-        spaceDegree = 7f,
-        selectedPaddingDegree = 4f,
-        style = Pie.Style.Stroke(width = 50.dp)
-        //style = Pie.Style.Fill
-    )
-}
-
-@Composable
-fun grafLine() {
-    LineChart(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 22.dp),
-        data = remember {
-            listOf(
-                Line(
-                    label = "Windows",
-                    values = listOf(28.0, 41.0, 5.0, 10.0, 35.0),
-                    color = SolidColor(Color(0xFF23af92)),
-                    firstGradientFillColor = Color(0xFF2BC0A1).copy(alpha = .5f),
-                    secondGradientFillColor = Color.Transparent,
-                    strokeAnimationSpec = tween(2000, easing = EaseInOutCubic),
-                    gradientAnimationDelay = 1000,
-                    drawStyle = DrawStyle.Stroke(width = 2.dp),
-                )
-            )
-        },
-        animationMode = AnimationMode.Together(delayBuilder = {
-            it * 500L
-        }),
-    )
-}
 
 
 
