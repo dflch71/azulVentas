@@ -36,6 +36,25 @@ class VentaRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun getVentaHoraFecha(EmpresaID: String, Fecha: String): Result<List<ResumenDia>> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = apiService.getVentaHoraFecha(EmpresaID, Fecha)
+                if (response.isSuccessful && response.body() != null) {
+                    Result.success(response.body()!!.map { it.toDomain() })
+                } else {
+                    Result.failure(Exception("Error del servidor: ${response.code()}"))
+                }
+            } catch (e: ConnectException) {
+                Result.failure(Exception("No se pudo conectar al servidor"))
+            } catch (e: IOException) {
+                Result.failure(Exception("Error de red: ${e.localizedMessage}"))
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+    }
+
     override suspend fun getVentaSemana(EmpresaID: String): Result<List<ResumenSemana>> {
         return withContext(Dispatchers.IO) {
             try {

@@ -188,7 +188,8 @@ fun VentaScreen(
                                             "Venta",
                                             empresaID,
                                             "Venta Día",
-                                            fechaCodificada,
+                                            fechaCodificada, //Debe ser este formato
+                                            ventaDiaFmt.facturas,
                                             ventaDiaFmt.efectivo,
                                             ventaDiaFmt.credito,
                                             ventaDiaFmt.total
@@ -216,6 +217,7 @@ fun VentaScreen(
                             tipo = TipoVentaCard.SEMANA
                         )
                     } else {
+
                         CardResumen(
                             titulo = "Últ 7 Días: ${ventaSemanaFmt.tituloSemana}",
                             total = ventaSemanaFmt.total,
@@ -223,8 +225,24 @@ fun VentaScreen(
                             efectivo = ventaSemanaFmt.efectivo,
                             credito = ventaSemanaFmt.credito,
                             tipoResumen = "",
-                            tipo = TipoVentaCard.SEMANA
+                            tipo = TipoVentaCard.SEMANA,
+                            onClick = {
+                                if (ventaSemanaFmt.facturas != "0") {
+                                    navController.navigate(
+                                        NavGraph.VentaSemana.createRoute(
+                                            idEmpresa = empresaID,
+                                            nomEmpresa = nombreEmpresa,
+                                        )
+                                    )
+                                } else {
+                                    // Mostrar Snackbar dentro de una corrutina
+                                    scope.launch {
+                                        snackbarHostState.showSnackbar("No hay datos disponibles para mostrar")
+                                    }
+                                }
+                            }
                         )
+
                     }
                 }
 

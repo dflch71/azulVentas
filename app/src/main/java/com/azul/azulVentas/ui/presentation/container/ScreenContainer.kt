@@ -34,6 +34,8 @@ import com.azul.azulVentas.ui.presentation.registrationEmail.view.RegistrationEm
 import com.azul.azulVentas.ui.presentation.registrationEmail.viewmodel.RegisterEmailViewModel
 import com.azul.azulVentas.ui.presentation.userPG.viewmodel.UserPGViewModel
 import com.azul.azulVentas.ui.presentation.usuarioEmpresas.viewmodel.UsuarioEmpresasPGViewModel
+import com.azul.azulVentas.ui.presentation.venta.view.VentaSemanaScreen
+import com.azul.azulVentas.ui.presentation.venta.viewmodel.VentaDiaFechaViewModel
 import com.azul.azulVentas.ui.presentation.venta.viewmodel.VentaDiaViewModel
 import com.azul.azulVentas.ui.presentation.venta.viewmodel.VentaPeriodoViewModel
 import com.azul.azulVentas.ui.presentation.venta.viewmodel.VentaSemanaViewModel
@@ -58,6 +60,7 @@ fun ScreenContainer(
     recoverPasswordViewModel: RecoverPasswordViewModel,
     registerEmailViewModel: RegisterEmailViewModel,
     ventaDiaViewModel: VentaDiaViewModel,
+    ventaDiaFechaViewModel: VentaDiaFechaViewModel,
     ventaSemanaViewModel: VentaSemanaViewModel,
     ventaPeriodoViewModel: VentaPeriodoViewModel,
     ventaPosDiaViewModel: VentaPosDiaViewModel,
@@ -248,6 +251,7 @@ fun ScreenContainer(
                 navArgument("tipoOperacion") { type = NavType.StringType },
                 navArgument("title") { type = NavType.StringType },
                 navArgument("fecha") { type = NavType.StringType },
+                navArgument("facturas") { type = NavType.StringType },
                 navArgument("efectivo") { type = NavType.StringType },
                 navArgument("credito") { type = NavType.StringType },
                 navArgument("total") { type = NavType.StringType }
@@ -258,6 +262,7 @@ fun ScreenContainer(
             val tipoOperacion = backStackEntry.arguments?.getString("tipoOperacion") ?: ""
             val title = backStackEntry.arguments?.getString("title") ?: ""
             val fecha = backStackEntry.arguments?.getString("fecha") ?: ""
+            val facturas = backStackEntry.arguments?.getString("facturas") ?: ""
             val efectivo = backStackEntry.arguments?.getString("efectivo") ?: ""
             val credito = backStackEntry.arguments?.getString("credito") ?: ""
             val total = backStackEntry.arguments?.getString("total") ?: ""
@@ -265,6 +270,7 @@ fun ScreenContainer(
                 navController = navHost,
                 tipoOperacion = tipoOperacion,
                 ventaDiaViewModel = ventaDiaViewModel,
+                ventaDiaFechaViewModel = ventaDiaFechaViewModel,
                 ventaPosDiaViewModel = ventaPosDiaViewModel,
                 compraDiaViewModel = compraDiaViewModel,
                 egresoDiaViewModel = egresoDiaViewModel,
@@ -272,10 +278,37 @@ fun ScreenContainer(
                 empresaID = empresaID,
                 title = title,
                 fecha = fecha,
+                facturas = facturas,
                 efectivo = efectivo,
                 credito = credito,
                 total = total
             )
         }
+
+
+
+        composable(
+            route = NavGraph.VentaSemana.route,
+            arguments = listOf(
+                navArgument(NavGraph.Home.idEmpresaArg) { type = NavType.StringType },
+                navArgument(NavGraph.Home.nomEmpresaArg) { type = NavType.StringType }
+            )
+
+        ) { backStackEntry ->
+            val idEmpresa = backStackEntry.arguments?.getString(NavGraph.Home.idEmpresaArg)
+            val nomEmpresa = backStackEntry.arguments?.getString(NavGraph.Home.nomEmpresaArg)
+
+            if (idEmpresa != null) {
+                VentaSemanaScreen(
+                    navController = navHost,
+                    empresaID = idEmpresa ?: "",
+                    nombreEmpresa = nomEmpresa ?: "",
+                    ventaDiaViewModel,
+                    ventaSemanaViewModel,
+                    networkViewModel
+                )
+            }
+        }
+
     }
 }

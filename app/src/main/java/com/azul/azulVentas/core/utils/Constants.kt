@@ -29,24 +29,28 @@ object Constants {
     //VENTA
     //http://localhost:9060/datasnap/rest/TServerMethods/VentaxHora/901253102
     const val GET_PATH_VENTA_DIA = "VentaxHora/{EmpresaID}"
+    const val GET_PATH_VENTA_DIA_FECHA = "VentaXHoraFecha/{EmpresaID}/{Fecha}"
     const val GET_PATH_VENTA_SEMANA = "VentaUltimaSemana/{EmpresaID}"
     const val GET_PATH_VENTA_PERIODO = "VentaPeriodos/{EmpresaID}"
 
     //VENTA POS
     //http://localhost:9060/datasnap/rest/TServerMethods/VentaPosxHora/901253102
     const val GET_PATH_VENTA_POS_DIA = "VentaPosxHora/{EmpresaID}"
+    const val GET_PATH_VENTA_POS_DIA_FECHA = "VentaPosXHoraFecha/{EmpresaID}/{Fecha}"
     const val GET_PATH_VENTA_POS_SEMANA = "VentaPosUltimaSemana/{EmpresaID}"
     const val GET_PATH_VENTA_POS_PERIODO = "VentaPosPeriodos/{EmpresaID}"
 
     //COMPRA
     //http://localhost:9060/datasnap/rest/TServerMethods/CompraxHora/901253102
     const val GET_PATH_COMPRA_DIA = "CompraxHora/{EmpresaID}"
+    const val GET_PATH_COMPRA_DIA_FECHA = "CompraxHoraFecha/{EmpresaID}/{Fecha}"
     const val GET_PATH_COMPRA_SEMANA = "CompraUltimaSemana/{EmpresaID}"
     const val GET_PATH_COMPRA_PERIODO = "CompraPeriodos/{EmpresaID}"
 
     //EGRESO
     //http://localhost:9060/datasnap/rest/TServerMethods/EgresoxHora/901253102
     const val GET_PATH_EGRESO_DIA = "EgresoxHora/{EmpresaID}"
+    const val GET_PATH_EGRESO_DIA_FECHA = "EgresoxHoraFecha/{EmpresaID}/{Fecha}"
     const val GET_PATH_EGRESO_SEMANA = "EgresoUltimaSemana/{EmpresaID}"
     const val GET_PATH_EGRESO_PERIODO = "EgresoPeriodos/{EmpresaID}"
 }

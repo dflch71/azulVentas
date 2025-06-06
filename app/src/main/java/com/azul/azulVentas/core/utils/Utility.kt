@@ -21,6 +21,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
+import java.time.format.TextStyle
 import java.time.temporal.ChronoUnit
 import java.util.Date
 import java.util.Locale
@@ -116,5 +117,29 @@ class Utility {
                 .replaceFirstChar { it.uppercase() }
         }
 
+        fun formatearFecha(fechaInput: String): String {
+            return try {
+                val date = when {
+                    fechaInput.contains('-') -> LocalDate.parse(fechaInput)
+                    else -> {
+                        val parts = fechaInput.split(", ", "/")
+                        val month = when (parts[0].lowercase(Locale.US)) {
+                            "jan" -> 1; "feb" -> 2; "mar" -> 3; "apr" -> 4; "may" -> 5; "jun" -> 6
+                            "jul" -> 7; "aug" -> 8; "sep" -> 9; "oct" -> 10; "nov" -> 11; "dec" -> 12
+                            else -> throw IllegalArgumentException("Mes no válido")
+                        }
+                        LocalDate.of(parts[2].toInt(), month, parts[1].toInt())
+                    }
+                }
+
+                val diaSemana = date.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale("es", "ES"))
+                val mes = date.month.getDisplayName(TextStyle.FULL, Locale("es", "ES"))
+
+                "${diaSemana.capitalize(Locale.ROOT)} ${date.dayOfMonth} $mes de ${date.year}"
+            } catch (e: Exception) {
+                fechaInput
+            }
+        }
     }
+
 }

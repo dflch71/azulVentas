@@ -27,6 +27,7 @@ import com.azul.azulVentas.ui.presentation.registration.viewmodel.RegisterViewMo
 import com.azul.azulVentas.ui.presentation.registrationEmail.viewmodel.RegisterEmailViewModel
 import com.azul.azulVentas.ui.presentation.userPG.viewmodel.UserPGViewModel
 import com.azul.azulVentas.ui.presentation.usuarioEmpresas.viewmodel.UsuarioEmpresasPGViewModel
+import com.azul.azulVentas.ui.presentation.venta.viewmodel.VentaDiaFechaViewModel
 import com.azul.azulVentas.ui.presentation.venta.viewmodel.VentaDiaViewModel
 import com.azul.azulVentas.ui.presentation.venta.viewmodel.VentaPeriodoViewModel
 import com.azul.azulVentas.ui.presentation.venta.viewmodel.VentaSemanaViewModel
@@ -60,6 +61,7 @@ class MainActivity : ComponentActivity() {
     private val recoverPasswordViewModel: RecoverPasswordViewModel by viewModels()
     private val registerEmailViewModel: RegisterEmailViewModel by viewModels()
     private val ventaDiaViewModel: VentaDiaViewModel by viewModels()
+    private val ventaDiaFechaViewModel: VentaDiaFechaViewModel by viewModels()
     private val ventaSemanaViewModel: VentaSemanaViewModel by viewModels()
     private val ventaPeriodoViewModel: VentaPeriodoViewModel by viewModels()
     private val ventaPosDiaViewModel: VentaPosDiaViewModel by viewModels()
@@ -98,6 +100,7 @@ class MainActivity : ComponentActivity() {
                     recoverPasswordViewModel,
                     registerEmailViewModel,
                     ventaDiaViewModel,
+                    ventaDiaFechaViewModel,
                     ventaSemanaViewModel,
                     ventaPeriodoViewModel,
                     ventaPosDiaViewModel,

@@ -179,6 +179,7 @@ fun CompraScreen(
                                         empresaID,
                                         "Compras Día",
                                         fechaCodificada,
+                                        compraDiaFmt.facturas,
                                         compraDiaFmt.efectivo,
                                         compraDiaFmt.credito,
                                         compraDiaFmt.total

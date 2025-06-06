@@ -28,6 +28,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.azul.azulVentas.ui.theme.DarkTextColor
 
 enum class TipoVentaCard {
     DIA, SEMANA, PERIODO
@@ -86,6 +87,7 @@ fun CardResumen(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+
                     Text(
                         text = titulo,
                         fontWeight = FontWeight.Light,
@@ -93,6 +95,7 @@ fun CardResumen(
                         maxLines = 1,
                         modifier = Modifier.weight(1f)
                     )
+
                     if (tipo == TipoVentaCard.PERIODO) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowForward,

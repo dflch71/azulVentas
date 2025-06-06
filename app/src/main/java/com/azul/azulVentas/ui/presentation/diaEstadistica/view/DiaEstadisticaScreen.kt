@@ -26,6 +26,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
@@ -58,6 +59,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.navigation.NavController
 import com.azul.azulVentas.R
 import com.azul.azulVentas.core.utils.Utility.Companion.formatearEtiqueta
+import com.azul.azulVentas.core.utils.Utility.Companion.formatearFecha
 import com.azul.azulVentas.domain.model.resumenDia.ResumenDia
 import com.azul.azulVentas.ui.components.CharTypes
 import com.azul.azulVentas.ui.components.ErrorDialog
@@ -67,16 +69,19 @@ import com.azul.azulVentas.ui.presentation.graficas.grafColumn
 import com.azul.azulVentas.ui.presentation.graficas.grafPie
 import com.azul.azulVentas.ui.presentation.network.sync.NetworkSyncManager
 import com.azul.azulVentas.ui.presentation.network.viewmodel.NetworkViewModel
+import com.azul.azulVentas.ui.presentation.venta.viewmodel.VentaDiaFechaViewModel
 import com.azul.azulVentas.ui.presentation.venta.viewmodel.VentaDiaViewModel
 import com.azul.azulVentas.ui.presentation.ventaPOS.viewModel.VentaPosDiaViewModel
 import com.azul.azulVentas.ui.theme.DarkTextColor
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DiaEstadisticaScreen(
     navController: NavController,
-    tipoOperacion: String, //Venta, VentaPOS, Egreso, Compra
+    tipoOperacion: String, //Venta, VentaPOS, Egreso, Compra, VentaFecha
     ventaDiaViewModel: VentaDiaViewModel,
+    ventaDiaFechaViewModel: VentaDiaFechaViewModel,
     ventaPosDiaViewModel: VentaPosDiaViewModel,
     compraDiaViewModel: CompraDiaViewModel,
     egresoDiaViewModel: EgresoDiaViewModel,
@@ -84,6 +89,7 @@ fun DiaEstadisticaScreen(
     empresaID: String,
     title: String,
     fecha: String,
+    facturas: String,
     efectivo: String,
     credito: String,
     total: String
@@ -98,6 +104,12 @@ fun DiaEstadisticaScreen(
             datosDia = ventaDiaViewModel.ventaDia
             isLoading = ventaDiaViewModel.isLoading.collectAsState().value
             errorDia = ventaDiaViewModel.error.collectAsState().value
+        }
+
+        "VentaFecha" -> {
+            datosDia = ventaDiaFechaViewModel.ventaDiaFecha
+            isLoading = ventaDiaFechaViewModel.isLoading.collectAsState().value
+            errorDia = ventaDiaFechaViewModel.error.collectAsState().value
         }
 
         "VentaPos" -> {
@@ -139,6 +151,7 @@ fun DiaEstadisticaScreen(
     fun cargarDatos() {
         when (tipoOperacion) {
             "Venta" -> { ventaDiaViewModel.cargarVentaDia(empresaID) }
+            "VentaFecha" -> { ventaDiaFechaViewModel.cargarVentaDiaFecha(empresaID, fecha) }
             "VentaPos" -> { ventaPosDiaViewModel.cargarVentaPosDia(empresaID) }
             "Egreso" -> { egresoDiaViewModel.cargarEgresoDia(empresaID) }
             "Compra" -> { compraDiaViewModel.cargarCompraDia(empresaID) }
@@ -168,9 +181,12 @@ fun DiaEstadisticaScreen(
         topBar = {
             TopAppBar(
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    titleContentColor = MaterialTheme.colorScheme.primary,
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    titleContentColor = MaterialTheme.colorScheme.onPrimary,
+                    navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
+                    actionIconContentColor = MaterialTheme.colorScheme.onPrimary
                 ),
+
                 title = {
                     Text(
                         title,
@@ -190,7 +206,6 @@ fun DiaEstadisticaScreen(
                 scrollBehavior = scrollBehavior
             )
         },
-
 
         bottomBar = {
 
@@ -278,7 +293,7 @@ fun DiaEstadisticaScreen(
                 //Fecha del dia Seleccionado
                 Spacer(modifier = Modifier.padding(8.dp))
                 Text(
-                    text = fechaDecode.uppercase(),
+                    text = formatearFecha(fechaDecode).uppercase(),
                     style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.Light,
                     modifier = Modifier.padding(horizontal = 16.dp),
@@ -286,15 +301,15 @@ fun DiaEstadisticaScreen(
                 )
 
                 Text(
-                    text = "Última ${title} reportada",
+                    text = "Reporte de ${title}",
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.Light,
                     modifier = Modifier.padding(horizontal = 16.dp),
                     color = Color.DarkGray
                 )
 
-                Spacer(modifier = Modifier.padding(4.dp))
 
+                Spacer(modifier = Modifier.padding(4.dp))
                 Card(
                     colors = CardDefaults.cardColors(
                         containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
@@ -312,7 +327,7 @@ fun DiaEstadisticaScreen(
                     ) {
                         Column() {
                             Text(
-                                text = "TOTAL",
+                                text = "TOTAL (Facturas: $facturas)",
                                 style = MaterialTheme.typography.bodyMedium,
                                 fontWeight = FontWeight.Normal,
                                 modifier = Modifier.padding(horizontal = 16.dp),
@@ -403,7 +418,11 @@ fun DiaEstadisticaScreen(
                     }
                 }
 
-                Spacer(modifier = Modifier.padding(4.dp))
+                HorizontalDivider(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 8.dp)
+                )
 
                 BoxWithConstraints(
                     modifier = Modifier

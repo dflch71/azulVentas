@@ -21,15 +21,23 @@ sealed class NavGraph (val route: String) {
     object RecoverPassword: NavGraph("recoverPassword_screen")
 
     object DiaEstadistica :
-        NavGraph("dia_estadistica_screen/{tipoOperacion}/{empresaID}/{title}/{fecha}/{efectivo}/{credito}/{total}") {
+        NavGraph("dia_estadistica_screen/{tipoOperacion}/{empresaID}/{title}/{fecha}/{facturas}/{efectivo}/{credito}/{total}") {
         fun createRoute(
             tipoOperacion: String,
             empresaID: String,
             title: String,
             fecha: String,
+            facturas: String,
             efectivo: String,
             credito: String,
             total: String) =
-            "dia_estadistica_screen/$tipoOperacion/$empresaID/$title/$fecha/$efectivo/$credito/$total"
+            "dia_estadistica_screen/$tipoOperacion/$empresaID/$title/$fecha/$facturas/$efectivo/$credito/$total"
+    }
+
+
+    object VentaSemana: NavGraph("ventaSemana_screen/{idEmpresa}/{nomEmpresa}") {
+        const val idEmpresaArg = "idEmpresa"
+        const val nomEmpresaArg = "nomEmpresa"
+        fun createRoute(idEmpresa: String, nomEmpresa: String) = "ventaSemana_screen/$idEmpresa/$nomEmpresa"
     }
 }

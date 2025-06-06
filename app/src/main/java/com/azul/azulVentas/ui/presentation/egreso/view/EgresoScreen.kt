@@ -182,6 +182,7 @@ fun EgresoScreen(
                                         empresaID,
                                         "Egresos Día",
                                         fechaCodificada,
+                                        egresoDiaFmt.facturas,
                                         egresoDiaFmt.total,
                                         egresoDiaFmt.credito,
                                         egresoDiaFmt.total

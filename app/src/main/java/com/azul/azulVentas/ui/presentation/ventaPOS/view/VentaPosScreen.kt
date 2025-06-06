@@ -179,7 +179,8 @@ fun VentaPosScreen(
                                         "VentaPos",
                                         empresaID,
                                         "Ventapos Día",
-                                        fechaCodificada,
+                                        fechaCodificada, //Debe ser este formato
+                                        ventaPosDiaFmt.facturas,
                                         ventaPosDiaFmt.efectivo,
                                         ventaPosDiaFmt.credito,
                                         ventaPosDiaFmt.total
