@@ -31,6 +31,7 @@ import com.azul.azulVentas.ui.presentation.venta.viewmodel.VentaDiaFechaViewMode
 import com.azul.azulVentas.ui.presentation.venta.viewmodel.VentaDiaViewModel
 import com.azul.azulVentas.ui.presentation.venta.viewmodel.VentaPeriodoViewModel
 import com.azul.azulVentas.ui.presentation.venta.viewmodel.VentaSemanaViewModel
+import com.azul.azulVentas.ui.presentation.ventaPOS.viewModel.VentaPosDiaFechaViewModel
 import com.azul.azulVentas.ui.presentation.ventaPOS.viewModel.VentaPosDiaViewModel
 import com.azul.azulVentas.ui.presentation.ventaPOS.viewModel.VentaPosPeriodoViewModel
 import com.azul.azulVentas.ui.presentation.ventaPOS.viewModel.VentaPosSemanaViewModel
@@ -65,6 +66,7 @@ class MainActivity : ComponentActivity() {
     private val ventaSemanaViewModel: VentaSemanaViewModel by viewModels()
     private val ventaPeriodoViewModel: VentaPeriodoViewModel by viewModels()
     private val ventaPosDiaViewModel: VentaPosDiaViewModel by viewModels()
+    private val ventaPosDiaFechaViewModel: VentaPosDiaFechaViewModel by viewModels()
     private val ventaPosSemanaViewModel: VentaPosSemanaViewModel by viewModels()
     private val ventaPosPeriodoViewModel: VentaPosPeriodoViewModel by viewModels()
     private val egresoDiaViewModel: EgresoDiaViewModel by viewModels()
@@ -104,6 +106,7 @@ class MainActivity : ComponentActivity() {
                     ventaSemanaViewModel,
                     ventaPeriodoViewModel,
                     ventaPosDiaViewModel,
+                    ventaPosDiaFechaViewModel,
                     ventaPosSemanaViewModel,
                     ventaPosPeriodoViewModel,
                     egresoDiaViewModel,

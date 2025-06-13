@@ -37,12 +37,12 @@ import com.azul.azulVentas.R
 
 @Composable
 fun BottomNavigationBar(
-    onItemselected: (selectedIndex: Int) -> Unit
+    selectedItemIndex: Int,
+    onItemSelected: (Int) -> Unit
+    //onItemselected: (selectedIndex: Int) -> Unit
 ){
 
-    var selectedItemIndex by remember {
-        mutableStateOf(0)
-    }
+    //var selectedItemIndex by remember { mutableStateOf(0) }
 
     val navigationList = listOf(
         NavigationItem(
@@ -73,13 +73,13 @@ fun BottomNavigationBar(
     NavigationBar {
         navigationList.forEachIndexed{ index, navigationItem ->
             NavigationBarItem(
-                label = {
-                    Text(text = navigationItem.title)
-                },
+                label = { Text(text = navigationItem.title) },
                 selected = index == selectedItemIndex,
                 onClick = {
-                    selectedItemIndex = index
-                    onItemselected(selectedItemIndex)
+                    //selectedItemIndex = index
+                    //onItemselected(selectedItemIndex)
+
+                    onItemSelected(index)
                 },
                 icon = {
                     Icon(

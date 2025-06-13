@@ -39,6 +39,8 @@ import com.azul.azulVentas.ui.presentation.venta.viewmodel.VentaDiaFechaViewMode
 import com.azul.azulVentas.ui.presentation.venta.viewmodel.VentaDiaViewModel
 import com.azul.azulVentas.ui.presentation.venta.viewmodel.VentaPeriodoViewModel
 import com.azul.azulVentas.ui.presentation.venta.viewmodel.VentaSemanaViewModel
+import com.azul.azulVentas.ui.presentation.ventaPOS.view.VentaPosSemanaScreen
+import com.azul.azulVentas.ui.presentation.ventaPOS.viewModel.VentaPosDiaFechaViewModel
 import com.azul.azulVentas.ui.presentation.ventaPOS.viewModel.VentaPosDiaViewModel
 import com.azul.azulVentas.ui.presentation.ventaPOS.viewModel.VentaPosPeriodoViewModel
 import com.azul.azulVentas.ui.presentation.ventaPOS.viewModel.VentaPosSemanaViewModel
@@ -64,6 +66,7 @@ fun ScreenContainer(
     ventaSemanaViewModel: VentaSemanaViewModel,
     ventaPeriodoViewModel: VentaPeriodoViewModel,
     ventaPosDiaViewModel: VentaPosDiaViewModel,
+    ventaPosDiaFechaViewModel: VentaPosDiaFechaViewModel,
     ventaPosSemanaViewModel: VentaPosSemanaViewModel,
     ventaPosPeriodoViewModel: VentaPosPeriodoViewModel,
     egresoDiaViewModel: EgresoDiaViewModel,
@@ -266,12 +269,14 @@ fun ScreenContainer(
             val efectivo = backStackEntry.arguments?.getString("efectivo") ?: ""
             val credito = backStackEntry.arguments?.getString("credito") ?: ""
             val total = backStackEntry.arguments?.getString("total") ?: ""
+
             DiaEstadisticaScreen(
                 navController = navHost,
                 tipoOperacion = tipoOperacion,
                 ventaDiaViewModel = ventaDiaViewModel,
                 ventaDiaFechaViewModel = ventaDiaFechaViewModel,
                 ventaPosDiaViewModel = ventaPosDiaViewModel,
+                ventaPosDiaFechaViewModel = ventaPosDiaFechaViewModel,
                 compraDiaViewModel = compraDiaViewModel,
                 egresoDiaViewModel = egresoDiaViewModel,
                 networkViewModel = networkViewModel,
@@ -284,8 +289,6 @@ fun ScreenContainer(
                 total = total
             )
         }
-
-
 
         composable(
             route = NavGraph.VentaSemana.route,
@@ -303,8 +306,29 @@ fun ScreenContainer(
                     navController = navHost,
                     empresaID = idEmpresa ?: "",
                     nombreEmpresa = nomEmpresa ?: "",
-                    ventaDiaViewModel,
                     ventaSemanaViewModel,
+                    networkViewModel
+                )
+            }
+        }
+
+        composable(
+            route = NavGraph.VentaPosSemana.route,
+            arguments = listOf(
+                navArgument(NavGraph.Home.idEmpresaArg) { type = NavType.StringType },
+                navArgument(NavGraph.Home.nomEmpresaArg) { type = NavType.StringType }
+            )
+
+        ) { backStackEntry ->
+            val idEmpresa = backStackEntry.arguments?.getString(NavGraph.Home.idEmpresaArg)
+            val nomEmpresa = backStackEntry.arguments?.getString(NavGraph.Home.nomEmpresaArg)
+
+            if (idEmpresa != null) {
+                VentaPosSemanaScreen(
+                    navController = navHost,
+                    empresaID = idEmpresa ?: "",
+                    nombreEmpresa = nomEmpresa ?: "",
+                    ventaPosSemanaViewModel,
                     networkViewModel
                 )
             }

@@ -1,7 +1,5 @@
 package com.azul.azulVentas.ui.presentation.container
 
-
-
 sealed class NavGraph (val route: String) {
     object Welcome: NavGraph("welcome_screen")
     object Login: NavGraph("login_screen")
@@ -30,14 +28,18 @@ sealed class NavGraph (val route: String) {
             facturas: String,
             efectivo: String,
             credito: String,
-            total: String) =
-            "dia_estadistica_screen/$tipoOperacion/$empresaID/$title/$fecha/$facturas/$efectivo/$credito/$total"
+            total: String
+        ) = "dia_estadistica_screen/$tipoOperacion/$empresaID/$title/$fecha/$facturas/$efectivo/$credito/$total"
     }
 
 
     object VentaSemana: NavGraph("ventaSemana_screen/{idEmpresa}/{nomEmpresa}") {
-        const val idEmpresaArg = "idEmpresa"
-        const val nomEmpresaArg = "nomEmpresa"
+        //const val idEmpresaArg = "idEmpresa"
+        //const val nomEmpresaArg = "nomEmpresa"
         fun createRoute(idEmpresa: String, nomEmpresa: String) = "ventaSemana_screen/$idEmpresa/$nomEmpresa"
+    }
+
+    object VentaPosSemana: NavGraph("ventaPosSemana_screen/{idEmpresa}/{nomEmpresa}") {
+        fun createRoute(idEmpresa: String, nomEmpresa: String) = "ventaPosSemana_screen/$idEmpresa/$nomEmpresa"
     }
 }

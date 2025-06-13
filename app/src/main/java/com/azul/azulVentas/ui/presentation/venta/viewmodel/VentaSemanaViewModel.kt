@@ -75,6 +75,7 @@ class VentaSemanaViewModel @Inject constructor(
         }
     }
 
+    //Lsitado muestra completo los valores, pero me muestra varios valores por un dia
     fun listarVentaSemana(empresaID: String) {
         viewModelScope.launch {
             _isLoading.value = true
@@ -97,4 +98,43 @@ class VentaSemanaViewModel @Inject constructor(
             _isLoading.value = false
         }
     }
+
+    //Listado donde me totaliza los valores x día
+    fun listarVentaSemanaAgrupada(empresaID: String) {
+        viewModelScope.launch {
+            _isLoading.value = true
+
+            val result = getVentaSemanaUseCase(empresaID)
+
+            when {
+                result.isSuccess -> {
+                    val response = result.getOrDefault(emptyList())
+
+                    val resumenPorFecha = response
+                        .groupBy { it.fecha_dia }
+                        .map { (fecha, ventasDelDia) ->
+                            ventasDelDia.reduce { acc, venta ->
+                                acc.copy(
+                                    facturas = acc.facturas + venta.facturas,
+                                    sum_dia = acc.sum_dia + venta.sum_dia,
+                                    sum_credito = acc.sum_credito + venta.sum_credito,
+                                    sum_contado = acc.sum_contado + venta.sum_contado
+                                )
+                            }
+                        }
+                        .sortedBy { it.fecha_dia } // Si quieres que aparezcan ordenados por fecha
+
+                    _ventaSemana.postValue(resumenPorFecha)
+                    _error.value = null
+                }
+
+                result.isFailure -> {
+                    _ventaSemana.postValue(emptyList())
+                    _error.value = result.exceptionOrNull()?.message ?: "Error desconocido"
+                }
+            }
+            _isLoading.value = false
+        }
+    }
+
 }

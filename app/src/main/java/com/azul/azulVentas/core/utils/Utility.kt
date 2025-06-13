@@ -106,15 +106,15 @@ class Utility {
         fun formatearEtiqueta(texto: String): String {
             return texto.split("_").joinToString(" ") { palabra ->
                 when (palabra.lowercase()) {
-                    "hora" -> "hora"
-                    "dia" -> "día"
-                    "mes" -> "mes"
-                    "anio", "año" -> "año"
+                    "hora" -> "Hora"
+                    "dia" -> "Día"
+                    "mes" -> "Mes"
+                    "anio", "año" -> "Año"
                     "por" -> "por"
                     else -> palabra.replaceFirstChar { it.uppercase() }
                 }
-            }.replace(" ", " por ", ignoreCase = true)
-                .replaceFirstChar { it.uppercase() }
+            }//.replace(" ", " por ", ignoreCase = true)
+             //   .replaceFirstChar { it.uppercase() }
         }
 
         fun formatearFecha(fechaInput: String): String {

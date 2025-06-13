@@ -36,10 +36,8 @@ fun grafColumn(
 {
     val datos by listaValores.observeAsState(initial = emptyList())
 
-    // Ordenar por hora_dia para mostrar la gráfica correctamente
-    val datosOrdenados = remember(datos) {
-        datos.sortedBy { it.hora_dia }
-    }
+    //Ordenar por hora_dia para mostrar la gráfica correctamente
+    val datosOrdenados = remember(datos) { datos.sortedBy { it.hora_dia } }
 
     val colors = listOf(
         Color(0xFFE1BEE7),

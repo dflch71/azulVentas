@@ -60,7 +60,7 @@ fun VentaPosScreen(
 ) {
 
     val ventaPosDiaFmt by ventaPosDiaViewModel.ventaPosDiaFormatted
-    val ventaSemanaFmt by ventaPosSemanaViewModel.ventaSemanaFormatted
+    val ventaPosSemanaFmt by ventaPosSemanaViewModel.ventaPosSemanaFormatted
     val ventaPosPeriodo by ventaPosPeriodoViewModel.ventaPosPeriodo.observeAsState(initial = emptyList())
 
     val isLoadingVentaPosPeriodo by ventaPosPeriodoViewModel.isLoading.collectAsState()
@@ -198,18 +198,32 @@ fun VentaPosScreen(
 
                 item {
                     CardResumen(
-                        titulo = "Últ 7 Días: ${ventaSemanaFmt.tituloSemana}",
-                        total = ventaSemanaFmt.total,
-                        facturas = ventaSemanaFmt.facturas,
-                        efectivo = ventaSemanaFmt.efectivo,
-                        credito = ventaSemanaFmt.credito,
+                        titulo = "Últ 7 Días: ${ventaPosSemanaFmt.tituloSemana}",
+                        total = ventaPosSemanaFmt.total,
+                        facturas = ventaPosSemanaFmt.facturas,
+                        efectivo = ventaPosSemanaFmt.efectivo,
+                        credito = ventaPosSemanaFmt.credito,
                         tipoResumen = "POS",
                         tipo = TipoVentaCard.SEMANA,
+                        onClick = {
+                            if (ventaPosSemanaFmt.facturas != "0") {
+                                navController.navigate(
+                                    NavGraph.VentaPosSemana.createRoute(
+                                        idEmpresa = empresaID,
+                                        nomEmpresa = nombreEmpresa,
+                                    )
+                                )
+                            } else {
+                                // Mostrar Snackbar dentro de una corrutina
+                                scope.launch {
+                                    snackbarHostState.showSnackbar("No hay datos disponibles para mostrar")
+                                }
+                            }
+                        }
                     )
                 }
 
                 item {
-
                     LazyRow(
                         modifier = Modifier.fillMaxWidth()
                     ) {

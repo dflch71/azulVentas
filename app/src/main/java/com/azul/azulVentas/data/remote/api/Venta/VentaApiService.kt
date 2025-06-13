@@ -1,11 +1,9 @@
 package com.azul.azulVentas.data.remote.api.Venta
 
-import com.azul.azulVentas.core.utils.Constants.GET_PATH_VALIDAR_USUARIO_EMAIL
 import com.azul.azulVentas.core.utils.Constants.GET_PATH_VENTA_DIA
 import com.azul.azulVentas.core.utils.Constants.GET_PATH_VENTA_DIA_FECHA
 import com.azul.azulVentas.core.utils.Constants.GET_PATH_VENTA_PERIODO
 import com.azul.azulVentas.core.utils.Constants.GET_PATH_VENTA_SEMANA
-import com.azul.azulVentas.data.remote.model.EmpresaEmail.EmpresaEmailResponse
 import com.azul.azulVentas.data.remote.model.ResumenDia.ResumenDiaResponse
 import com.azul.azulVentas.data.remote.model.ResumenPeriodo.ResumenPeriodoResponse
 import com.azul.azulVentas.data.remote.model.ResumenSemana.ResumenSemanaResponse

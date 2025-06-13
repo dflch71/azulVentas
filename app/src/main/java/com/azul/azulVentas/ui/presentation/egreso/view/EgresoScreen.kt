@@ -37,6 +37,7 @@ import com.azul.azulEgresos.ui.presentation.egreso.viewmodel.EgresoPeriodoViewMo
 import com.azul.azulVentas.core.utils.Utility.Companion.ShowRealTimeClock
 import com.azul.azulVentas.core.utils.Utility.Companion.formatCurrency
 import com.azul.azulVentas.ui.components.ErrorDialog
+import com.azul.azulVentas.ui.components.OperationTypes
 import com.azul.azulVentas.ui.presentation.container.NavGraph
 import com.azul.azulVentas.ui.presentation.egreso.component.CardEgreso
 import com.azul.azulVentas.ui.presentation.egreso.component.TipoCard

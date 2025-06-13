@@ -1,6 +1,10 @@
 package com.azul.azulVentas.ui.presentation.diaEstadistica.view
 
 import android.net.Uri
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -24,12 +28,12 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
@@ -63,6 +67,7 @@ import com.azul.azulVentas.core.utils.Utility.Companion.formatearFecha
 import com.azul.azulVentas.domain.model.resumenDia.ResumenDia
 import com.azul.azulVentas.ui.components.CharTypes
 import com.azul.azulVentas.ui.components.ErrorDialog
+import com.azul.azulVentas.ui.components.OperationTypes
 import com.azul.azulVentas.ui.presentation.compra.viewmodel.CompraDiaViewModel
 import com.azul.azulVentas.ui.presentation.egreso.viewmodel.EgresoDiaViewModel
 import com.azul.azulVentas.ui.presentation.graficas.grafColumn
@@ -71,8 +76,10 @@ import com.azul.azulVentas.ui.presentation.network.sync.NetworkSyncManager
 import com.azul.azulVentas.ui.presentation.network.viewmodel.NetworkViewModel
 import com.azul.azulVentas.ui.presentation.venta.viewmodel.VentaDiaFechaViewModel
 import com.azul.azulVentas.ui.presentation.venta.viewmodel.VentaDiaViewModel
+import com.azul.azulVentas.ui.presentation.ventaPOS.viewModel.VentaPosDiaFechaViewModel
 import com.azul.azulVentas.ui.presentation.ventaPOS.viewModel.VentaPosDiaViewModel
 import com.azul.azulVentas.ui.theme.DarkTextColor
+import kotlinx.coroutines.delay
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -83,6 +90,7 @@ fun DiaEstadisticaScreen(
     ventaDiaViewModel: VentaDiaViewModel,
     ventaDiaFechaViewModel: VentaDiaFechaViewModel,
     ventaPosDiaViewModel: VentaPosDiaViewModel,
+    ventaPosDiaFechaViewModel: VentaPosDiaFechaViewModel,
     compraDiaViewModel: CompraDiaViewModel,
     egresoDiaViewModel: EgresoDiaViewModel,
     networkViewModel: NetworkViewModel,
@@ -94,37 +102,50 @@ fun DiaEstadisticaScreen(
     credito: String,
     total: String
 ) {
+
     // Primero declaramos las variables que vamos a usar luego del when
     val datosDia: LiveData<List<ResumenDia>>
     val isLoading: Boolean
     val errorDia: String?
 
     when (tipoOperacion) {
-        "Venta" -> {
+        //"Venta"
+        OperationTypes.Venta.toString() -> {
             datosDia = ventaDiaViewModel.ventaDia
             isLoading = ventaDiaViewModel.isLoading.collectAsState().value
             errorDia = ventaDiaViewModel.error.collectAsState().value
         }
 
-        "VentaFecha" -> {
+        //"VentaFecha"
+        OperationTypes.VentaFecha.toString() -> {
             datosDia = ventaDiaFechaViewModel.ventaDiaFecha
             isLoading = ventaDiaFechaViewModel.isLoading.collectAsState().value
             errorDia = ventaDiaFechaViewModel.error.collectAsState().value
         }
 
-        "VentaPos" -> {
+        //"VentaPos"
+        OperationTypes.VentaPos.toString() -> {
             datosDia = ventaPosDiaViewModel.ventaPosDia
             isLoading = ventaPosDiaViewModel.isLoading.collectAsState().value
             errorDia = ventaPosDiaViewModel.error.collectAsState().value
         }
 
-        "Egreso" -> {
+        //"VentaPosFecha"
+        OperationTypes.VentaPosFecha.toString() -> {
+            datosDia = ventaPosDiaFechaViewModel.ventaPosDiaFecha
+            isLoading = ventaPosDiaFechaViewModel.isLoading.collectAsState().value
+            errorDia = ventaPosDiaFechaViewModel.error.collectAsState().value
+        }
+
+        //"Egreso"
+        OperationTypes.Egreso.toString() -> {
             datosDia = egresoDiaViewModel.egresoDia
             isLoading = egresoDiaViewModel.isLoading.collectAsState().value
             errorDia = egresoDiaViewModel.error.collectAsState().value
         }
 
-        "Compra" -> {
+        //"Compra"
+        OperationTypes.Compra.toString() -> {
             datosDia = compraDiaViewModel.compraDia
             isLoading = compraDiaViewModel.isLoading.collectAsState().value
             errorDia = compraDiaViewModel.error.collectAsState().value
@@ -150,11 +171,18 @@ fun DiaEstadisticaScreen(
 
     fun cargarDatos() {
         when (tipoOperacion) {
-            "Venta" -> { ventaDiaViewModel.cargarVentaDia(empresaID) }
-            "VentaFecha" -> { ventaDiaFechaViewModel.cargarVentaDiaFecha(empresaID, fecha) }
-            "VentaPos" -> { ventaPosDiaViewModel.cargarVentaPosDia(empresaID) }
-            "Egreso" -> { egresoDiaViewModel.cargarEgresoDia(empresaID) }
-            "Compra" -> { compraDiaViewModel.cargarCompraDia(empresaID) }
+            OperationTypes.Venta.toString() -> { ventaDiaViewModel.cargarVentaDia(empresaID) }
+            OperationTypes.VentaFecha.toString() -> { ventaDiaFechaViewModel.cargarVentaDiaFecha(empresaID, fecha) }
+            OperationTypes.VentaPos.toString() -> { ventaPosDiaViewModel.cargarVentaPosDia(empresaID) }
+            OperationTypes.VentaPosFecha.toString() -> { ventaPosDiaFechaViewModel.cargarVentaPosDiaFecha(empresaID, fecha) }
+            OperationTypes.Egreso.toString() -> { egresoDiaViewModel.cargarEgresoDia(empresaID) }
+            OperationTypes.Compra.toString() -> { compraDiaViewModel.cargarCompraDia(empresaID) }
+
+            //"Venta" -> { ventaDiaViewModel.cargarVentaDia(empresaID) }
+            //"VentaFecha" -> { ventaDiaFechaViewModel.cargarVentaDiaFecha(empresaID, fecha)  }
+            //"VentaPos" -> { ventaPosDiaViewModel.cargarVentaPosDia(empresaID) }
+            //"Egreso" -> { egresoDiaViewModel.cargarEgresoDia(empresaID) }
+            //"Compra" -> { compraDiaViewModel.cargarCompraDia(empresaID) }
         }
     }
 
@@ -176,6 +204,7 @@ fun DiaEstadisticaScreen(
 
     //Fecha decodificada para aceptar los formatos de la fecha /
     val fechaDecode: String = Uri.decode(fecha)
+
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
@@ -195,7 +224,9 @@ fun DiaEstadisticaScreen(
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
+                    IconButton(
+                        onClick = { navController.popBackStack() }
+                    ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Localized description"
@@ -279,15 +310,52 @@ fun DiaEstadisticaScreen(
             )
         }
 
+        //Mostrar el progress para cargar las imagenes
+        var showProgress by remember { mutableStateOf(false) }
+        LaunchedEffect(isLoading) {
+            if (isLoading) {
+                showProgress = true
+            } else {
+                delay(1000) // mantener visible por 1 segundos extra
+                showProgress = false
+            }
+        }
+
         Box(
             modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxSize()
         ) {
             Column() {
-                if (isLoading) {
-                    Spacer(modifier = Modifier.padding(8.dp))
-                    LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+
+                AnimatedVisibility(
+                    visible = showProgress,
+                    enter = fadeIn(animationSpec = tween(300)),
+                    exit = fadeOut(animationSpec = tween(300))
+                ) {
+                    Box(
+                        modifier = Modifier.fillMaxSize()
+                            .padding(horizontal = 16.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            //LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+                            CircularProgressIndicator()
+                            Spacer(modifier = Modifier.padding(16.dp))
+                            Text(
+                                text = "Cargando Datos...",
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp),
+                                style = MaterialTheme.typography.bodyLarge,
+                                fontWeight = FontWeight.Normal,
+                                color = Color.DarkGray
+                            )
+                        }
+                    }
                 }
 
                 //Fecha del dia Seleccionado
@@ -462,7 +530,6 @@ fun DiaEstadisticaScreen(
                             ) {
 
                                 item {
-
                                     CardResumenDia(
                                         datosDia,
                                         'F',
@@ -582,11 +649,4 @@ fun CardResumenPie(
         }
     }
 }
-
-
-
-
-
-
-
 

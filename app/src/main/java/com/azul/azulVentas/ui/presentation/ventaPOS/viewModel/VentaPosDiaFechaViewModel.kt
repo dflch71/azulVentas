@@ -1,4 +1,4 @@
-package com.azul.azulVentas.ui.presentation.venta.viewmodel
+package com.azul.azulVentas.ui.presentation.ventaPOS.viewModel
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
@@ -12,7 +12,7 @@ import com.azul.azulVentas.core.utils.Utility.Companion.formatDate
 import com.azul.azulVentas.core.utils.Utility.Companion.stringToLocalDateTime
 import com.azul.azulVentas.domain.model.resumenDia.ResumenDia
 import com.azul.azulVentas.domain.model.resumenOperaciones.ResumenOperaciones
-import com.azul.azulVentas.domain.usecases.venta.GetVentaDiaFechaUseCase
+import com.azul.azulVentas.domain.usecases.ventaPos.GetVentaPosDiaFechaUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -22,12 +22,12 @@ import javax.inject.Inject
 
 // presentation/viewmodel/EmpresaViewModel.kt
 @HiltViewModel
-class VentaDiaFechaViewModel @Inject constructor(
-    private val getVentaDiaFechaUseCase: GetVentaDiaFechaUseCase
+class VentaPosDiaFechaViewModel @Inject constructor(
+    private val getVentaPosDiaFechaUseCase: GetVentaPosDiaFechaUseCase
 ) : ViewModel() {
 
-    private val _ventaDiaFecha = MutableLiveData<List<ResumenDia>>()
-    val ventaDiaFecha: LiveData<List<ResumenDia>> = _ventaDiaFecha
+    private val _ventaPosDiaFecha = MutableLiveData<List<ResumenDia>>()
+    val ventaPosDiaFecha: LiveData<List<ResumenDia>> = _ventaPosDiaFecha
 
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading
@@ -35,23 +35,23 @@ class VentaDiaFechaViewModel @Inject constructor(
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error
 
-    private val _ventaDiaFechaFormatted = mutableStateOf(ResumenOperaciones())
-    val ventaDiaFechaFormatted: State<ResumenOperaciones> = _ventaDiaFechaFormatted
+    private val _ventaPosDiaFechaFormatted = mutableStateOf(ResumenOperaciones())
+    val ventaPosDiaFechaFormatted: State<ResumenOperaciones> = _ventaPosDiaFechaFormatted
 
-    fun cargarVentaDiaFecha(empresaID: String, fecha: String) {
+    fun cargarVentaPosDiaFecha(empresaID: String, fecha: String) {
         viewModelScope.launch {
             _isLoading.value = true
 
             // Assign the result of the use case call to a variable
-            val result = getVentaDiaFechaUseCase(empresaID, fecha)
+            val result = getVentaPosDiaFechaUseCase(empresaID, fecha)
 
             when {
                 result.isSuccess -> {
                     val response = result.getOrDefault(emptyList())
-                    _ventaDiaFecha.postValue(response)
+                    _ventaPosDiaFecha.postValue(response)
                     _error.value = null
 
-                    _ventaDiaFechaFormatted.value = ResumenOperaciones(
+                    _ventaPosDiaFechaFormatted.value = ResumenOperaciones(
                         tituloDia = "",
                         total = "",
                         efectivo = "",
@@ -63,7 +63,7 @@ class VentaDiaFechaViewModel @Inject constructor(
                         val date = stringToLocalDateTime(fecha) ?: LocalDateTime.now()
                         val tDia = "${formatDate(response.first().fecha_dia)} - ${calculateDaysToTargetDate(date)} Días"
 
-                        _ventaDiaFechaFormatted.value = ResumenOperaciones(
+                        _ventaPosDiaFechaFormatted.value = ResumenOperaciones(
                             tituloDia = tDia,
                             total = formatCurrency(response.sumOf { it.sum_hora }),
                             efectivo = formatCurrency(response.sumOf { it.sum_contado }),
@@ -74,7 +74,7 @@ class VentaDiaFechaViewModel @Inject constructor(
                 }
 
                 result.isFailure -> {
-                    _ventaDiaFecha.postValue(emptyList())
+                    _ventaPosDiaFecha.postValue(emptyList())
                     _error.value = result.exceptionOrNull()?.message ?: "Error desconocido"
                 }
             }
@@ -82,22 +82,22 @@ class VentaDiaFechaViewModel @Inject constructor(
         }
     }
 
-    fun listarVentaDiaFecha(empresaID: String, fecha: String) {
+    fun listarVentaPosDiaFecha(empresaID: String, fecha: String) {
         viewModelScope.launch {
             _isLoading.value = true
 
             // Assign the result of the use case call to a variable
-            val result = getVentaDiaFechaUseCase(empresaID, fecha)
+            val result = getVentaPosDiaFechaUseCase(empresaID, fecha)
 
             when {
                 result.isSuccess -> {
                     val response = result.getOrDefault(emptyList())
-                    _ventaDiaFecha.postValue(response)
+                    _ventaPosDiaFecha.postValue(response)
                     _error.value = null
                 }
 
                 result.isFailure -> {
-                    _ventaDiaFecha.postValue(emptyList())
+                    _ventaPosDiaFecha.postValue(emptyList())
                     _error.value = result.exceptionOrNull()?.message ?: "Error desconocido"
                 }
             }

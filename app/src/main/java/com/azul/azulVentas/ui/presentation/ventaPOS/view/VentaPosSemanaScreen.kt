@@ -1,4 +1,4 @@
-package com.azul.azulVentas.ui.presentation.venta.view
+package com.azul.azulVentas.ui.presentation.ventaPOS.view
 
 import android.net.Uri
 import androidx.compose.foundation.layout.Box
@@ -51,29 +51,29 @@ import com.azul.azulVentas.ui.presentation.network.viewmodel.NetworkViewModel
 import com.azul.azulVentas.ui.presentation.venta.component.CardResumen
 import com.azul.azulVentas.ui.presentation.venta.component.TipoVentaCard
 import com.azul.azulVentas.ui.presentation.venta.viewmodel.VentaSemanaViewModel
+import com.azul.azulVentas.ui.presentation.ventaPOS.viewModel.VentaPosSemanaViewModel
 import com.azul.azulVentas.ui.theme.DarkTextColor
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun VentaSemanaScreen(
+fun VentaPosSemanaScreen(
     navController: NavController,
     empresaID: String,
     nombreEmpresa: String,
-    //ventaDiaViewModel: VentaDiaViewModel,
-    ventaSemanaViewModel: VentaSemanaViewModel,
+    ventaPosSemanaViewModel: VentaPosSemanaViewModel,
     networkViewModel: NetworkViewModel
 ) {
     //val ventaDiaFmt by ventaDiaViewModel.ventaDiaFormatted
-    val ventaSemanaFmt by ventaSemanaViewModel.ventaSemanaFormatted
+    val ventaPosSemanaFmt by ventaPosSemanaViewModel.ventaPosSemanaFormatted
 
-    val ventaSemana by ventaSemanaViewModel.ventaSemana.observeAsState(initial = emptyList())
+    val ventaPosSemana by ventaPosSemanaViewModel.ventaPosSemana.observeAsState(initial = emptyList())
 
-    val isLoadingVentaSemana by ventaSemanaViewModel.isLoading.collectAsState()
+    val isLoadingVentaSemana by ventaPosSemanaViewModel.isLoading.collectAsState()
 
     //val errorVentaDia by ventaDiaViewModel.error.collectAsState()
-    val errorVentaSemana by ventaSemanaViewModel.error.collectAsState()
+    val errorVentaSemana by ventaPosSemanaViewModel.error.collectAsState()
     var showErrorDialog by remember { mutableStateOf(false) }
 
     //val screenWidth = LocalConfiguration.current.screenWidthDp.dp
@@ -84,11 +84,8 @@ fun VentaSemanaScreen(
     val scope = rememberCoroutineScope()
 
     fun cargarDatos() {
-        //ventaDiaViewModel.cargarVentaDia(empresaID)
-        //ventaDiaViewModel.listarVentaDia(empresaID)
-        ventaSemanaViewModel.cargarVentaSemana(empresaID)
-        //ventaSemanaViewModel.listarVentaSemana(empresaID)
-        ventaSemanaViewModel.listarVentaSemanaAgrupada(empresaID)
+        ventaPosSemanaViewModel.cargarVentaPosSemana(empresaID)
+        ventaPosSemanaViewModel.listarVentaPosSemanaAgrupada(empresaID)
     }
 
     // ✅ Al primer render, cargar si hay conexión
@@ -118,7 +115,7 @@ fun VentaSemanaScreen(
                     navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
                     actionIconContentColor = MaterialTheme.colorScheme.onPrimary
                 ),
-                title = { Text(text = "Ventas Semana") },
+                title = { Text(text = "VentaPos Semana") },
 
 
                 navigationIcon = {
@@ -204,7 +201,7 @@ fun VentaSemanaScreen(
                 )
 
                 Text(
-                    text = ventaSemanaFmt.tituloSemana,
+                    text = ventaPosSemanaFmt.tituloSemana,
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.SemiBold,
                     modifier = Modifier.padding(horizontal = 16.dp),
@@ -217,8 +214,8 @@ fun VentaSemanaScreen(
                         .systemBarsPadding(),
                     contentPadding = PaddingValues(vertical = 8.dp)
                 ) {
-                    items(ventaSemana.size) { index ->
-                        val venta = ventaSemana[index]
+                    items(ventaPosSemana.size) { index ->
+                        val venta = ventaPosSemana[index]
 
                         val fechaCodificada = Uri.encode(venta.fecha_dia)
                         val fecha = venta.fecha_dia + "T00:00:00"
@@ -237,9 +234,9 @@ fun VentaSemanaScreen(
                                 if (venta.facturas != 0) {
                                     navController.navigate(
                                         NavGraph.DiaEstadistica.createRoute(
-                                            "VentaFecha",
+                                            "VentaPosFecha",
                                             empresaID,
-                                            "Venta Día",
+                                            "VentaPos Día",
                                             fechaCodificada, //Debe ser este formato
                                             venta.facturas.toString(),
                                             formatCurrency(venta.sum_contado),

@@ -32,8 +32,8 @@ class VentaPosSemanaViewModel @Inject constructor(
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error
 
-    private val _ventaSemanaFormatted = mutableStateOf(ResumenOperaciones())
-    val ventaSemanaFormatted: State<ResumenOperaciones> = _ventaSemanaFormatted
+    private val _ventaPosSemanaFormatted = mutableStateOf(ResumenOperaciones())
+    val ventaPosSemanaFormatted: State<ResumenOperaciones> = _ventaPosSemanaFormatted
 
     fun cargarVentaPosSemana(empresaID: String) {
         viewModelScope.launch {
@@ -47,7 +47,7 @@ class VentaPosSemanaViewModel @Inject constructor(
                     _ventaPosSemana.postValue(response)
                     _error.value = null
 
-                    _ventaSemanaFormatted.value = ResumenOperaciones(
+                    _ventaPosSemanaFormatted.value = ResumenOperaciones(
                         tituloSemana = "",
                         total = "",
                         efectivo = "",
@@ -57,7 +57,7 @@ class VentaPosSemanaViewModel @Inject constructor(
                     if (response.isNotEmpty()) {
                         val titulo =
                             "${formatDate(response.first().fecha_dia)} a ${formatDate(response.last().fecha_dia)}"
-                        _ventaSemanaFormatted.value = ResumenOperaciones(
+                        _ventaPosSemanaFormatted.value = ResumenOperaciones(
                             tituloSemana = titulo,
                             total = formatCurrency(response.sumOf { it.sum_dia }),
                             efectivo = formatCurrency(response.sumOf { it.sum_contado }),
@@ -65,6 +65,44 @@ class VentaPosSemanaViewModel @Inject constructor(
                             facturas = response.sumOf { it.facturas }.toString()
                         )
                     }
+                }
+
+                result.isFailure -> {
+                    _ventaPosSemana.postValue(emptyList())
+                    _error.value = result.exceptionOrNull()?.message ?: "Error desconocido"
+                }
+            }
+            _isLoading.value = false
+        }
+    }
+
+    //Listado donde me totaliza los valores x día
+    fun listarVentaPosSemanaAgrupada(empresaID: String) {
+        viewModelScope.launch {
+            _isLoading.value = true
+
+            val result = getVentaPosSemanaUseCase(empresaID)
+
+            when {
+                result.isSuccess -> {
+                    val response = result.getOrDefault(emptyList())
+
+                    val resumenPorFecha = response
+                        .groupBy { it.fecha_dia }
+                        .map { (fecha, ventasDelDia) ->
+                            ventasDelDia.reduce { acc, venta ->
+                                acc.copy(
+                                    facturas = acc.facturas + venta.facturas,
+                                    sum_dia = acc.sum_dia + venta.sum_dia,
+                                    sum_credito = acc.sum_credito + venta.sum_credito,
+                                    sum_contado = acc.sum_contado + venta.sum_contado
+                                )
+                            }
+                        }
+                        .sortedBy { it.fecha_dia } // Si quieres que aparezcan ordenados por fecha
+
+                    _ventaPosSemana.postValue(resumenPorFecha)
+                    _error.value = null
                 }
 
                 result.isFailure -> {
